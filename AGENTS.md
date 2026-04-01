@@ -6,6 +6,7 @@ Project context and how to work in this repo. **`aiDocs/context.md`** is the sho
 
 - **Context index:** `aiDocs/context.md`
 - **Product:** `aiDocs/prd.md`, `aiDocs/mvp.md`
+- **Architecture:** `aiDocs/architecture.md`
 - **Research:** `aiDocs/externalresearch/`
 - **`ai/`** is gitignored — local notes, guides, roadmaps only; not shared canon.
 
@@ -16,6 +17,6 @@ Project context and how to work in this repo. **`aiDocs/context.md`** is the sho
 - Say when something is uncertain instead of inventing APIs, paths, or requirements.
 - Match existing code style, naming, and structure in this repo.
 
-## Stack (see context)
+## Stack
 
-React PWA, AWS (API Gateway + Lambda + DynamoDB), voice ASR + LLM for stat events — details in `aiDocs/context.md`.
+React PWA, AWS (API Gateway + Lambda + DynamoDB), voice ASR + LLM for stat events — see **`aiDocs/architecture.md`**.
