@@ -53,6 +53,21 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - Confirm the resulting framing supports the PRD -> plan -> roadmap -> implementation -> verification loop expected by the class materials.
 - Confirm that later plans can reference a stable definition of MVP scope, success, and non-goals.
 
+## Implementation Notes
+
+- The locked implementation decisions already existed in `aiDocs/evidence/mvp_implementation_decisions.md`; Phase 1 work confirmed and reused that file instead of duplicating it.
+- The remaining close-out artifacts were published in tracked docs so later phases can reference them directly:
+  - `aiDocs/mvp_scope_sheet.md`
+  - `aiDocs/evidence/final_project_success_criteria.md`
+  - `aiDocs/evidence/validation_backlog.md`
+  - `aiDocs/evidence/demo_narrative_and_risks.md`
+- `aiDocs/evidence/README.md` was updated so future validation write-ups have an explicit home and structure.
+
+## Close-Out Status
+
+- Phase intent achieved: the MVP boundary, proof expectations, and demo story are now documented in tracked artifacts.
+- No blocking ambiguity remains for Phase 2 on stack choice, trust behavior scope, or post-game narrative inclusion.
+
 ## Assumptions
 
 - The current `aiDocs/` set remains the source of truth unless a tracked update changes it.

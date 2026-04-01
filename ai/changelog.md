@@ -7,3 +7,4 @@ This is meant to be a CONCISE list of changes to track as we develop this projec
 - Added `aiDocs/final_project_alignment.md` to translate the final rubric and class slides into concrete repo and presentation expectations.
 - Updated `aiDocs/context.md` so future sessions see final-project alignment, evidence gathering, and demo reliability as the current focus.
 - Added phase-by-phase sub-plan and roadmap doc pairs in `ai/roadmaps` for all seven MVP implementation phases, aligned to `ai/roadmaps/2026-04-01_high_level_mvp_implementation_plan.md` and `ai/roadmaps/2026-04-01_high_level_implementation_roadmap.md`.
+- Implemented Phase 1 alignment artifacts: added `aiDocs/mvp_scope_sheet.md`, `aiDocs/evidence/final_project_success_criteria.md`, `aiDocs/evidence/validation_backlog.md`, and `aiDocs/evidence/demo_narrative_and_risks.md`; updated `aiDocs/evidence/README.md`; and closed the Phase 1 roadmap/sub-plan pair for archive.
