@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<!-- saved from url=(0057)https://d1dtpagvh0qhqn.cloudfront.net/agentic35WebSlides/ -->
+<html lang="en" class="reveal-full-page" style="--vsc-domain: &quot;d1dtpagvh0qhqn.cloudfront.net&quot;;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Unit 3.5: Implementation Lab - Agentic Development Course</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="./Implementation Lab_files/reveal.min.css">
+    <link rel="stylesheet" href="./Implementation Lab_files/night.min.css">
+
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet" href="./Implementation Lab_files/monokai.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./Implementation Lab_files/css2" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./Implementation Lab_files/custom.css">
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style></head>
+<body class="reveal-viewport" style="transition: transform 0.8s; --slide-width: 1300px; --slide-height: 900px; --slide-scale: 0.9898;">
+    <div class="reveal slide center focused has-vertical-slides has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade" style="">
+        <div class="slides" style="width: 1300px; height: 900px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(0.9898);">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 31px; display: block;" class="present">
+                <h1 class="title-main">Dev Unit 3.5: Implementation Lab</h1>
+                <h3 class="title-sub">From plans to working code</h3>
+                <img src="./Implementation Lab_files/buildACar.png" alt="Build a Car" class="funny-image" style="max-width:55%; max-height:400px; margin-top:0.3em;">
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section style="top: 53px; display: block;" class="future" data-fragment="-1" hidden="" aria-hidden="true">
+                <h2>What We'll Cover Today</h2>
+                <div class="agenda-grid">
+                    <div class="agenda-item fragment fade-up" data-fragment-index="0">
+                        <span class="agenda-number">1</span>
+                        <div class="agenda-content">
+                            <strong>Implementing Roadmaps with AI</strong>
+                            <span>Turning plans into code</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="1">
+                        <span class="agenda-number">2</span>
+                        <div class="agenda-content">
+                            <strong>Verifying Roadmap Implementation</strong>
+                            <span>Did AI build what we planned?</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="2">
+                        <span class="agenda-number">3</span>
+                        <div class="agenda-content">
+                            <strong>Creating CLI Testing Scripts</strong>
+                            <span>The full loop</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="3">
+                        <span class="agenda-number">4</span>
+                        <div class="agenda-content">
+                            <strong>Testing with CLI Tools</strong>
+                            <span>Run and validate</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="4">
+                        <span class="agenda-number">5</span>
+                        <div class="agenda-content">
+                            <strong>The Fix Loop</strong>
+                            <span>Autonomous bug fixing</span>
+                        </div>
+                    </div>
+                </div>
+                <blockquote class="fragment fade-up" style="margin-top:0.5em;" data-fragment-index="5">
+                    <strong>Format:</strong> ~15 min instruction + hands-on lab time
+                </blockquote>
+            </section>
+
+            <!-- ==================== LEARNING OBJECTIVES ==================== -->
+            <section style="top: 105px; display: block;" class="future" data-fragment="-1" hidden="" aria-hidden="true">
+                <h2>What You Should Be Able to DO by End of Today</h2>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">1.</span>
+                        <span><strong>Have AI implement at least one phase</strong> of your project from your roadmaps</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">2.</span>
+                        <span><strong>Verify</strong> that the implementation matches the roadmap requirements</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">3.</span>
+                        <span><strong>Create CLI scripts</strong> that let AI test your application</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="3">
+                        <span class="homework-check">4.</span>
+                        <span><strong>Run and test</strong> your application using CLI tools</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="4">
+                        <span class="homework-check">5.</span>
+                        <span><strong>Fix bugs</strong> found during testing using the test-fix loop</span>
+                    </div>
+                </div>
+                <blockquote class="fragment fade-up" style="margin-top:0.5em;" data-fragment-index="5">
+                    If you accomplish all five, you're ahead of most professional developers using AI.
+                </blockquote>
+            </section>
+
+            <!-- ==================== PART 1: IMPLEMENTING ROADMAPS WITH AI ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#1e3a5f" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 1</h2>
+                    <h1>Implementing Roadmaps with AI</h1>
+                    <p class="part-subtitle">Turning plans into code</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 319px; display: none;" hidden="">
+                    <h2>Quick Recap: Where We Are</h2>
+                    <div class="doc-hierarchy">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">PRD  --&gt;  Plans  --&gt;  Roadmaps  --&gt;  ???
+ (what)    (how)      (checklist)    (CODE)</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.8em;" data-fragment-index="0">
+                        <strong>You have the planning docs.</strong> Now we turn them into working software.
+                    </p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 286px; display: none;" hidden="">
+                    <h2>The Implementation Prompt Pattern</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Review @context.md. Implement the roadmap
+at ai/roadmaps/[your-roadmap].md.</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="0">
+                        <strong>That's it.</strong> context.md points to architecture, coding style, and everything else AI needs.
+                    </div>
+                    <aside class="notes">
+                        Emphasize that this only works well if they did the planning homework. Good plans = good implementation. Bad plans = AI guessing.
+                    </aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>What Happens Next</h2>
+                    <p style="font-size:0.8em; color:var(--primary-blue); font-weight:600; margin-bottom:0.4em;">AI will:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Read the roadmap and understand the scope</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Read architecture.md for system design</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Read coding-style.md for conventions</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Implement the code</li>
+                        <li class="fragment fade-up" data-fragment-index="4">May ask clarifying questions — answer them</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.8em;" data-fragment-index="5">What you do:</p>
+                    <ul class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="6">
+                        <li>Watch the implementation unfold</li>
+                        <li>Answer questions when asked</li>
+                        <li>Don't micromanage — let it work</li>
+                    </ul>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Live demo — open the meme generator project. Show the roadmap file. Run the implementation prompt. Let AI implement phase 1 from the roadmap. Show code appearing, AI reading context files, making decisions. Pause and answer any questions from the AI.
+                    </aside>
+                </section>
+            </section>
+
+            <!-- ==================== PART 2: VERIFYING ROADMAP IMPLEMENTATION ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#2d4a22" style="top: 162.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 2</h2>
+                    <h1>Verifying Roadmap Implementation</h1>
+                    <p class="part-subtitle">Did AI build what we planned?</p>
+                    <img src="./Implementation Lab_files/farSide_scientistsWorkingTogether.png" alt="Far Side - Scientists Working Together" class="funny-image" style="max-width:30%; max-height:300px; margin-top:0.3em;">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 220.5px; display: none;" hidden="">
+                    <h2>Did AI Build What We Planned?</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">
+                        Verification implements the <strong>Law of Witnesses</strong> — a second perspective to ensure truth and correctness.
+                    </p>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.6em;">
+                        After implementation, <strong>verify against the roadmap</strong>.
+                    </p>
+                    <div class="prompt-box fragment fade-up" data-fragment-index="0">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Review the roadmap at ai/roadmaps/[your-roadmap].md.
+Check off what was completed from phase 1.
+Flag anything that was missed or implemented
+differently than planned.
+Don't make any code changes — just report.</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 179.5px; display: none;" hidden="">
+                    <h2>What Verification Looks Like</h2>
+                    <p style="font-size:0.8em; color:var(--primary-blue); font-weight:600; margin-bottom:0.4em;">AI will:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Cross-reference roadmap tasks against actual code</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Mark completed items</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Flag anything missed or changed</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Note any deviations from the plan</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.8em;" data-fragment-index="4">You review:</p>
+                    <ul class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="5">
+                        <li>Are the deviations reasonable?</li>
+                        <li>Was anything critical missed?</li>
+                        <li>Does the code match your expectations?</li>
+                    </ul>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Update Your Roadmap</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">After verification, update the roadmap:</p>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Update the roadmap to reflect what was completed.
+Add notes on any changes from the original plan.
+Mark phase 1 as complete if everything checks out.</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="0">
+                        <strong>This keeps your roadmap a living document</strong> — not just a planning artifact.
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 3: CREATING CLI TESTING SCRIPTS ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#4a1942" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 3</h2>
+                    <h1>Creating CLI Testing Scripts</h1>
+                    <p class="part-subtitle">The full loop</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 219px; display: none;" hidden="">
+                    <h2>The Key Insight</h2>
+                    <blockquote style="margin-bottom:0.6em;">
+                        "When AI can test itself, you have the full loop."
+                    </blockquote>
+                    <div class="mcp-diagram">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">AI implements --&gt; AI tests --&gt; AI reads output --&gt; AI fixes
+     ^                                                  |
+     └──────────────────────────────────────────────────┘</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-orange); font-weight:600; margin-top:0.6em;" data-fragment-index="0">
+                        Without CLI scripts, YOU are the bottleneck.
+                    </p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 276.5px; display: none;" hidden="">
+                    <h2>The Prompt</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Create CLI scripts in scripts/ that exercise
+the features we just built.
+Each script should:
+- Accept inputs as command-line arguments
+- Run the feature
+- Output JSON results to stdout
+- Use proper exit codes (0 = success, non-zero = failure)
+- Send errors to stderr</code></pre>
+                    </div>
+                    <aside class="notes">
+                        Remind them of exit codes from the Day 4 preview. 0 = success, 1 = failure, 2 = bad usage. JSON output so AI can parse results.
+                    </aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>The scripts/ Folder Pattern</h2>
+                    <div class="doc-hierarchy">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">scripts/
+├── build.sh      # Compile/build the project
+├── test.sh       # Run all tests
+├── run.sh        # Run the application
+└── dev.sh        # Start dev server (optional)</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); margin-top:0.6em;" data-fragment-index="0">
+                        <strong>Minimum viable set:</strong> build.sh and test.sh
+                    </p>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.3em;" data-fragment-index="1">
+                        AI can run your entire workflow from the command line
+                    </p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Example: test.sh</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-bash hljs" data-trim=""><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Building project..."</span>
+./scripts/build.sh || { <span class="hljs-built_in">echo</span> <span class="hljs-string">'{"status":"fail","step":"build"}'</span> &gt;&amp;2; <span class="hljs-built_in">exit</span> 1; }
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Running tests..."</span>
+<span class="hljs-keyword">if</span> npm <span class="hljs-built_in">test</span> 2&gt;&amp;1; <span class="hljs-keyword">then</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">'{"status": "pass", "message": "All tests passed"}'</span>
+    <span class="hljs-built_in">exit</span> 0
+<span class="hljs-keyword">else</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">'{"status": "fail", "message": "Tests failed"}'</span> &gt;&amp;2
+    <span class="hljs-built_in">exit</span> 1
+<span class="hljs-keyword">fi</span></code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Cross-Platform Note</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">
+                        <strong>Shell scripts don't work on all machines.</strong><br>
+                        For Windows/Mac compatibility, consider Node.js scripts:
+                    </p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-comment">// scripts/test.js</span>
+<span class="hljs-keyword">const</span> { execSync } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'child_process'</span>);
+<span class="hljs-keyword">try</span> {
+  <span class="hljs-title function_">execSync</span>(<span class="hljs-string">'npm test'</span>, { <span class="hljs-attr">stdio</span>: <span class="hljs-string">'inherit'</span> });
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>({ <span class="hljs-attr">status</span>: <span class="hljs-string">'pass'</span> }));
+  process.<span class="hljs-title function_">exit</span>(<span class="hljs-number">0</span>);
+} <span class="hljs-keyword">catch</span> (err) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>({ <span class="hljs-attr">status</span>: <span class="hljs-string">'fail'</span>, <span class="hljs-attr">error</span>: err.<span class="hljs-property">message</span> }));
+  process.<span class="hljs-title function_">exit</span>(<span class="hljs-number">1</span>);
+}</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); margin-top:0.5em;" data-fragment-index="0"><strong>Run with:</strong> <code>node scripts/test.js</code></p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Live demo — create CLI scripts for the meme generator. Show scripts/build.sh and scripts/test.sh. Run them and show JSON output. Show exit codes. Demonstrate AI reading the output.
+                    </aside>
+                </section>
+            </section>
+
+            <!-- ==================== PART 4: TESTING WITH CLI TOOLS ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#1a4731" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 4</h2>
+                    <h1>Testing with CLI Tools</h1>
+                    <p class="part-subtitle">Run and validate</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 229px; display: none;" hidden="">
+                    <h2>Run the Scripts</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-bash hljs" data-trim=""><span class="hljs-comment"># Build first</span>
+./scripts/build.sh
+
+<span class="hljs-comment"># Then test</span>
+./scripts/test.sh</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.6em;" data-fragment-index="0"><strong>AI reads the output and knows:</strong></p>
+                    <ul class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="1">
+                        <li>Did it work? (exit code 0)</li>
+                        <li>What failed? (JSON error output)</li>
+                        <li>What to fix? (error details in stderr)</li>
+                    </ul>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 248px; display: none;" hidden="">
+                    <h2>The Autonomous Loop</h2>
+                    <div class="mcp-diagram">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">1. AI runs: ./scripts/test.sh
+2. AI reads output
+3. If exit code 0: Done! Tests pass.
+4. If exit code != 0: AI reads error output
+5. AI diagnoses the issue
+6. AI fixes the code
+7. Go to step 1</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.6em;" data-fragment-index="0">
+                        <strong>This can run without you touching anything.</strong>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>What Success Looks Like</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-bash hljs" data-trim="">$ ./scripts/test.sh
+{<span class="hljs-string">"status"</span>: <span class="hljs-string">"pass"</span>, <span class="hljs-string">"tests"</span>: 12, <span class="hljs-string">"failures"</span>: 0}
+$ <span class="hljs-built_in">echo</span> $?
+0</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="0">
+                        <strong>Exit code 0 + JSON output = AI knows everything worked.</strong>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 5: THE FIX LOOP ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#4a3520" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 5</h2>
+                    <h1>The Fix Loop</h1>
+                    <p class="part-subtitle">Autonomous bug fixing</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 291.5px; display: none;" hidden="">
+                    <h2>When Tests Fail</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Run ./scripts/test.sh.
+If any tests fail, analyze the output,
+fix the issues, and run again.
+Continue until all tests pass.</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.8em;" data-fragment-index="0">
+                        Then step back and let AI work.
+                    </p>
+                    <aside class="notes">
+                        This is the magic moment. When students see AI autonomously fixing bugs, they get it. Emphasize: your job is to set this up, not to babysit it.
+                    </aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 162.5px; display: none;" hidden="">
+                    <h2>When to Intervene</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>Let AI work. Step back. Only intervene if:</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Same error repeating 3+ times</li>
+                        <li class="fragment fade-up" data-fragment-index="1">AI trying increasingly complex "solutions"</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Fix is making things worse</li>
+                        <li class="fragment fade-up" data-fragment-index="3">AI is clearly confused about the root cause</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-orange); font-weight:600; margin-top:0.8em;" data-fragment-index="4">Intervention prompt:</p>
+                    <div class="prompt-box fragment fade-up" data-fragment-index="5">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Stop. Let's step back.
+What have we tried so far?
+What's the actual root cause?
+Is there a different approach entirely?</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>The Full Picture</h2>
+                    <div class="mcp-diagram">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">PLAN         --&gt;  IMPLEMENT  --&gt;  TEST    --&gt;  FIX     --&gt;  VERIFY
+(roadmap)         (AI codes)      (CLI)       (loop)       (check roadmap)
+                                    ^            |
+                                    └────────────┘</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="0">
+                        <strong>You planned well. Now let AI execute.</strong>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== KEY TAKEAWAYS ==================== -->
+            <section style="top: 131px; display: none;" class="future" data-fragment="-1" hidden="" aria-hidden="true">
+                <h2>Key Takeaways</h2>
+                <div class="takeaways">
+                    <div class="takeaway fragment fade-up" data-fragment-index="0">
+                        <span class="takeaway-num">1</span>
+                        <div class="takeaway-content">
+                            <strong>Roadmaps become code</strong>
+                            <span>AI implements what you planned</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="1">
+                        <span class="takeaway-num">2</span>
+                        <div class="takeaway-content">
+                            <strong>Verify implementation against the roadmap</strong>
+                            <span>Trust but verify</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="2">
+                        <span class="takeaway-num">3</span>
+                        <div class="takeaway-content">
+                            <strong>CLI scripts are how AI tests itself</strong>
+                            <span>The full loop</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="3">
+                        <span class="takeaway-num">4</span>
+                        <div class="takeaway-content">
+                            <strong>The test-fix cycle can run autonomously</strong>
+                            <span>Step back and let it work</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="4">
+                        <span class="takeaway-num">5</span>
+                        <div class="takeaway-content">
+                            <strong>Your job: plan well, verify results, intervene when stuck</strong>
+                            <span>The human role in agentic development</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== LAB TIME ==================== -->
+            <section style="top: 183px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Lab Time</h2>
+                <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>Now it's your turn. Work through these steps on YOUR project:</strong></p>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">1.</span>
+                        <span>Have AI implement phase 1 from your roadmap</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">2.</span>
+                        <span>Verify the implementation against the roadmap</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">3.</span>
+                        <span>Create scripts/build.sh and scripts/test.sh</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="3">
+                        <span class="homework-check">4.</span>
+                        <span>Run the test-fix loop until tests pass</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="4">
+                        <span class="homework-check">5.</span>
+                        <span>Commit your working code and updated roadmap</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== HOMEWORK ==================== -->
+            <section style="top: 215.5px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Before Next Time</h2>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">1.</span>
+                        <span><strong>Implement at least one full phase</strong> of your project from your roadmaps</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">2.</span>
+                        <span><strong>Verify</strong> the implementation matches the roadmap</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">3.</span>
+                        <span><strong>Create at least 2 CLI scripts</strong> (build.sh and test.sh minimum)</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="3">
+                        <span class="homework-check">4.</span>
+                        <span><strong>Run the test-fix loop</strong> until tests pass</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="4">
+                        <span class="homework-check">5.</span>
+                        <span><strong>Commit</strong> your working code and updated roadmaps</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== RESOURCES ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Resources</h2>
+                <div class="resources-list">
+                    <a href="https://github.com/tj/commander.js" target="_blank" class="resource-item">
+                        <span class="resource-icon">💻</span>
+                        <span class="resource-name">Commander.js (CLI framework)</span>
+                        <span class="resource-url">github.com/tj/commander.js</span>
+                    </a>
+                    <a href="https://tldp.org/LDP/abs/html/exitcodes.html" target="_blank" class="resource-item">
+                        <span class="resource-icon">🔌</span>
+                        <span class="resource-name">Bash Exit Codes</span>
+                        <span class="resource-url">tldp.org/LDP/abs/html/exitcodes.html</span>
+                    </a>
+                    <a href="https://nodejs.org/api/child_process.html" target="_blank" class="resource-item">
+                        <span class="resource-icon">🖥</span>
+                        <span class="resource-name">Node.js child_process</span>
+                        <span class="resource-url">nodejs.org/api/child_process.html</span>
+                    </a>
+                    <a href="https://jsonapi.org/" target="_blank" class="resource-item">
+                        <span class="resource-icon">📚</span>
+                        <span class="resource-name">JSON Output Best Practices</span>
+                        <span class="resource-url">jsonapi.org</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ==================== END SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>See you next time!</h2>
+                <h3 class="next-session">Next: Advanced Testing &amp; Deployment</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+        </div>
+    <div class="backgrounds"><div class="slide-background present" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: block;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#2d4a22nullnullnullnullnull" style="background-color: rgb(45, 74, 34); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a1942nullnullnullnullnull" style="background-color: rgb(74, 25, 66); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1a4731nullnullnullnullnull" style="background-color: rgb(26, 71, 49); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a3520nullnullnullnullnull" style="background-color: rgb(74, 53, 32); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: none;"><div class="slide-background-content"></div></div></div><div class="slide-number" style="display: none;"><a href="https://d1dtpagvh0qhqn.cloudfront.net/agentic35WebSlides/#/">
+					<span class="slide-number-a">1</span>
+					<span class="slide-number-delimiter">/</span>
+					<span class="slide-number-b">32</span>
+					</a></div><aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded" style="display: block;"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down" aria-label="below slide" disabled="disabled"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div class="aria-status" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">Dev Unit 3.5: Implementation Lab From plans to working code Agentic Development Course </div></div>
+
+    <!-- Reveal.js -->
+    <script src="./Implementation Lab_files/reveal.min.js"></script>
+    <script src="./Implementation Lab_files/notes.min.js"></script>
+    <script src="./Implementation Lab_files/highlight.min.js"></script>
+    <script src="./Implementation Lab_files/zoom.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'speaker',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+
+            // Slide dimensions - taller to fit more content
+            width: 1300,
+            height: 900,
+            margin: 0.02,
+
+            // Scale settings - allow shrinking to fit
+            minScale: 0.1,
+            maxScale: 2.0,
+
+            // Center vertically
+            center: true,
+
+            // Vertical slides
+            navigationMode: 'default',
+
+            // Speaker notes
+            showNotes: false,
+
+            // Auto-animate
+            autoAnimateEasing: 'ease-out',
+            autoAnimateDuration: 0.8,
+
+            // Plugins
+            plugins: [ RevealNotes, RevealHighlight, RevealZoom ]
+        });
+    </script>
+
+
+</body></html>

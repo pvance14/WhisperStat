@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://d1dtpagvh0qhqn.cloudfront.net/agentic8WebSlides/ -->
+<html lang="en" class="reveal-full-page" style="--vsc-domain: &quot;d1dtpagvh0qhqn.cloudfront.net&quot;;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Unit 8: RAG &amp; Multi-Tool Agents - Agentic Development Course</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="./RAG &amp; Multi-Tool Agents_files/reveal.min.css">
+    <link rel="stylesheet" href="./RAG &amp; Multi-Tool Agents_files/night.min.css">
+
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet" href="./RAG &amp; Multi-Tool Agents_files/monokai.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./RAG &amp; Multi-Tool Agents_files/css2" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./RAG &amp; Multi-Tool Agents_files/custom.css">
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style></head>
+<body class="reveal-viewport" style="transition: transform 0.8s; --slide-width: 1300px; --slide-height: 900px; --slide-scale: 0.9745555555555556;">
+    <div class="reveal slide center focused has-vertical-slides has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade" style="">
+        <div class="slides" style="width: 1300px; height: 900px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(0.974556);">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 261.5px; display: block;" class="present">
+                <h1 class="title-main">Dev Unit 8: RAG &amp; Multi-Tool Agents</h1>
+                <h3 class="title-sub">Adding knowledge and chaining tools</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section style="top: 43.5px; display: block;" hidden="" aria-hidden="true" class="future">
+                <h2>What We'll Cover Today</h2>
+                <div class="agenda-grid">
+                    <div class="agenda-item fragment fade-up" data-fragment-index="0">
+                        <span class="agenda-number">1</span>
+                        <div class="agenda-content">
+                            <strong>Quick Recap</strong>
+                            <span>What we built last time</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="1">
+                        <span class="agenda-number">2</span>
+                        <div class="agenda-content">
+                            <strong>RAG &amp; Embeddings</strong>
+                            <span>Give your agent a knowledge base</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="2">
+                        <span class="agenda-number">3</span>
+                        <div class="agenda-content">
+                            <strong>Multi-Tool Agents</strong>
+                            <span>Chaining tools together</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="3">
+                        <span class="agenda-number">4</span>
+                        <div class="agenda-content">
+                            <strong>Conversation Memory</strong>
+                            <span>Multi-turn context</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="4">
+                        <span class="agenda-number">5</span>
+                        <div class="agenda-content">
+                            <strong>Beyond LangChain</strong>
+                            <span>Other frameworks</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="5">
+                        <span class="agenda-number">6</span>
+                        <div class="agenda-content">
+                            <strong>Production Considerations</strong>
+                            <span>Costs, debugging, security</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="6">
+                        <span class="agenda-number">7</span>
+                        <div class="agenda-content">
+                            <strong>Your Agent Project</strong>
+                            <span>Adding RAG and finishing up</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== LEARNING OBJECTIVES ==================== -->
+            <section style="top: 159.5px; display: block;" hidden="" aria-hidden="true" class="future">
+                <h2>What You Should Be Able to DO After Today</h2>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">1.</span>
+                        <span><strong>Implement RAG</strong> — embed documents, vector search, semantic retrieval</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">2.</span>
+                        <span><strong>Build a multi-tool chatbot</strong> that picks the right tool for each question</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">3.</span>
+                        <span><strong>Add conversation memory</strong> to maintain context across turns</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="3">
+                        <span class="homework-check">4.</span>
+                        <span><strong>Evaluate when to use an agent</strong> vs. a single LLM call</span>
+                    </div>
+                </div>
+                <blockquote class="fragment fade-up" style="margin-top:0.6em;" data-fragment-index="4">Today you complete the picture: agents with knowledge, multi-tool reasoning, and memory.</blockquote>
+            </section>
+
+            <!-- ==================== QUICK RECAP ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Quick Recap: What We Built in Unit 7</h2>
+                <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.4em;">You now know how to:</p>
+                <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                    <li class="fragment fade-up" data-fragment-index="0">Define tools with <code>tool()</code> — function + name/description + Zod schema</li>
+                    <li class="fragment fade-up" data-fragment-index="1">Create a ReAct agent with <code>createReactAgent</code> from LangChain</li>
+                    <li class="fragment fade-up" data-fragment-index="2">Build a calculator tool and a web search tool</li>
+                    <li class="fragment fade-up" data-fragment-index="3">Handle errors in tools (return messages, never throw)</li>
+                </ul>
+                <p class="fragment fade-up" style="font-size:0.9em; color:var(--primary-green); font-weight:600; margin-top:0.8em;" data-fragment-index="4"><strong>Today:</strong> We add a knowledge base (RAG), chain multiple tools together, and complete your homework assignment.</p>
+            </section>
+
+            <!-- ==================== PART 1: RAG & EMBEDDINGS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section class="image-reveal has-dark-background" data-auto-animate="" data-background-color="#1e3a5f" style="top: 450px; display: none;">
+                    <h1>RAG &amp; Embeddings</h1>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/connectedLibrary.png" alt="A glowing connected library" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <h2 class="part-header">Part 1</h2>
+                        <p class="part-subtitle">Give your agent a knowledge base</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Tool 3: RAG (In-Memory Vector Search)</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>What is RAG?</strong> Retrieval-Augmented Generation</p>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/rag-pipeline.svg" alt="RAG Pipeline: Embed → Vector Search → LLM + Context" style="max-width:500px; margin:0.5em auto; display:block;">
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.4em;" data-fragment-index="0"><strong>Why?</strong> Give the agent access to YOUR documents — company docs, course notes, API references, anything.</p>
+                </section>
+
+                <section class="image-reveal future" data-auto-animate="" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>What Are Embeddings?</h2>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/constellationOfMeaning.png" alt="Constellation of meaning - words as stars" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Embeddings</strong> convert text into vectors (arrays of numbers) that capture meaning:</p>
+                        <img src="./RAG &amp; Multi-Tool Agents_files/embeddings-vector-space.svg" alt="Embeddings: similar text clusters together in vector space" style="max-width:600px; margin:0.5em auto; display:block;">
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Embeddings in Code</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">"king"    → [0.21, -0.45, 0.89, 0.12, ...]
+"queen"   → [0.19, -0.42, 0.91, 0.15, ...]   ← similar!
+"banana"  → [0.82, 0.33, -0.11, 0.67, ...]   ← different!</code></pre>
+                    </div>
+                    <p style="font-size:0.8em; color:var(--text-secondary); margin-top:0.5em;"><strong>Key insight:</strong> Similar meanings → similar vectors → we can search by meaning, not just keywords.</p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">import</span> { <span class="hljs-title class_">OpenAIEmbeddings</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"@langchain/openai"</span>;
+
+<span class="hljs-keyword">const</span> embeddings = <span class="hljs-keyword">new</span> <span class="hljs-title class_">OpenAIEmbeddings</span>({
+  <span class="hljs-attr">model</span>: <span class="hljs-string">"text-embedding-3-small"</span>,  <span class="hljs-comment">// Fast and cheap</span>
+});
+
+<span class="hljs-keyword">const</span> vector = <span class="hljs-keyword">await</span> embeddings.<span class="hljs-title function_">embedQuery</span>(<span class="hljs-string">"What is photosynthesis?"</span>);
+<span class="hljs-comment">// → [0.021, -0.045, 0.089, ...] (1536 numbers)</span></code></pre>
+                    </div>
+                    <blockquote class="fragment fade-up" style="margin-top:0.5em; font-size:0.75em;" data-fragment-index="0"><strong>Note:</strong> Anthropic doesn't offer an embeddings model, so you'll need an OpenAI API key for this part regardless of which chat model you use. Alternatively, look into Voyage AI (recommended by Anthropic) or a free local option.</blockquote>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Building the Vector Store</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">import</span> { <span class="hljs-title class_">MemoryVectorStore</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"@langchain/classic/vectorstores/memory"</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">OpenAIEmbeddings</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"@langchain/openai"</span>;
+
+<span class="hljs-keyword">const</span> embeddings = <span class="hljs-keyword">new</span> <span class="hljs-title class_">OpenAIEmbeddings</span>({
+  <span class="hljs-attr">model</span>: <span class="hljs-string">"text-embedding-3-small"</span>,
+});
+
+<span class="hljs-comment">// Create in-memory vector store</span>
+<span class="hljs-keyword">const</span> vectorStore = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MemoryVectorStore</span>(embeddings);
+
+<span class="hljs-comment">// Add your documents</span>
+<span class="hljs-keyword">await</span> vectorStore.<span class="hljs-title function_">addDocuments</span>([
+  {
+    <span class="hljs-attr">pageContent</span>: <span class="hljs-string">"Our API rate limit is 100 requests per minute..."</span>,
+    <span class="hljs-attr">metadata</span>: { <span class="hljs-attr">source</span>: <span class="hljs-string">"api-docs.md"</span>, <span class="hljs-attr">topic</span>: <span class="hljs-string">"rate-limits"</span> },
+  },
+  {
+    <span class="hljs-attr">pageContent</span>: <span class="hljs-string">"Authentication uses JWT tokens with 24h expiry..."</span>,
+    <span class="hljs-attr">metadata</span>: { <span class="hljs-attr">source</span>: <span class="hljs-string">"auth-docs.md"</span>, <span class="hljs-attr">topic</span>: <span class="hljs-string">"authentication"</span> },
+  },
+  <span class="hljs-comment">// ... add as many documents as you want</span>
+]);</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Loading Documents for Your Homework</h2>
+                    <p style="font-size:0.85em; margin-bottom:0.5em;"><strong>Option 1:</strong> Create a <code>documents.ts</code> file with your content as an array of objects</p>
+                    <p style="font-size:0.85em; margin-bottom:0.5em;"><strong>Option 2:</strong> Use LangChain's <code>DirectoryLoader</code> to load files from a <code>docs/</code> folder:</p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">import</span> { <span class="hljs-title class_">DirectoryLoader</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"langchain/document_loaders/fs/directory"</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">TextLoader</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"langchain/document_loaders/fs/text"</span>;
+
+<span class="hljs-keyword">const</span> loader = <span class="hljs-keyword">new</span> <span class="hljs-title class_">DirectoryLoader</span>(<span class="hljs-string">"./docs"</span>, {
+  <span class="hljs-string">".txt"</span>: <span class="hljs-function">(<span class="hljs-params">path</span>) =&gt;</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TextLoader</span>(path),
+});
+<span class="hljs-keyword">const</span> docs = <span class="hljs-keyword">await</span> loader.<span class="hljs-title function_">load</span>();
+<span class="hljs-keyword">await</span> vectorStore.<span class="hljs-title function_">addDocuments</span>(docs);</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.5em;" data-fragment-index="0">Either approach works — pick whichever fits your document source.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The RAG Tool</h2>
+                    <div class="code-box" style="max-height: 75vh;">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">const</span> knowledgeBase = <span class="hljs-title function_">tool</span>(
+  <span class="hljs-keyword">async</span> ({ query }) =&gt; {
+    <span class="hljs-comment">// Semantic search — finds documents by MEANING</span>
+    <span class="hljs-keyword">const</span> results = <span class="hljs-keyword">await</span> vectorStore.<span class="hljs-title function_">similaritySearch</span>(query, <span class="hljs-number">3</span>);
+
+    <span class="hljs-keyword">if</span> (results.<span class="hljs-property">length</span> === <span class="hljs-number">0</span>) {
+      <span class="hljs-keyword">return</span> <span class="hljs-string">"No relevant documents found."</span>;
+    }
+
+    <span class="hljs-keyword">return</span> results
+      .<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">doc, i</span>) =&gt;</span>
+        <span class="hljs-string">`[<span class="hljs-subst">${i + <span class="hljs-number">1</span>}</span>] (Source: <span class="hljs-subst">${doc.metadata.source}</span>)\n<span class="hljs-subst">${doc.pageContent}</span>`</span>
+      )
+      .<span class="hljs-title function_">join</span>(<span class="hljs-string">"\n\n"</span>);
+  },
+  {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"knowledge_base"</span>,
+    <span class="hljs-attr">description</span>:
+      <span class="hljs-string">"Search the documentation knowledge base using semantic "</span> +
+      <span class="hljs-string">"search. Use this to find information from our docs "</span> +
+      <span class="hljs-string">"about APIs, authentication, configuration, etc."</span>,
+    <span class="hljs-attr">schema</span>: z.<span class="hljs-title function_">object</span>({
+      <span class="hljs-attr">query</span>: z.<span class="hljs-title function_">string</span>().<span class="hljs-title function_">describe</span>(
+        <span class="hljs-string">"Natural language query about the documentation"</span>
+      ),
+    }),
+  }
+);</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>RAG: Why In-Memory?</h2>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Approach</th>
+                                <th>Best For</th>
+                                <th>Trade-offs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><strong>In-memory</strong> (today)</td>
+                                <td>Prototypes, small datasets (&lt;10K docs)</td>
+                                <td>Fast, no setup; lost on restart</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td><strong>Pinecone / Weaviate</strong></td>
+                                <td>Production, large datasets</td>
+                                <td>Persistent, scalable; costs money</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td><strong>ChromaDB</strong></td>
+                                <td>Local development</td>
+                                <td>Persistent, free; single machine</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td><strong>PostgreSQL + pgvector</strong></td>
+                                <td>If you already use Postgres</td>
+                                <td>Integrated; requires Postgres</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="4"><strong>For homework:</strong> In-memory is perfect. Load your docs at startup, search them during conversation.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Demo building a RAG tool. Load some documents into a vector store, create the RAG tool, wire it into the agent, and show semantic search in action. Compare keyword search vs. semantic search results.
+                    </aside>
+                </section>
+            </section>
+
+            <!-- ==================== PART 2: MULTI-TOOL AGENTS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section class="image-reveal has-dark-background" data-auto-animate="" data-background-color="#2d4a22" style="top: 450px; display: none;">
+                    <h1>Multi-Tool Agents</h1>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/octopusOperator.png" alt="Octopus operator juggling tools" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <h2 class="part-header">Part 2</h2>
+                        <p class="part-subtitle">Chaining tools together</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Multi-Tool Agent Architecture</h2>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/multi-tool-architecture.svg" alt="Multi-Tool Agent: LLM routes to Calculator, Web Search, Knowledge Base" style="max-width:650px; margin:0.5em auto; display:block;">
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.4em;" data-fragment-index="0">The LLM reads tool descriptions and <strong>decides which tool(s) to call</strong> for each question.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Multi-Tool Reasoning in Action</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Question:</strong> "How much does the starter plan cost per year?"</p>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/multi-tool-reasoning.svg" alt="Multi-tool chain: RAG → Calculator → Final Answer" style="max-width:700px; margin:0.5em auto; display:block;">
+                    <div class="key-concept fragment fade-up" data-fragment-index="0">
+                        <strong>The agent chained two tools together</strong> — RAG for the fact, calculator for the math. You didn't have to tell it to do this.
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Multi-Tool Reasoning: Another Example</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>A campus event budget app:</strong></p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Question: "How much would it cost to cater 3 club events this month?"
+
+Step 1: knowledge_base("catering pricing options")
+  → "Basic pizza package: $85/event. Sandwich platter: $120/event."
+
+Step 2: calculator("85 * 3")
+  → "255"
+
+Final answer: "The basic pizza package for 3 events would be $255.
+  The sandwich platter option would be $360 (3 × $120)."</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" data-fragment-index="0">
+                        The agent chained RAG (pricing knowledge) + calculator (cost math) — same multi-tool pattern.
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 3: CONVERSATION MEMORY ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section class="image-reveal has-dark-background" data-auto-animate="" data-background-color="#4a1942" style="top: 450px; display: none;">
+                    <h1>Conversation Memory</h1>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/evidenceBoard.png" alt="Evidence board with connected clues" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <h2 class="part-header">Part 3</h2>
+                        <p class="part-subtitle">Multi-turn context</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Adding Conversation Memory</h2>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/conversation-memory.svg" alt="Conversation memory: message history grows across turns" style="max-width:650px; margin:0.5em auto; display:block;">
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-comment">// Maintain message history across turns</span>
+<span class="hljs-keyword">let</span> messageHistory = [];
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">chat</span>(<span class="hljs-params">userMessage</span>) {
+  messageHistory.<span class="hljs-title function_">push</span>({
+    <span class="hljs-attr">role</span>: <span class="hljs-string">"user"</span>,
+    <span class="hljs-attr">content</span>: userMessage,
+  });
+
+  <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> agent.<span class="hljs-title function_">invoke</span>({
+    <span class="hljs-attr">messages</span>: messageHistory,
+  });
+
+  <span class="hljs-keyword">const</span> assistantMessage =
+    result.<span class="hljs-property">messages</span>[result.<span class="hljs-property">messages</span>.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>];
+
+  messageHistory.<span class="hljs-title function_">push</span>({
+    <span class="hljs-attr">role</span>: <span class="hljs-string">"assistant"</span>,
+    <span class="hljs-attr">content</span>: assistantMessage.<span class="hljs-property">content</span>,
+  });
+
+  <span class="hljs-keyword">return</span> assistantMessage.<span class="hljs-property">content</span>;
+}
+
+<span class="hljs-comment">// Multi-turn conversation</span>
+<span class="hljs-keyword">await</span> <span class="hljs-title function_">chat</span>(<span class="hljs-string">"What does the starter plan cost?"</span>);
+<span class="hljs-keyword">await</span> <span class="hljs-title function_">chat</span>(<span class="hljs-string">"And what's that per year?"</span>);  <span class="hljs-comment">// Remembers context!</span></code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Conversation Memory: Caveats</h2>
+                    <div class="key-concept">
+                        <strong>Note:</strong> This is a naive implementation — the message array grows without limit. In production, you'd truncate or summarize history to stay within context window limits.
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.5em;" data-fragment-index="0">
+                        <strong>Note:</strong> This simplified version only stores the final response. For tool-using agents, you may want to preserve the full message history including tool calls for better context.
+                    </div>
+                </section>
+
+                <section class="image-reveal future" data-auto-animate="" aria-hidden="true" style="top: 450px; display: none;">
+                    <h1>In Practice</h1>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/toolDj.png" alt="DJ mixing tools at a turntable" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <aside class="notes">
+                            Live demo of the complete multi-tool agent. Ask it a math question (uses calculator), a current events question (uses web search), and a knowledge base question (uses RAG). Then show a multi-tool chain where it needs both RAG and calculator. Show verbose output so students see the ReAct loop.
+                        </aside>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 4: BEYOND LANGCHAIN ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#4a3520" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 4</h2>
+                    <h1>Beyond LangChain</h1>
+                    <p class="part-subtitle">Other agent frameworks</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Beyond LangChain: Other Agent Frameworks</h2>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Framework</th>
+                                <th>Language</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><strong>LangChain</strong> (this course)</td>
+                                <td>Python + JS/TS</td>
+                                <td>Broadest ecosystem, most tutorials</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td><strong>Mastra</strong></td>
+                                <td>TypeScript only</td>
+                                <td>TS-native DX, built-in production features</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td><strong>CrewAI</strong></td>
+                                <td>Python</td>
+                                <td>Multi-agent teams with defined roles</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td><strong>OpenAI Agents SDK</strong></td>
+                                <td>Python</td>
+                                <td>Simple agents, OpenAI-only (vendor locked)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.6em;" data-fragment-index="4">
+                        <strong>The key insight:</strong> They all implement the same ReAct loop under the hood. Learn one well, understand the patterns — switching frameworks is straightforward.
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.4em;" data-fragment-index="5"><strong>For this course:</strong> We use LangChain (broadest ecosystem). Explore others on your own.</p>
+                </section>
+            </section>
+
+            <!-- ==================== PART 5: PRODUCTION CONSIDERATIONS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section class="image-reveal has-dark-background" data-auto-animate="" data-background-color="#1a4731" style="top: 450px; display: none;">
+                    <h1>Production Considerations</h1>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/hiddenCost.png" alt="Hidden costs revealed" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <h2 class="part-header">Part 5</h2>
+                        <p class="part-subtitle">Costs, debugging, security</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Token Costs and Iteration Limits</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Every iteration = another LLM API call = more tokens = more cost</strong></p>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Typical Iterations</th>
+                                <th>Cost Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td>Simple calculation</td>
+                                <td>1-2</td>
+                                <td>Low</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td>Web search + answer</td>
+                                <td>2-3</td>
+                                <td>Medium</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td>Multi-tool chain</td>
+                                <td>3-5</td>
+                                <td>Higher</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td>Agent stuck in loop</td>
+                                <td>10+</td>
+                                <td>Expensive!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-top:0.4em;" data-fragment-index="4">Control the loop:</p>
+                    <div class="code-box fragment fade-up" data-fragment-index="5">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">const</span> agent = <span class="hljs-title function_">createReactAgent</span>({
+  <span class="hljs-attr">model</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">ChatAnthropic</span>({ <span class="hljs-attr">model</span>: <span class="hljs-string">"claude-haiku-3-5"</span> }),
+  <span class="hljs-attr">tools</span>: tools,
+});
+
+<span class="hljs-comment">// Limit iterations when invoking</span>
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> agent.<span class="hljs-title function_">invoke</span>(
+  { messages },
+  { <span class="hljs-attr">recursionLimit</span>: <span class="hljs-number">10</span> }  <span class="hljs-comment">// Prevent infinite loops</span>
+);</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Security Considerations</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>From Dev Unit 4 — still applies here:</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0"><strong>Never hardcode API keys</strong> — use environment variables</li>
+                        <li class="fragment fade-up" data-fragment-index="1"><strong>Validate tool inputs</strong> — especially for calculator</li>
+                        <li class="fragment fade-up" data-fragment-index="2"><strong>Sanitize user input</strong> — prevent prompt injection through tools</li>
+                        <li class="fragment fade-up" data-fragment-index="3"><strong>Audit tool outputs</strong> — don't blindly trust web search results</li>
+                    </ul>
+                    <div class="code-box fragment fade-up" style="margin-top:0.5em;" data-fragment-index="4">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-comment">// ❌ Dangerous — eval executes arbitrary code</span>
+<span class="hljs-keyword">const</span> result = <span class="hljs-built_in">eval</span>(userExpression);
+
+<span class="hljs-comment">// ❌ Function() is also unsafe for untrusted input (as we noted in Unit 7)</span>
+
+<span class="hljs-comment">// ✅ Use a proper math library in production</span>
+<span class="hljs-keyword">import</span> { evaluate } <span class="hljs-keyword">from</span> <span class="hljs-string">"mathjs"</span>;
+<span class="hljs-keyword">const</span> result = evaluate(expression);  <span class="hljs-comment">// Only does math, nothing else</span></code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Troubleshooting: Common Errors (Reference Handout)</h2>
+                    <table class="strategy-table" style="font-size:0.65em;">
+                        <thead>
+                            <tr>
+                                <th>Error</th>
+                                <th>Cause</th>
+                                <th>Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><code>API_KEY not set</code></td>
+                                <td>Missing env variable</td>
+                                <td><code>export ANTHROPIC_API_KEY="..."</code> or <code>export OPENAI_API_KEY="sk-..."</code></td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td><code>Tool not found</code></td>
+                                <td>Typo in tool name</td>
+                                <td>Check tool <code>name</code> matches exactly</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td>Agent returns text instead of calling tool</td>
+                                <td>Bad tool description</td>
+                                <td>Make description more specific about WHEN to use</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td><code>RateLimitError</code></td>
+                                <td>Too many API calls</td>
+                                <td>Add delays, use <code>claude-haiku-3-5</code>, reduce <code>maxResults</code></td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="4">
+                                <td>RAG returns no results</td>
+                                <td>Documents not loaded</td>
+                                <td>Verify <code>addDocuments()</code> was <code>await</code>ed</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="5">
+                                <td><code>TypeError: Cannot read properties</code></td>
+                                <td>Forgot <code>async</code>/<code>await</code></td>
+                                <td>Web and RAG tools MUST be <code>async</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== PART 6: YOUR AGENT PROJECT ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section class="image-reveal has-dark-background" data-auto-animate="" data-background-color="#3d2066" style="top: 450px; display: none;">
+                    <h1>Your Agent Project — Adding RAG and Finishing Up</h1>
+                    <img src="./RAG &amp; Multi-Tool Agents_files/finalPiece.png" alt="Craftsperson placing the final piece" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <h2 class="part-header">Part 6</h2>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Your Target by the Deadline</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;">Here's what we're working toward over the next two weeks:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">A working agent with calculator and web search tools</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Repo with <code>context.md</code>, PRD, and roadmap</li>
+                        <li class="fragment fade-up" data-fragment-index="2">A web UI in progress (or at minimum a working terminal interface)</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Incremental git history showing your development process</li>
+                        <li class="fragment fade-up" data-fragment-index="4">Logging that shows which tool was called, arguments passed, and results returned</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.5em;" data-fragment-index="5">You have two weeks — focus on getting the agent working first, then layer in the infrastructure.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>What to Add Now</h2>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.3em;">Add a RAG tool:</p>
+                    <ul style="font-size:0.78em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Choose a document set (project docs, course notes, a library's docs, a company FAQ)</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Create at least 5 documents with meaningful content</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Use OpenAI embeddings (or Voyage AI) + in-memory vector store</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Build a <code>knowledge_base</code> tool that returns relevant documents with source attribution</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-top:0.5em;" data-fragment-index="4">Add conversation memory:</p>
+                    <ul class="fragment fade-up" style="font-size:0.78em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="5">
+                        <li>Maintain a message history array across turns</li>
+                        <li>Pass the full history to the agent on each invocation</li>
+                        <li>Verify multi-turn conversations work (follow-up questions that reference earlier context)</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="6">Complete your web UI — your agent should be usable through a simple chat web page, not just a terminal.</p>
+                    <p class="fragment fade-up" style="font-size:0.78em; color:var(--text-muted); margin-top:0.3em;" data-fragment-index="7">Continue updating your roadmap and committing incrementally as you add these features.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Deliverables</h2>
+                    <div class="homework-list">
+                        <div class="homework-item fragment fade-up" data-fragment-index="0">
+                            <span class="homework-check">1.</span>
+                            <span><strong>A repo that demonstrates your development process</strong> — <code>context.md</code>, <code>.gitignore</code>, PRD, roadmap with phases checked off, logging that shows which tool was called, arguments passed, and results returned, incremental git history</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="1">
+                            <span class="homework-check">2.</span>
+                            <span><strong>Working agent</strong> — three tools (calculator, web search, RAG with 5+ real docs) with conversation memory, accessible through a web UI</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="2">
+                            <span class="homework-check">3.</span>
+                            <span><strong>README.md</strong> — explaining your agent, what tools it has, and how to run it</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="3">
+                            <span class="homework-check">4.</span>
+                            <span><strong>Demo</strong> — a 2-minute screen capture showing your web UI with at least 2-3 of your agent's tools/features</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Stretch Goals (Optional)</h2>
+                    <div class="homework-list">
+                        <div class="homework-item fragment fade-up" data-fragment-index="0">
+                            <span class="homework-check">1.</span>
+                            <span><strong>Add streaming</strong> — show responses in real time in your web UI; dramatically improves the user experience</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="1">
+                            <span class="homework-check">2.</span>
+                            <span><strong>Add a 4th tool</strong> — file reader, database query, or API call to a service you use</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="2">
+                            <span class="homework-check">3.</span>
+                            <span><strong>Persistent vector store</strong> — use ChromaDB or a hosted vector DB so documents survive restarts</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="3">
+                            <span class="homework-check">4.</span>
+                            <span><strong>Connect to your project</strong> — Identify one feature in a project you've built that would benefit from an agent pattern (tool calling, RAG, or multi-step reasoning). Write a ~1 page proposal: what the agent would do, what tools it would need, and why it's better than a single LLM call.</span>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== KEY TAKEAWAYS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Key Takeaways</h2>
+                <div class="takeaways">
+                    <div class="takeaway fragment fade-up" data-fragment-index="0">
+                        <span class="takeaway-num">1</span>
+                        <div class="takeaway-content">
+                            <strong>RAG gives agents YOUR knowledge</strong>
+                            <span>Embeddings + vector search + any document set</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="1">
+                        <span class="takeaway-num">2</span>
+                        <div class="takeaway-content">
+                            <strong>Multi-tool chaining is automatic</strong>
+                            <span>The agent reasons about which tools to call and in what order</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="2">
+                        <span class="takeaway-num">3</span>
+                        <div class="takeaway-content">
+                            <strong>Agent frameworks share the same patterns</strong>
+                            <span>LangChain, Mastra, CrewAI all implement the same ReAct loop</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="3">
+                        <span class="takeaway-num">4</span>
+                        <div class="takeaway-content">
+                            <strong>Not every feature needs an agent</strong>
+                            <span>Set a clear hypothesis before building one</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="4">
+                        <span class="takeaway-num">5</span>
+                        <div class="takeaway-content">
+                            <strong>The full picture: Agents = LLM + Tools + Loop + Knowledge</strong>
+                            <span>You can now build all of it</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== RESOURCES ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Resources</h2>
+                <div class="resources-list">
+                    <a href="https://docs.anthropic.com/" target="_blank" class="resource-item">
+                        <span class="resource-icon">🛠</span>
+                        <span class="resource-name">Anthropic Docs</span>
+                        <span class="resource-url">docs.anthropic.com</span>
+                    </a>
+                    <a href="https://docs.langchain.com/oss/javascript/integrations/chat/anthropic" target="_blank" class="resource-item">
+                        <span class="resource-icon">🔗</span>
+                        <span class="resource-name">LangChain + Anthropic</span>
+                        <span class="resource-url">docs.langchain.com/oss/javascript/integrations/chat/anthropic</span>
+                    </a>
+                    <a href="https://js.langchain.com/" target="_blank" class="resource-item">
+                        <span class="resource-icon">🔗</span>
+                        <span class="resource-name">LangChain.js Docs</span>
+                        <span class="resource-url">js.langchain.com</span>
+                    </a>
+                    <a href="https://docs.langchain.com/oss/javascript/langchain/agents" target="_blank" class="resource-item">
+                        <span class="resource-icon">🔗</span>
+                        <span class="resource-name">LangChain Agents</span>
+                        <span class="resource-url">docs.langchain.com/oss/javascript/langchain/agents</span>
+                    </a>
+                    <a href="https://langchain-ai.github.io/langgraphjs" target="_blank" class="resource-item">
+                        <span class="resource-icon">📈</span>
+                        <span class="resource-name">LangGraph (ReAct)</span>
+                        <span class="resource-url">langchain-ai.github.io/langgraphjs</span>
+                    </a>
+                    <a href="https://tavily.com/" target="_blank" class="resource-item">
+                        <span class="resource-icon">🔍</span>
+                        <span class="resource-name">Tavily (Web Search)</span>
+                        <span class="resource-url">tavily.com</span>
+                    </a>
+                    <a href="https://platform.openai.com/docs/guides/embeddings" target="_blank" class="resource-item">
+                        <span class="resource-icon">🧠</span>
+                        <span class="resource-name">OpenAI Embeddings</span>
+                        <span class="resource-url">platform.openai.com/docs/guides/embeddings</span>
+                    </a>
+                    <a href="https://mastra.ai/docs" target="_blank" class="resource-item">
+                        <span class="resource-icon">🛠</span>
+                        <span class="resource-name">Mastra Docs</span>
+                        <span class="resource-url">mastra.ai/docs</span>
+                    </a>
+                    <a href="https://zod.dev/" target="_blank" class="resource-item">
+                        <span class="resource-icon">📜</span>
+                        <span class="resource-name">Zod (Schemas)</span>
+                        <span class="resource-url">zod.dev</span>
+                    </a>
+                    <a href="https://arxiv.org/abs/2210.03629" target="_blank" class="resource-item">
+                        <span class="resource-icon">📚</span>
+                        <span class="resource-name">ReAct Paper</span>
+                        <span class="resource-url">arxiv.org/abs/2210.03629</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ==================== END SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Now go build something amazing.</h2>
+                <h3 class="next-session">You have two weeks — start today.</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+        </div>
+    <div class="backgrounds"><div class="slide-background present" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: block;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#2d4a22nullnullnullnullnull" style="background-color: rgb(45, 74, 34); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#4a1942nullnullnullnullnull" style="background-color: rgb(74, 25, 66); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a3520nullnullnullnullnull" style="background-color: rgb(74, 53, 32); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#1a4731nullnullnullnullnull" style="background-color: rgb(26, 71, 49); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#3d2066nullnullnullnullnull" style="background-color: rgb(61, 32, 102); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: none;"><div class="slide-background-content"></div></div></div><div class="slide-number" style="display: none;"><a href="https://d1dtpagvh0qhqn.cloudfront.net/agentic8WebSlides/#/">
+					<span class="slide-number-a">1</span>
+					<span class="slide-number-delimiter">/</span>
+					<span class="slide-number-b">35</span>
+					</a></div><aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded" style="display: block;"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled highlight" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down" aria-label="below slide" disabled="disabled"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div class="aria-status" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">Dev Unit 8: RAG &amp; Multi-Tool Agents Adding knowledge and chaining tools Agentic Development Course </div></div>
+
+    <!-- Reveal.js -->
+    <script src="./RAG &amp; Multi-Tool Agents_files/reveal.min.js"></script>
+    <script src="./RAG &amp; Multi-Tool Agents_files/notes.min.js"></script>
+    <script src="./RAG &amp; Multi-Tool Agents_files/highlight.min.js"></script>
+    <script src="./RAG &amp; Multi-Tool Agents_files/zoom.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'speaker',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+
+            // Slide dimensions - taller to fit more content
+            width: 1300,
+            height: 900,
+            margin: 0.02,
+
+            // Scale settings - allow shrinking to fit
+            minScale: 0.1,
+            maxScale: 2.0,
+
+            // Center vertically
+            center: true,
+
+            // Vertical slides
+            navigationMode: 'default',
+
+            // Speaker notes
+            showNotes: false,
+
+            // Auto-animate
+            autoAnimateEasing: 'ease-out',
+            autoAnimateDuration: 0.8,
+
+            // Plugins
+            plugins: [ RevealNotes, RevealHighlight, RevealZoom ]
+        });
+    </script>
+
+
+</body></html>

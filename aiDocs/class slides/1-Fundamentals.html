@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://d1dtpagvh0qhqn.cloudfront.net/agentic1WebSlides/ -->
+<html lang="en" class="reveal-full-page" style="--vsc-domain: &quot;d1dtpagvh0qhqn.cloudfront.net&quot;;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative AI Fundamentals - Agentic Development Course</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="./Generative AI Fundamentals - Agentic Development Course_files/reveal.min.css">
+    <link rel="stylesheet" href="./Generative AI Fundamentals - Agentic Development Course_files/night.min.css">
+
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet" href="./Generative AI Fundamentals - Agentic Development Course_files/monokai.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./Generative AI Fundamentals - Agentic Development Course_files/css2" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./Generative AI Fundamentals - Agentic Development Course_files/custom.css">
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style></head>
+<body class="reveal-viewport" style="transition: transform 0.8s; --slide-width: 960px; --slide-height: 900px; --slide-scale: 0.9745555555555556;">
+    <div class="reveal slide center focused has-vertical-slides has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade" style="">
+        <div class="slides" style="width: 960px; height: 900px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(0.974556);">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 226.5px; display: block;" class="present">
+                <h1 class="title-main">Generative AI Fundamentals</h1>
+                <h3 class="title-sub">&amp; How Agents Work</h3>
+                <p class="title-tagline">Understanding the technology before using it</p>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section style="top: 93.5px; display: block;" hidden="" aria-hidden="true" class="future">
+                <h2>What We'll Cover Today</h2>
+                <div class="agenda-grid">
+                    <div class="agenda-item fragment fade-up" data-fragment-index="0">
+                        <span class="agenda-number">1</span>
+                        <div class="agenda-content">
+                            <strong>What is Generative AI?</strong>
+                            <span>GPT, tokens, training</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="1">
+                        <span class="agenda-number">2</span>
+                        <div class="agenda-content">
+                            <strong>Fun Exercises</strong>
+                            <span>Creative generation</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="2">
+                        <span class="agenda-number">3</span>
+                        <div class="agenda-content">
+                            <strong>From Autocomplete to Agents</strong>
+                            <span>ReAct framework</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="3">
+                        <span class="agenda-number">4</span>
+                        <div class="agenda-content">
+                            <strong>Lab</strong>
+                            <span>Hands-on experimentation</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PART 1: WHAT IS GENERATIVE AI ==================== -->
+            <section style="top: 0px; display: block;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#1e3a5f" style="top: 376px; display: block;" class="has-dark-background">
+                    <h2 class="part-header">Part 1</h2>
+                    <h1>What is Generative AI?</h1>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Understanding AI Training</h2>
+                    <p class="section-intro">Two short videos explaining how AI learns:</p>
+                    <div class="video-links">
+                        <a href="https://www.youtube.com/watch?v=R9OHn5ZF4Uo" target="_blank" class="video-link">
+                            <span class="video-icon">🎬</span>
+                            <div class="video-info">
+                                <strong>How AI Image Generators Work</strong>
+                                <span class="video-url">youtube.com/watch?v=R9OHn5ZF4Uo</span>
+                            </div>
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=wvWpdrfoEv0" target="_blank" class="video-link">
+                            <span class="video-icon">🎬</span>
+                            <div class="video-info">
+                                <strong>How Large Language Models Work</strong>
+                                <span class="video-url">youtube.com/watch?v=wvWpdrfoEv0</span>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>A Brief History of Generative AI</h2>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Milestone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment" data-fragment-index="0">
+                                <td>1957</td>
+                                <td><strong>Perceptron</strong> - First trainable neural network</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="1">
+                                <td>1961</td>
+                                <td><strong>ELIZA</strong> - First chatbot (early generative AI)</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="2">
+                                <td>1979</td>
+                                <td><strong>Neocognitron</strong> - First deep learning neural network</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="3">
+                                <td>1989</td>
+                                <td><strong>Backpropagation</strong> - Deep learning becomes practical</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="4">
+                                <td>1997</td>
+                                <td><strong>LSTM</strong> - Long short-term memory for speech recognition</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="source-note fragment" data-fragment-index="5">Source: dataversity.net/articles/a-brief-history-of-generative-ai</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Modern Era of Generative AI</h2>
+                    <table class="history-table modern">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Breakthrough</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment" data-fragment-index="0">
+                                <td>2014</td>
+                                <td><strong>GANs</strong> - Generate realistic images, video, audio</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="1">
+                                <td>2017</td>
+                                <td><strong>Transformers</strong> - "Attention Is All You Need" paper</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="2">
+                                <td>2022</td>
+                                <td><strong>ChatGPT</strong> - LLMs go mainstream</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="3">
+                                <td>2023+</td>
+                                <td><strong>Agentic AI</strong> - Systems that plan and take actions</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="key-insight fragment" data-fragment-index="4">
+                        <span class="insight-icon">💡</span>
+                        <span>Most of what we call "AI" today happened in the last 10 years</span>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>GPT = ?</h2>
+                    <div class="gpt-breakdown">
+                        <div class="gpt-letter fragment fade-right" data-fragment-index="0">
+                            <span class="letter">G</span>
+                            <span class="word">Generative</span>
+                            <span class="desc">Creates new content</span>
+                        </div>
+                        <div class="gpt-letter fragment fade-right" data-fragment-index="1">
+                            <span class="letter">P</span>
+                            <span class="word">Pre-trained</span>
+                            <span class="desc">Learned from massive data before you use it</span>
+                        </div>
+                        <div class="gpt-letter fragment fade-right" data-fragment-index="2">
+                            <span class="letter">T</span>
+                            <span class="word">Transformer</span>
+                            <span class="desc">The architecture that made this possible (2017)</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Core Insight</h2>
+                    <h3 class="insight-quote">"World's Best Autocomplete"</h3>
+                    <img src="./Generative AI Fundamentals - Agentic Development Course_files/autocomplete.png" alt="Autocomplete" class="funny-image">
+                </section>
+
+                <section data-auto-animate="" class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Core Insight</h2>
+                    <div class="insight-box" data-id="insight">
+                        <h3 class="insight-quote">"World's Best Autocomplete"</h3>
+                    </div>
+                </section>
+
+                <section data-auto-animate="" class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Core Insight</h2>
+                    <div class="insight-box expanded" data-id="insight">
+                        <h3 class="insight-quote">"World's Best Autocomplete"</h3>
+                        <ul class="insight-points">
+                            <li class="fragment" data-fragment-index="0">At its heart: predicting "what word comes next"</li>
+                            <li class="fragment" data-fragment-index="1">Trained on billions of text examples</li>
+                            <li class="fragment" data-fragment-index="2">Does prediction SO well it <em>appears</em> intelligent</li>
+                            <li class="fragment" data-fragment-index="3">Not "thinking" — pattern matching at unprecedented scale</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>How Generative AI Works (Interactive)</h2>
+                    <div class="interactive-link">
+                        <a href="https://ig.ft.com/generative-ai/" target="_blank" class="ft-link">
+                            <span class="link-icon">🔗</span>
+                            <span class="link-url">ig.ft.com/generative-ai</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>How Training Works</h2>
+                    <div class="training-steps">
+                        <div class="training-step fragment fade-up" data-fragment-index="0">
+                            <span class="step-num">1</span>
+                            <div class="step-content">
+                                <strong>Feed billions of text examples</strong>
+                                <span>Books, websites, code, conversations</span>
+                            </div>
+                        </div>
+                        <div class="training-step fragment fade-up" data-fragment-index="1">
+                            <span class="step-num">2</span>
+                            <div class="step-content">
+                                <strong>Learn to predict next token</strong>
+                                <span>Given previous tokens</span>
+                            </div>
+                        </div>
+                        <div class="training-step fragment fade-up" data-fragment-index="2">
+                            <span class="step-num">3</span>
+                            <div class="step-content">
+                                <strong>Scale up</strong>
+                                <span>More data + more parameters = emergent capabilities</span>
+                            </div>
+                        </div>
+                        <div class="training-step fragment fade-up" data-fragment-index="3">
+                            <span class="step-num">4</span>
+                            <div class="step-content">
+                                <strong>Fine-tune for conversation</strong>
+                                <span>RLHF (Reinforcement Learning from Human Feedback)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Key Concept: Tokens</h2>
+                    <div class="concept-highlight">
+                        <span class="highlight-text">Tokens ≠ Words</span>
+                    </div>
+                    <p class="concept-desc fragment" data-fragment-index="0">Tokens are subword pieces (~4 characters average)</p>
+                    <table class="token-table fragment" data-fragment-index="1">
+                        <thead>
+                            <tr>
+                                <th>Text</th>
+                                <th>Tokens</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>"hello"</code></td>
+                                <td>1 token</td>
+                            </tr>
+                            <tr>
+                                <td><code>"uncomfortable"</code></td>
+                                <td><code>["un", "comfort", "able"]</code> = 3 tokens</td>
+                            </tr>
+                            <tr>
+                                <td>Code</td>
+                                <td>Often more tokens per line than English</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="concept-note fragment" data-fragment-index="2"><strong>Why it matters:</strong> You pay per token, limits are in tokens</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Key Concept: Context Window</h2>
+                    <div class="context-visual">
+                        <div class="context-label">The model's "working memory"</div>
+                        <div class="context-window fragment" data-fragment-index="0">
+                            <div class="context-items">
+                                <span>System prompt</span>
+                                <span>Conversation history</span>
+                                <span>Your current message</span>
+                                <span>Documents/code</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="context-sizes fragment" data-fragment-index="1">
+                        <div class="size-item">
+                            <span class="model-name">Claude</span>
+                            <span class="token-count">~200K tokens</span>
+                        </div>
+                        <div class="size-item">
+                            <span class="model-name">GPT-4</span>
+                            <span class="token-count">~128K tokens</span>
+                        </div>
+                        <div class="size-item">
+                            <span class="model-name">Gemini 1.5</span>
+                            <span class="token-count">~1M tokens</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Key Concept: Temperature</h2>
+                    <div class="temperature-visual">
+                        <div class="temp-scale">
+                            <div class="temp-marker" style="left: 0%">
+                                <span class="temp-value">0</span>
+                                <span class="temp-label">Deterministic</span>
+                            </div>
+                            <div class="temp-marker" style="left: 50%">
+                                <span class="temp-value">0.5</span>
+                                <span class="temp-label">Balanced</span>
+                            </div>
+                            <div class="temp-marker" style="left: 100%">
+                                <span class="temp-value">1.0</span>
+                                <span class="temp-label">Creative</span>
+                            </div>
+                            <div class="temp-gradient"></div>
+                        </div>
+                    </div>
+                    <div class="temp-use-cases fragment" data-fragment-index="0">
+                        <div class="use-case">
+                            <span class="use-icon">🔧</span>
+                            <span class="use-text"><strong>Lower</strong> for code/facts</span>
+                        </div>
+                        <div class="use-case">
+                            <span class="use-icon">🎨</span>
+                            <span class="use-text"><strong>Higher</strong> for creative writing</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Key Concept: Hallucinations</h2>
+                    <h3>Why AI makes things up</h3>
+                    <img src="./Generative AI Fundamentals - Agentic Development Course_files/robotProfessor.png" alt="Robot Professor" class="funny-image">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Key Concept: Hallucinations</h2>
+                    <div class="hallucination-box">
+                        <ul>
+                            <li class="fragment" data-fragment-index="0">Model generates <em>plausible</em> next tokens</li>
+                            <li class="fragment" data-fragment-index="1">Plausible ≠ True</li>
+                            <li class="fragment" data-fragment-index="2">Confident prediction ≠ Factual information</li>
+                        </ul>
+                    </div>
+                    <div class="warning-box fragment" data-fragment-index="3">
+                        <span class="warning-icon">⚠️</span>
+                        <span class="warning-text"><strong>Always verify important outputs</strong></span>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Jagged Frontier of AI</h2>
+                    <div class="frontier-content">
+                        <img src="./Generative AI Fundamentals - Agentic Development Course_files/92c4e814-870d-401b-80ac-3ebfa0cfc3af_3444x1924.jpeg" alt="Jagged Frontier of AI" class="frontier-image">
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Jagged Frontier - Key Insights</h2>
+                    <div class="frontier-points">
+                        <div class="frontier-point fragment" data-fragment-index="0">
+                            <span class="point-icon">🏆</span>
+                            <div class="point-content">
+                                <strong>Superhuman at unexpected tasks</strong>
+                                <span>Medical diagnosis, complex math, sophisticated code</span>
+                            </div>
+                        </div>
+                        <div class="frontier-point fragment" data-fragment-index="1">
+                            <span class="point-icon">🤔</span>
+                            <div class="point-content">
+                                <strong>Struggles with "simple" tasks</strong>
+                                <span>Visual puzzles, counting, physical reasoning</span>
+                            </div>
+                        </div>
+                        <div class="frontier-point fragment" data-fragment-index="2">
+                            <span class="point-icon">🎯</span>
+                            <div class="point-content">
+                                <strong>Jaggedness doesn't match intuition</strong>
+                                <span>Passes bar exam, fails at basic visual tasks</span>
+                            </div>
+                        </div>
+                        <div class="frontier-point fragment" data-fragment-index="3">
+                            <span class="point-icon">🤝</span>
+                            <div class="point-content">
+                                <strong>Creates collaboration opportunities</strong>
+                                <span>Humans fill AI gaps, AI amplifies human strengths</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="source-note fragment" data-fragment-index="4">Source: Ethan Mollick, "The Shape of AI"</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Equation of Agentic Work</h2>
+                    <div class="equation-content">
+                        <img src="./Generative AI Fundamentals - Agentic Development Course_files/ec5279eb-e12f-408f-8727-ffcc7b1f3ba7_2816x1536.jpeg" alt="Equation of Agentic Work" class="equation-image">
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Equation - Key Factors</h2>
+                    <div class="equation-factors">
+                        <div class="factor fragment" data-fragment-index="0">
+                            <span class="factor-num">1</span>
+                            <div class="factor-content">
+                                <strong>Human Baseline Time</strong>
+                                <span>How long would this take YOU to do?</span>
+                            </div>
+                        </div>
+                        <div class="factor fragment" data-fragment-index="1">
+                            <span class="factor-num">2</span>
+                            <div class="factor-content">
+                                <strong>Probability of Success</strong>
+                                <span>How likely is AI to succeed? (Remember the jagged frontier)</span>
+                            </div>
+                        </div>
+                        <div class="factor fragment" data-fragment-index="2">
+                            <span class="factor-num">3</span>
+                            <div class="factor-content">
+                                <strong>AI Process Time</strong>
+                                <span>Agents run in background while you work on other things</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="equation-insight fragment" data-fragment-index="3">
+                        <span class="insight-icon">💡</span>
+                        <span class="insight-text"><strong>Management skills</strong> become your superpower with AI agents</span>
+                    </div>
+                    <p class="source-note fragment" data-fragment-index="4">Source: Ethan Mollick, "Management as AI Superpower"</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Management as AI Superpower</h2>
+                    <div class="superpower-content">
+                        <img src="./Generative AI Fundamentals - Agentic Development Course_files/6cbe84ef-5e39-49bb-a6e8-4d427d42b54e_2496x1696.jpeg" alt="Management as AI Superpower" class="superpower-image">
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 2: FUN EXERCISES ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#2d4a22" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 2</h2>
+                    <h1>Fun Generative Exercises</h1>
+                    <p class="part-subtitle">These aren't just games — they reveal how the model works</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Exercise: The Dinosaur Rewrite 🦖</h2>
+                    <img src="./Generative AI Fundamentals - Agentic Development Course_files/pressDinosour.png" alt="Press Dinosaur" class="funny-image">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Exercise: The Dinosaur Rewrite 🦖</h2>
+                    <pre data-id="dino-code" class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Take this news article: [paste any recent news]
+
+Rewrite it so that a dinosaur is somehow
+centrally involved in the incident.
+
+Keep the same journalistic tone and structure.</code></pre>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Exercise: The Tone Dial 🎚️</h2>
+                    <div class="exercise-box">
+                        <div class="original-text">
+                            <strong>Original email:</strong>
+                            <p>"The project deadline was missed again. This is unacceptable. We need to discuss this."</p>
+                        </div>
+                        <div class="tone-scale fragment" data-fragment-index="0">
+                            <div class="tone-item">1. Furious</div>
+                            <div class="tone-arrow">→</div>
+                            <div class="tone-item">2. Frustrated</div>
+                            <div class="tone-arrow">→</div>
+                            <div class="tone-item">3. Neutral</div>
+                            <div class="tone-arrow">→</div>
+                            <div class="tone-item">4. Understanding</div>
+                            <div class="tone-arrow">→</div>
+                            <div class="tone-item">5. Gracious</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Exercise: Format Juggling 🔄</h2>
+                    <div class="format-exercise">
+                        <div class="format-input">
+                            <strong>Input:</strong>
+                            <p>"John Smith is a 34-year-old software engineer from Seattle. He earns $150,000 at TechCorp..."</p>
+                        </div>
+                        <div class="format-outputs fragment" data-fragment-index="0">
+                            <span class="format-tag">JSON</span>
+                            <span class="format-tag">YAML</span>
+                            <span class="format-tag">Bullet points</span>
+                            <span class="format-tag">SQL INSERT</span>
+                            <span class="format-tag">Haiku 🎋</span>
+                            <span class="format-tag">Movie trailer 🎬</span>
+                        </div>
+                    </div>
+                    <p class="fragment highlight-point" data-fragment-index="1">Same information, endless formats!</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Exercise: The Accordion 🪗</h2>
+                    <div class="accordion-exercise">
+                        <div class="accordion-start">
+                            <strong>Start with:</strong> "The server crashed."
+                        </div>
+                        <div class="accordion-steps">
+                            <div class="accordion-step fragment" data-fragment-index="0">
+                                <span class="step-direction expand">↗️ Expand</span>
+                                <span class="step-result">Incident report (1 paragraph)</span>
+                            </div>
+                            <div class="accordion-step fragment" data-fragment-index="1">
+                                <span class="step-direction expand">↗️ Expand</span>
+                                <span class="step-result">Post-mortem (3 paragraphs)</span>
+                            </div>
+                            <div class="accordion-step fragment" data-fragment-index="2">
+                                <span class="step-direction compress">↘️ Compress</span>
+                                <span class="step-result">Tweet (280 chars)</span>
+                            </div>
+                            <div class="accordion-step fragment" data-fragment-index="3">
+                                <span class="step-direction compress">↘️ Compress</span>
+                                <span class="step-result">Single emoji</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 3: FROM AUTOCOMPLETE TO AGENTS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#4a1942" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 3</h2>
+                    <h1>From Autocomplete to Agents</h1>
+                    <p class="part-subtitle">The conceptual leap that changes everything</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Limitation</h2>
+                    <h3>LLMs can only produce text</h3>
+                    <img src="./Generative AI Fundamentals - Agentic Development Course_files/brainInGlassJar.png" alt="Brain in Glass Jar" class="funny-image">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Limitation</h2>
+                    <div class="limitation-box">
+                        <div class="limitation-list">
+                            <div class="limitation-item fragment" data-fragment-index="0">
+                                <span class="x-mark">✗</span>
+                                <span>Can't browse the web</span>
+                            </div>
+                            <div class="limitation-item fragment" data-fragment-index="1">
+                                <span class="x-mark">✗</span>
+                                <span>Can't run code</span>
+                            </div>
+                            <div class="limitation-item fragment" data-fragment-index="2">
+                                <span class="x-mark">✗</span>
+                                <span>Can't read files</span>
+                            </div>
+                            <div class="limitation-item fragment" data-fragment-index="3">
+                                <span class="x-mark">✗</span>
+                                <span>Can't call APIs</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="fragment limitation-quote" data-fragment-index="4">"All talk, no action"</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Solution: Tools</h2>
+                    <p class="solution-intro">Give the LLM ability to <strong>request actions</strong></p>
+                    <div class="tool-flow">
+                        <div class="flow-step fragment" data-fragment-index="0">
+                            <span class="flow-label">User</span>
+                            <span class="flow-content">"What's the weather in Seattle?"</span>
+                        </div>
+                        <div class="flow-arrow fragment" data-fragment-index="1">↓</div>
+                        <div class="flow-step fragment" data-fragment-index="1">
+                            <span class="flow-label">LLM thinks</span>
+                            <span class="flow-content">"I need weather data..."</span>
+                        </div>
+                        <div class="flow-arrow fragment" data-fragment-index="2">↓</div>
+                        <div class="flow-step code-step fragment" data-fragment-index="2">
+                            <span class="flow-label">LLM outputs</span>
+                            <code>{"tool": "get_weather", "location": "Seattle"}</code>
+                        </div>
+                        <div class="flow-arrow fragment" data-fragment-index="3">↓</div>
+                        <div class="flow-step fragment" data-fragment-index="3">
+                            <span class="flow-label">System executes</span>
+                            <code>{"temp": 52, "condition": "rainy"}</code>
+                        </div>
+                        <div class="flow-arrow fragment" data-fragment-index="4">↓</div>
+                        <div class="flow-step fragment" data-fragment-index="4">
+                            <span class="flow-label">LLM responds</span>
+                            <span class="flow-content">"It's 52°F and rainy in Seattle."</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section data-auto-animate="" class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The ReAct Framework</h2>
+                    <div class="react-title" data-id="react-title">
+                        <span class="react-re">Re</span>asoning + <span class="react-act">Act</span>ing
+                    </div>
+                </section>
+
+                <section data-auto-animate="" class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The ReAct Framework</h2>
+                    <div class="react-title small" data-id="react-title">
+                        <span class="react-re">Re</span>asoning + <span class="react-act">Act</span>ing
+                    </div>
+                    <div class="react-diagram">
+                        <div class="react-step think">
+                            <span class="step-icon">🤔</span>
+                            <span class="step-name">THINK</span>
+                            <span class="step-desc">Reason about task</span>
+                        </div>
+                        <div class="react-arrow">→</div>
+                        <div class="react-step act">
+                            <span class="step-icon">⚡</span>
+                            <span class="step-name">ACT</span>
+                            <span class="step-desc">Tool call</span>
+                        </div>
+                        <div class="react-arrow">→</div>
+                        <div class="react-step observe">
+                            <span class="step-icon">👁️</span>
+                            <span class="step-name">OBSERVE</span>
+                            <span class="step-desc">See result</span>
+                        </div>
+                        <div class="react-loop">
+                            <span class="loop-text">REPEAT</span>
+                            <svg class="loop-arrow" viewBox="0 0 100 50">
+                                <path d="M 90 25 Q 90 45, 50 45 Q 10 45, 10 25" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                <polygon points="5,25 15,20 15,30" fill="currentColor"></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why ReAct Works</h2>
+                    <div class="benefits-grid">
+                        <div class="benefit fragment" data-fragment-index="0">
+                            <span class="benefit-num">1</span>
+                            <strong>Explicit reasoning</strong>
+                            <span>Prevents rushing to wrong actions</span>
+                        </div>
+                        <div class="benefit fragment" data-fragment-index="1">
+                            <span class="benefit-num">2</span>
+                            <strong>Observation step</strong>
+                            <span>Allows course correction</span>
+                        </div>
+                        <div class="benefit fragment" data-fragment-index="2">
+                            <span class="benefit-num">3</span>
+                            <strong>Loop continues</strong>
+                            <span>Until task is complete</span>
+                        </div>
+                        <div class="benefit fragment" data-fragment-index="3">
+                            <span class="benefit-num">4</span>
+                            <strong>More reliable</strong>
+                            <span>Than single-shot generation</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ReAct Activity -->
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Activity: Be the LLM</h2>
+                    <img src="./Generative AI Fundamentals - Agentic Development Course_files/studentLlm.png" alt="Student as LLM" class="funny-image">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Activity: Be the LLM</h2>
+                    <div class="activity-roles">
+                        <div class="role-item">
+                            <span class="role-icon">🧠</span>
+                            <div class="role-content">
+                                <strong>1 student = The LLM</strong>
+                                <span>Reads prompt, generates response</span>
+                            </div>
+                        </div>
+                        <div class="role-item">
+                            <span class="role-icon">🔧</span>
+                            <div class="role-content">
+                                <strong>1 student = Tool Executor</strong>
+                                <span>Runs tools, returns results</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-outputs fragment" data-fragment-index="0">
+                        <p><strong>LLM outputs either:</strong></p>
+                        <code>TOOL: [name], INPUT: [value]</code>
+                        <span>or</span>
+                        <code>ANSWER: [response]</code>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Prompt → LLM (Round 1)</h2>
+                    <pre class="prompt-display code-wrapper"><code class="language-text hljs language-plaintext">SYSTEM:
+You are a helpful assistant. Follow this loop:
+1. THINK out loud about what you need to do
+2. ACT by calling a tool if needed
+3. OBSERVE the result
+4. REPEAT until you can answer
+
+Tools: calculator(expression), web_search(query)
+
+USER:
+What is the square root of 65536?</code></pre>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>LLM Response (Round 1)</h2>
+                    <pre class="response-display code-wrapper"><code class="language-text hljs language-plaintext">[LLM reasoning]
+
+TOOL: calculator
+INPUT: sqrt(65536)</code></pre>
+                    <p class="activity-instruction fragment" data-fragment-index="0"><em>Tool Executor: run the calculation</em></p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Tool Result</h2>
+                    <div class="tool-result-display">
+                        <code>256</code>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Prompt → LLM (Round 2)</h2>
+                    <pre class="prompt-display small code-wrapper"><code class="language-text hljs language-plaintext">SYSTEM:
+You are a helpful assistant. Follow this loop:
+1. THINK out loud about what you need to do
+2. ACT by calling a tool if needed
+3. OBSERVE the result
+4. REPEAT until you can answer
+
+Tools: calculator(expression), web_search(query)
+
+USER:
+What is the square root of 65536?
+
+ASSISTANT:
+[LLM's reasoning from Round 1]
+TOOL: calculator
+INPUT: sqrt(65536)
+
+TOOL RESULT:
+256</code></pre>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>LLM Response (Round 2)</h2>
+                    <pre class="response-display code-wrapper"><code class="language-text hljs language-plaintext">[LLM reasoning]
+
+ANSWER: The square root of 65536 is 256.</code></pre>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>What Makes an "Agent"</h2>
+                    <div class="agent-equation">
+                        <div class="equation-part fragment" data-fragment-index="0">
+                            <span class="part-icon">🧠</span>
+                            <span class="part-label">LLM</span>
+                            <span class="part-desc">"the brain"</span>
+                        </div>
+                        <span class="equation-plus fragment" data-fragment-index="1">+</span>
+                        <div class="equation-part fragment" data-fragment-index="1">
+                            <span class="part-icon">🔧</span>
+                            <span class="part-label">Tools</span>
+                            <span class="part-desc">"the hands"</span>
+                        </div>
+                        <span class="equation-plus fragment" data-fragment-index="2">+</span>
+                        <div class="equation-part fragment" data-fragment-index="2">
+                            <span class="part-icon">🔄</span>
+                            <span class="part-label">Reasoning Loop</span>
+                            <span class="part-desc">"the process"</span>
+                        </div>
+                        <span class="equation-equals fragment" data-fragment-index="3">=</span>
+                        <div class="equation-result fragment" data-fragment-index="3">
+                            <span class="result-icon">🤖</span>
+                            <span class="result-label">Autonomous Agent</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Common Agent Tools</h2>
+                    <table class="tools-table">
+                        <thead>
+                            <tr>
+                                <th>Tool Type</th>
+                                <th>Examples</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment" data-fragment-index="0">
+                                <td><span class="tool-icon">📁</span> File system</td>
+                                <td>Read, write, search files</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="1">
+                                <td><span class="tool-icon">🌐</span> Web</td>
+                                <td>Fetch pages, search</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="2">
+                                <td><span class="tool-icon">⚙️</span> Code execution</td>
+                                <td>Run scripts, tests</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="3">
+                                <td><span class="tool-icon">🔌</span> APIs</td>
+                                <td>External services</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="4">
+                                <td><span class="tool-icon">🎭</span> Browser</td>
+                                <td>Playwright for web interaction</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why Agents Matter for Development</h2>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Before</th>
+                                <th>After</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment" data-fragment-index="0">
+                                <td>AI <em>suggests</em> code</td>
+                                <td>AI <strong>READS</strong> your code</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="1">
+                                <td>You run tests</td>
+                                <td>AI <strong>RUNS</strong> your tests</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="2">
+                                <td>You research libraries</td>
+                                <td>AI <strong>RESEARCHES</strong> for you</td>
+                            </tr>
+                            <tr class="fragment" data-fragment-index="3">
+                                <td>You fix issues</td>
+                                <td>AI <strong>FIXES</strong> and verifies</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="transformation-quote fragment" data-fragment-index="4">
+                        Transforms AI from <span class="old">"assistant"</span> to <span class="new">"autonomous developer"</span>
+                    </p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why Agents Matter for Development</h2>
+                    <img src="./Generative AI Fundamentals - Agentic Development Course_files/automationIsParadise.png" alt="Automation is Paradise" class="funny-image">
+                </section>
+            </section>
+
+            <!-- ==================== PART 4: LAB ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#1a4731" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 4</h2>
+                    <h1>Lab Time</h1>
+                    <p class="part-subtitle">Put these concepts into practice</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Lab Exercises</h2>
+                    <div class="lab-exercises">
+                        <div class="lab-exercise fragment" data-fragment-index="0">
+                            <span class="exercise-num">1</span>
+                            <div class="exercise-content">
+                                <strong>Token Exploration</strong>
+                                <span class="exercise-time">5 min</span>
+                                <p>Use a tokenizer to explore how text splits</p>
+                                <a href="https://platform.openai.com/tokenizer" target="_blank" class="exercise-link">platform.openai.com/tokenizer →</a>
+                            </div>
+                        </div>
+                        <div class="lab-exercise fragment" data-fragment-index="1">
+                            <span class="exercise-num">2</span>
+                            <div class="exercise-content">
+                                <strong>Creative Generation</strong>
+                                <span class="exercise-time">10 min</span>
+                                <p>Rewrite your project description in 3 styles<br>
+                                <em>Or: Technical concept as children's story / rap / news</em></p>
+                            </div>
+                        </div>
+                        <div class="lab-exercise fragment" data-fragment-index="2">
+                            <span class="exercise-num">3</span>
+                            <div class="exercise-content">
+                                <strong>Agent Thinking</strong>
+                                <span class="exercise-time">5-10 min</span>
+                                <p>Write out ReAct steps for researching a library</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== KEY TAKEAWAYS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Key Takeaways</h2>
+                <div class="takeaways">
+                    <div class="takeaway fragment" data-fragment-index="0">
+                        <span class="takeaway-num">1</span>
+                        <div class="takeaway-content">
+                            <strong>LLMs = sophisticated autocomplete</strong>
+                            <span>Predicting tokens, not "thinking"</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment" data-fragment-index="1">
+                        <span class="takeaway-num">2</span>
+                        <div class="takeaway-content">
+                            <strong>Tokens ≠ words</strong>
+                            <span>Understanding tokens helps efficiency</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment" data-fragment-index="2">
+                        <span class="takeaway-num">3</span>
+                        <div class="takeaway-content">
+                            <strong>Agents = LLM + tools + loop</strong>
+                            <span>What makes AI useful for dev</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment" data-fragment-index="3">
+                        <span class="takeaway-num">4</span>
+                        <div class="takeaway-content">
+                            <strong>ReAct: Think → Act → Observe → Repeat</strong>
+                            <span>The foundational agent pattern</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment" data-fragment-index="4">
+                        <span class="takeaway-num">5</span>
+                        <div class="takeaway-content">
+                            <strong>Always verify</strong>
+                            <span>Hallucinations happen</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== HOMEWORK ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Before Next Time</h2>
+                <div class="homework-list">
+                    <div class="homework-item fragment" data-fragment-index="0">
+                        <span class="homework-check">☐</span>
+                        <span>Read: <strong>"Management as AI Superpower"</strong> - oneusefulthing.org</span>
+                    </div>
+                    <div class="homework-item fragment" data-fragment-index="1">
+                        <span class="homework-check">☐</span>
+                        <span>Think: What would you want an AI agent to <strong>research for your project?</strong></span>
+                    </div>
+                </div>
+                <div class="next-preview fragment" data-fragment-index="2">
+                    <strong>Next time:</strong> Ideation &amp; Planning with AI — brainstorming, market research, PRDs
+                </div>
+            </section>
+
+            <!-- ==================== RESOURCES ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Resources</h2>
+                <div class="resources-list">
+                    <a href="https://platform.openai.com/tokenizer" target="_blank" class="resource-item">
+                        <span class="resource-icon">🔤</span>
+                        <span class="resource-name">OpenAI Tokenizer</span>
+                        <span class="resource-url">platform.openai.com/tokenizer</span>
+                    </a>
+                    <a href="https://docs.anthropic.com/" target="_blank" class="resource-item">
+                        <span class="resource-icon">📚</span>
+                        <span class="resource-name">Claude Documentation</span>
+                        <span class="resource-url">docs.anthropic.com</span>
+                    </a>
+                    <a href="https://arxiv.org/abs/2210.03629" target="_blank" class="resource-item">
+                        <span class="resource-icon">📄</span>
+                        <span class="resource-name">ReAct Paper</span>
+                        <span class="resource-url">arxiv.org/abs/2210.03629</span>
+                    </a>
+                    <a href="https://www.oneusefulthing.org/p/management-as-ai-superpower" target="_blank" class="resource-item">
+                        <span class="resource-icon">📖</span>
+                        <span class="resource-name">Management as AI Superpower</span>
+                        <span class="resource-url">oneusefulthing.org</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ==================== END SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>See you next time!</h2>
+                <h3 class="next-session">Next: Ideation &amp; Planning with AI</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+        </div>
+    <div class="backgrounds"><div class="slide-background present" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: block;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background stack future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: block;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#2d4a22nullnullnullnullnull" style="background-color: rgb(45, 74, 34); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a1942nullnullnullnullnull" style="background-color: rgb(74, 25, 66); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1a4731nullnullnullnullnull" style="background-color: rgb(26, 71, 49); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: none;"><div class="slide-background-content"></div></div></div><div class="slide-number" style="display: none;"><a href="https://d1dtpagvh0qhqn.cloudfront.net/agentic1WebSlides/#/">
+					<span class="slide-number-a">1</span>
+					<span class="slide-number-delimiter">/</span>
+					<span class="slide-number-b">52</span>
+					</a></div><aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded" style="display: block;"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled highlight" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down" aria-label="below slide" disabled="disabled"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div class="aria-status" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">Generative AI Fundamentals &amp; How Agents Work Understanding the technology before using it Agentic Development Course </div></div>
+
+    <!-- Reveal.js -->
+    <script src="./Generative AI Fundamentals - Agentic Development Course_files/reveal.min.js"></script>
+    <script src="./Generative AI Fundamentals - Agentic Development Course_files/notes.min.js"></script>
+    <script src="./Generative AI Fundamentals - Agentic Development Course_files/highlight.min.js"></script>
+    <script src="./Generative AI Fundamentals - Agentic Development Course_files/zoom.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'speaker',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+
+            // Slide dimensions - taller to fit more content
+            width: 960,
+            height: 900,
+            margin: 0.02,
+
+            // Scale settings - allow shrinking to fit
+            minScale: 0.1,
+            maxScale: 2.0,
+
+            // Center vertically
+            center: true,
+
+            // Vertical slides
+            navigationMode: 'default',
+
+            // Speaker notes
+            showNotes: false,
+
+            // Auto-animate
+            autoAnimateEasing: 'ease-out',
+            autoAnimateDuration: 0.8,
+
+            // Plugins
+            plugins: [ RevealNotes, RevealHighlight, RevealZoom ]
+        });
+    </script>
+
+
+</body></html>

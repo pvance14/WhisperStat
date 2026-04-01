@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://d1dtpagvh0qhqn.cloudfront.net/agentic5WebSlides/ -->
+<html lang="en" class="reveal-full-page" style="--vsc-domain: &quot;d1dtpagvh0qhqn.cloudfront.net&quot;;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Unit 5: Building Your AI Workflow System - Agentic Development Course</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="./Building Your AI Workflow System_files/reveal.min.css">
+    <link rel="stylesheet" href="./Building Your AI Workflow System_files/night.min.css">
+
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet" href="./Building Your AI Workflow System_files/monokai.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./Building Your AI Workflow System_files/css2" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./Building Your AI Workflow System_files/custom.css">
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style></head>
+<body class="reveal-viewport" style="transition: transform 0.8s; --slide-width: 1300px; --slide-height: 900px; --slide-scale: 0.9723777777777778;">
+    <div class="reveal slide center focused has-vertical-slides has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade" style="">
+        <div class="slides" style="width: 1300px; height: 900px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(0.972378);">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 261.5px; display: block;" class="present">
+                <h1 class="title-main">Dev Unit 5: Building Your AI Workflow System</h1>
+                <h3 class="title-sub">From ad-hoc AI to systematic workflows</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section style="top: 144px; display: block;" class="future" data-fragment="-1" hidden="" aria-hidden="true">
+                <h2>What We'll Cover Today</h2>
+                <div class="agenda-grid">
+                    <div class="agenda-item fragment fade-up" data-fragment-index="0">
+                        <span class="agenda-number">1</span>
+                        <div class="agenda-content">
+                            <strong>Your Instruction Layer</strong>
+                            <span>The foundation that shapes every AI interaction</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="1">
+                        <span class="agenda-number">2</span>
+                        <div class="agenda-content">
+                            <strong>Sub-Agents &amp; Verification</strong>
+                            <span>Delegating and verifying with confidence</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="2">
+                        <span class="agenda-number">3</span>
+                        <div class="agenda-content">
+                            <strong>Multi-Session Discipline</strong>
+                            <span>Preventing the #1 project killer</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="3">
+                        <span class="agenda-number">4</span>
+                        <div class="agenda-content">
+                            <strong>Advanced Patterns</strong>
+                            <span>What's possible when you combine it all</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="4">
+                        <span class="agenda-number">5</span>
+                        <div class="agenda-content">
+                            <strong>Your Workflow Cheat Sheet</strong>
+                            <span>Takeaway artifact for final projects</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== LEARNING OBJECTIVES ==================== -->
+            <section style="top: 9.5px; display: block;" class="future" data-fragment="-1" hidden="" aria-hidden="true">
+                <h2>What You Should Be Able to DO After Today</h2>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">1.</span>
+                        <span><strong>Write a CLAUDE.md</strong> that improves every AI interaction in your project</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">2.</span>
+                        <span><strong>Codify successful workflows</strong> into reusable instruction files and slash commands</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">3.</span>
+                        <span><strong>Deploy sub-agents</strong> for verification with risk-appropriate witness counts</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="3">
+                        <span class="homework-check">4.</span>
+                        <span><strong>Budget tokens</strong> knowing sub-agents cost 3-5x baseline</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="4">
+                        <span class="homework-check">5.</span>
+                        <span><strong>Use multi-session workflows</strong> to prevent context pollution</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="5">
+                        <span class="homework-check">6.</span>
+                        <span><strong>Escalate effectively</strong> when AI gets stuck (not just re-prompt)</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="6">
+                        <span class="homework-check">7.</span>
+                        <span><strong>Prevent</strong> over-engineering, scope creep, and stuck loops before they happen</span>
+                    </div>
+                </div>
+                <blockquote class="fragment fade-up" style="margin-top:0.6em;" data-fragment-index="7">Today we build a complete workflow <em>system</em>, not just learn individual techniques.</blockquote>
+            </section>
+
+            <!-- ==================== THROUGHLINE ==================== -->
+            <section style="top: 151.5px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>The Throughline: Building a Stack</h2>
+                <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">Each block builds on the previous:</p>
+                <img src="./Building Your AI Workflow System_files/workflow-stack.svg" alt="Workflow Stack: Foundation → Power → Survival → Advanced" style="max-width:650px; margin:0.5em auto; display:block;">
+                <div class="key-concept fragment fade-up" style="margin-top:0.6em;" data-fragment-index="0">
+                    <strong>The meta-lesson:</strong> Dynamic → Codified → Automated
+                </div>
+            </section>
+
+            <!-- ==================== BLOCK 1: INSTRUCTION LAYER ==================== -->
+            <section style="top: 0px; display: none;" hidden="" aria-hidden="true" class="stack future" data-previous-indexv="0">
+                <section class="image-reveal has-dark-background" data-auto-animate="" data-background-color="#1e3a5f" style="top: 31px; display: none;">
+                    <h1>Your Instruction Layer</h1>
+                    <img src="./Building Your AI Workflow System_files/CLAUDE archeological artifact.png" alt="CLAUDE.md as archaeological artifact" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <h2 class="part-header">Block 1</h2>
+                        <p class="part-subtitle">The Foundation</p>
+                    </div>
+                </section>
+
+                <section class="image-reveal future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>What is an Instruction File?</h2>
+                    <img src="./Building Your AI Workflow System_files/Kitchen Catastrophe.png" alt="Kitchen Catastrophe" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <p style="font-size:0.8em; margin-bottom:0.3em;">A <strong>markdown file</strong> that shapes AI behavior for your project.</p>
+                        <ul style="font-size:0.7em; margin-bottom:0.3em;">
+                            <li><strong>CLAUDE.md</strong> — always loaded, shapes every interaction</li>
+                            <li><strong>Process docs</strong> — on-demand workflows in <code>ai/instructions/</code></li>
+                            <li><strong>Skills</strong> — one-command shortcuts in <code>.claude/skills/</code></li>
+                        </ul>
+                        <div class="key-concept" style="font-size:0.7em; padding:0.3em 0.6em;">
+                            Without instructions, AI is a talented chef who doesn't know your kitchen. With instructions → consistent results every time.
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why Instruction Files Beat Ad-Hoc Prompting</h2>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Ad-Hoc Prompting</th>
+                                <th>Instruction Files</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td>Inconsistent results</td>
+                                <td>Repeatable outcomes</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td>Hard to remember details</td>
+                                <td>Written down once</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td>No version history</td>
+                                <td>Refinable over time</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td>Solo knowledge</td>
+                                <td>Shareable with team</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="4">
+                                <td>Reinvent each time</td>
+                                <td>Build on what works</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="5">Instruction files are the highest-leverage thing you can create — one well-written CLAUDE.md influences hundreds of future interactions.</p>
+                </section>
+
+                <section data-auto-animate="" class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Anatomy of a Good CLAUDE.md</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-markdown hljs" data-trim=""><span class="hljs-section"># Project Context</span>
+[What this project is, who it's for]
+
+<span class="hljs-section">## Critical Files to Review</span>
+<span class="hljs-bullet">-</span> context.md — project knowledge base
+<span class="hljs-bullet">-</span> PRD — requirements source of truth
+<span class="hljs-bullet">-</span> Architecture — system design decisions
+
+<span class="hljs-section">## Behavioral Guidelines</span>
+<span class="hljs-bullet">-</span> Keep solutions simple and focused on requirements
+<span class="hljs-bullet">-</span> Ask for expert opinion before making changes
+<span class="hljs-bullet">-</span> Don't add features not in the PRD
+<span class="hljs-bullet">-</span> Change code as if it was always this way (no compatibility layers)
+
+<span class="hljs-section">## Code Style</span>
+[Patterns, naming conventions, testing expectations]</code></pre>
+                    </div>
+                    <div class="note-box fragment fade-up" style="margin-top:0.3em;" data-fragment-index="0">
+                        <strong>Note:</strong> CLAUDE.md is for context &amp; guidelines — skills/commands are defined separately (next slides).
+                    </div>
+                </section>
+
+                <section data-auto-animate="" class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Behavioral Guidelines Section</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;">This is where you <strong>prevent pitfalls before they happen:</strong></p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-markdown hljs" data-trim=""><span class="hljs-section">## Behavioral Guidelines</span>
+<span class="hljs-bullet">-</span> Keep solutions simple and focused on requirements
+<span class="hljs-bullet">-</span> Don't add features not in the PRD
+<span class="hljs-bullet">-</span> Ask for expert opinion before making changes
+<span class="hljs-bullet">-</span> Change code as if it was always this way (no compatibility layers)
+<span class="hljs-bullet">-</span> Don't over-engineer — we can add complexity later
+<span class="hljs-bullet">-</span> This is MVP only. Additional features go in future roadmaps.</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; margin-top:0.5em;" data-fragment-index="0">Over-engineering? Scope creep? Compatibility layers nobody asked for?</p>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.4em;" data-fragment-index="1">
+                        <strong>Solve them with one file, not constant vigilance.</strong>
+                    </div>
+                    <aside class="notes">This is rule beating prevention — changing the rules the AI optimizes against</aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Progression: Ad-Hoc → Codify → Automate</h2>
+                    <img src="./Building Your AI Workflow System_files/adhoc-codify-automate.svg" alt="Ad-Hoc to Codify to Automate progression" style="max-width:700px; margin:0.5em auto; display:block;">
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="0">This is how every expert-level workflow starts. Nobody designs the perfect process upfront.</p>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary); margin-top:0.3em;" data-fragment-index="1">A process document is a <strong>founding hypothesis</strong> for a workflow. Running it 3+ times is the cheap loop that tests it — same methodology Jason taught for business hypotheses.</p>
+                </section>
+
+                <section data-auto-animate="" class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Anatomy of a Process Document</h2>
+                    <div class="code-box" style="max-height: 75vh;">
+                        <pre class="code-wrapper"><code class="language-markdown hljs" data-trim=""><span class="hljs-section"># Instruction: PR Review</span>
+
+<span class="hljs-section">## Context</span>
+<span class="hljs-bullet">-</span> Read aiDocs/context.md
+<span class="hljs-bullet">-</span> Review the PRD for requirements alignment
+<span class="hljs-bullet">-</span> Check aiDocs/coding-style.md for conventions
+
+<span class="hljs-section">## Workflow</span>
+<span class="hljs-bullet">1.</span> Run git diff to see all changes
+<span class="hljs-bullet">2.</span> Review each changed file for correctness, style, and security
+<span class="hljs-bullet">3.</span> Check for missing tests
+<span class="hljs-bullet">4.</span> Check for scope creep beyond the roadmap
+<span class="hljs-bullet">5.</span> Report findings with severity (critical / suggestion / nit)
+
+<span class="hljs-section">## Success Criteria</span>
+<span class="hljs-bullet">-</span> [ ] All changes reviewed
+<span class="hljs-bullet">-</span> [ ] No critical issues remaining
+<span class="hljs-bullet">-</span> [ ] Tests cover new functionality
+
+<span class="hljs-section">## Behavioral Guidelines</span>
+<span class="hljs-bullet">-</span> Report findings before making any changes
+<span class="hljs-bullet">-</span> Don't fix things without asking first</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Skills &amp; Slash Commands</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;">Skills are <strong>SKILL.md files</strong> in <code>.claude/skills/</code> — NOT in CLAUDE.md.</p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-plaintext hljs" data-trim="">.claude/skills/
+  pr-review/SKILL.md          ← defines /pr-review
+  create-roadmap/SKILL.md     ← defines /create-roadmap
+  frenemy-pragmatic/SKILL.md  ← defines /frenemy-pragmatic</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; margin-top:0.3em;" data-fragment-index="0">Each SKILL.md = YAML frontmatter (name, description) + markdown instructions. Claude auto-discovers them.</p>
+                    <table class="feature-table fragment fade-up" style="font-size:0.72em; margin-top:0.3em;" data-fragment-index="1">
+                        <thead>
+                            <tr><th>Skill</th><th>Purpose</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>/create-roadmap</code></td><td>Generate plan + roadmap from requirements</td></tr>
+                            <tr><td><code>/implement</code></td><td>Execute a roadmap in fresh session</td></tr>
+                            <tr><td><code>/pr-review</code></td><td>Review uncommitted code</td></tr>
+                            <tr><td><code>/verify</code></td><td>Sub-agent verification of implementation</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.3em;" data-fragment-index="2">Promote after 3+ successful uses. Don't automate what you're still refining.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Cursor’s Approach</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;">No SKILL.md equivalent, but similar results:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0"><strong><code>.cursorrules</code></strong> — project-level instructions (like CLAUDE.md)</li>
+                        <li class="fragment fade-up" data-fragment-index="1"><strong>Notepad entries</strong> — reusable prompt templates you can reference</li>
+                        <li class="fragment fade-up" data-fragment-index="2"><strong>@-mentions</strong> — pull specific files/docs into context on demand</li>
+                        <li class="fragment fade-up" data-fragment-index="3"><strong>Composer rules</strong> — workflow-specific instructions per session</li>
+                    </ul>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.5em;" data-fragment-index="4">
+                        <strong>The principle is the same across tools:</strong> codify your workflows so the AI follows consistent steps every time. The file format changes — the discipline doesn’t.
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>"In Practice" — Real Skills in Action</h2>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.3em;">Demo: <code>/frenemy-pragmatic</code></p>
+                    <p style="font-size:0.8em; color:var(--text-secondary); margin-bottom:0.4em;">A mature automated skill:</p>
+                    <ol style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Launches a frenemy sub-agent to critically analyze your work</li>
+                        <li class="fragment fade-up" data-fragment-index="1">A pragmatic intermediary synthesizes: what's right, what's wrong, what to actually do</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Returns actionable recommendations</li>
+                    </ol>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-top:0.6em;" data-fragment-index="3">Demo: <code>/roadmap</code> → <code>/implement-roadmap</code></p>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary);" data-fragment-index="4">The full planning-to-execution pipeline as skills.</p>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.5em;" data-fragment-index="5">
+                        <strong>Key point:</strong> These didn't start as skills. They started as ad-hoc conversations → codified into process docs → promoted to SKILL.md files. <strong>You can build your own. Start this week.</strong>
+                    </div>
+                </section>
+
+                <section class="image-reveal future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Inside a Real Skill: The Frenemy</h2>
+                    <img src="./Building Your AI Workflow System_files/frenemy-cats.png" alt="Frenemy cats" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <div style="display:flex; gap:0.3em; max-width:100%; overflow:hidden;">
+                            <div style="flex:1; min-width:0;">
+                                <p style="font-size:0.7em; color:var(--primary-blue); font-weight:600; margin-bottom:0.2em;">frenemy/SKILL.md:</p>
+                                <div class="code-box">
+                                    <pre style="overflow-x:hidden;" class="code-wrapper"><code class="language-yaml hljs" data-trim="" style="font-size:0.42em; white-space:pre-wrap; word-wrap:break-word;"><span class="hljs-meta">---</span>
+<span class="hljs-attr">name:</span> <span class="hljs-string">frenemy</span>
+<span class="hljs-attr">description:</span> <span class="hljs-string">Respond</span> <span class="hljs-string">with</span> <span class="hljs-string">direct,</span> <span class="hljs-string">critical</span> <span class="hljs-string">analysis.</span> <span class="hljs-literal">No</span> <span class="hljs-string">compliments,</span> <span class="hljs-literal">no</span> <span class="hljs-string">softening.</span> <span class="hljs-string">Challenge</span> <span class="hljs-string">assumptions</span> <span class="hljs-string">and</span> <span class="hljs-string">fact-check</span> <span class="hljs-string">claims.</span>
+<span class="hljs-attr">disable-model-invocation:</span> <span class="hljs-literal">true</span>
+<span class="hljs-attr">argument-hint:</span> [<span class="hljs-string">prompt</span> <span class="hljs-string">to</span> <span class="hljs-string">critically</span> <span class="hljs-string">analyze</span>]
+<span class="hljs-meta">---
+</span>
+<span class="hljs-string">Regarding</span> <span class="hljs-string">the</span> <span class="hljs-string">following</span> <span class="hljs-string">prompt,</span> <span class="hljs-string">respond</span> <span class="hljs-string">with</span> <span class="hljs-string">direct,</span> <span class="hljs-string">critical</span> <span class="hljs-string">analysis.</span> <span class="hljs-string">Prioritize</span> <span class="hljs-string">clarity</span> <span class="hljs-string">over</span> <span class="hljs-string">kindness.</span> <span class="hljs-string">Do</span> <span class="hljs-string">not</span> <span class="hljs-string">compliment</span> <span class="hljs-string">me</span> <span class="hljs-string">or</span> <span class="hljs-string">soften</span> <span class="hljs-string">the</span> <span class="hljs-string">tone</span> <span class="hljs-string">of</span> <span class="hljs-string">your</span> <span class="hljs-string">answer.</span> <span class="hljs-string">Identify</span> <span class="hljs-string">my</span> <span class="hljs-string">logical</span> <span class="hljs-string">blind</span> <span class="hljs-string">spots</span> <span class="hljs-string">and</span> <span class="hljs-string">point</span> <span class="hljs-string">out</span> <span class="hljs-string">the</span> <span class="hljs-string">flaws</span> <span class="hljs-string">in</span> <span class="hljs-string">my</span> <span class="hljs-string">assumptions.</span> <span class="hljs-string">Fact-check</span> <span class="hljs-string">my</span> <span class="hljs-string">claims.</span> <span class="hljs-string">Refute</span> <span class="hljs-string">my</span> <span class="hljs-string">conclusions</span> <span class="hljs-string">where</span> <span class="hljs-string">you</span> <span class="hljs-string">can.</span> <span class="hljs-string">Assume</span> <span class="hljs-string">I'm</span> <span class="hljs-string">wrong</span> <span class="hljs-string">and</span> <span class="hljs-string">make</span> <span class="hljs-string">me</span> <span class="hljs-string">prove</span> <span class="hljs-string">otherwise.</span>
+
+<span class="hljs-string">$ARGUMENTS</span></code></pre>
+                                </div>
+                            </div>
+                            <div style="flex:1; min-width:0;">
+                                <p style="font-size:0.7em; color:var(--primary-blue); font-weight:600; margin-bottom:0.2em;">frenemy-pragmatic/SKILL.md:</p>
+                                <div class="code-box">
+                                    <pre style="overflow-x:hidden;" class="code-wrapper"><code class="language-yaml hljs" data-trim="" style="font-size:0.42em; white-space:pre-wrap; word-wrap:break-word;"><span class="hljs-meta">---</span>
+<span class="hljs-attr">name:</span> <span class="hljs-string">frenemy-pragmatic</span>
+<span class="hljs-attr">description:</span> <span class="hljs-string">Critical</span> <span class="hljs-string">frenemy</span> <span class="hljs-string">analysis</span> <span class="hljs-string">via</span> <span class="hljs-string">sub-agent,</span> <span class="hljs-string">followed</span> <span class="hljs-string">by</span> <span class="hljs-string">pragmatic</span> <span class="hljs-string">recommendations</span> <span class="hljs-string">on</span> <span class="hljs-string">how</span> <span class="hljs-string">to</span> <span class="hljs-string">proceed.</span>
+<span class="hljs-attr">argument-hint:</span> [<span class="hljs-string">optional</span> <span class="hljs-string">topic</span> <span class="hljs-string">to</span> <span class="hljs-string">analyze</span>, <span class="hljs-string">or</span> <span class="hljs-string">omit</span> <span class="hljs-string">to</span> <span class="hljs-string">analyze</span> <span class="hljs-string">current</span> <span class="hljs-string">conversation</span>]
+<span class="hljs-meta">---
+</span>
+<span class="hljs-string">First,</span> <span class="hljs-attr">determine the analysis topic:</span>
+<span class="hljs-bullet">-</span> <span class="hljs-string">If</span> <span class="hljs-string">arguments</span> <span class="hljs-string">are</span> <span class="hljs-string">provided</span> <span class="hljs-string">below,</span> <span class="hljs-string">use</span> <span class="hljs-string">them</span> <span class="hljs-string">as</span> <span class="hljs-string">the</span> <span class="hljs-string">topic.</span>
+<span class="hljs-bullet">-</span> <span class="hljs-string">If</span> <span class="hljs-literal">no</span> <span class="hljs-string">arguments</span> <span class="hljs-string">are</span> <span class="hljs-string">provided,</span> <span class="hljs-string">summarize</span> <span class="hljs-string">the</span> <span class="hljs-string">key</span> <span class="hljs-string">points,</span> <span class="hljs-string">discoveries,</span> <span class="hljs-string">and</span> <span class="hljs-string">decisions</span>
+  <span class="hljs-string">from</span> <span class="hljs-string">our</span> <span class="hljs-string">conversation</span> <span class="hljs-string">so</span> <span class="hljs-string">far</span> <span class="hljs-string">as</span> <span class="hljs-string">the</span> <span class="hljs-string">topic.</span>
+
+<span class="hljs-string">Then,</span> <span class="hljs-string">deploy</span> <span class="hljs-string">a</span> <span class="hljs-string">sub-agent</span> <span class="hljs-string">with</span> <span class="hljs-string">the</span> <span class="hljs-string">"/frenemy"</span> <span class="hljs-string">skill</span> <span class="hljs-string">to</span> <span class="hljs-string">critically</span> <span class="hljs-string">analyze</span> <span class="hljs-string">that</span> <span class="hljs-string">topic</span> <span class="hljs-string">—</span>
+<span class="hljs-string">including</span> <span class="hljs-string">any</span> <span class="hljs-string">relevant</span> <span class="hljs-string">code,</span> <span class="hljs-string">assumptions,</span> <span class="hljs-string">and</span> <span class="hljs-string">trade-offs.</span>
+
+<span class="hljs-string">Finally,</span> <span class="hljs-string">as</span> <span class="hljs-string">the</span> <span class="hljs-string">pragmatic</span> <span class="hljs-string">expert,</span> <span class="hljs-string">synthesize</span> <span class="hljs-string">the</span> <span class="hljs-string">frenemy's</span> <span class="hljs-string">critique</span> <span class="hljs-string">with</span> <span class="hljs-string">your</span> <span class="hljs-string">own</span>
+<span class="hljs-string">assessment</span> <span class="hljs-string">and</span> <span class="hljs-string">recommend</span> <span class="hljs-string">how</span> <span class="hljs-string">we</span> <span class="hljs-string">should</span> <span class="hljs-string">proceed.</span> <span class="hljs-string">Be</span> <span class="hljs-string">direct</span> <span class="hljs-string">and</span> <span class="hljs-string">actionable.</span>
+
+<span class="hljs-string">$ARGUMENTS</span></code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>How the Frenemy Works</h2>
+                    <div class="key-concept" style="margin-bottom:0.5em;">
+                        <strong>Skills calling skills:</strong> <code>disable-model-invocation</code> = the skill <em>is</em> the prompt. Frenemy-pragmatic deploys frenemy as a sub-agent, then synthesizes. Simple skills compose into powerful workflows.
+                    </div>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto 0.5em;">
+                        <li class="fragment fade-up" data-fragment-index="0"><strong>frenemy</strong> = direct prompt injection — Claude doesn’t interpret it, just prepends the adversarial instructions</li>
+                        <li class="fragment fade-up" data-fragment-index="1"><strong>frenemy-pragmatic</strong> = orchestration — launches frenemy as an independent sub-agent, then acts as a pragmatic intermediary</li>
+                        <li class="fragment fade-up" data-fragment-index="2">This is the <strong>supervisor-worker pattern</strong> from Block 2, implemented as composable skills</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary); margin-top:0.3em;" data-fragment-index="3"><strong>Jason’s Lecture 2 connection:</strong> The frenemy is falsifiability automated — “What would need to be true for this to be false?” turned into an adversarial reviewer that forces you to prove your reasoning before you ship it.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Token Budget Note</h2>
+                    <p class="fragment fade-up" style="font-size:0.9em; margin-bottom:0.4em;" data-fragment-index="0"><strong>Instruction files are essentially free</strong> — loaded as context, negligible cost.</p>
+                    <p class="fragment fade-up" style="font-size:0.9em; margin-bottom:0.4em;" data-fragment-index="1"><strong>Sub-agents are expensive</strong> — 3-5x token multiplier (we'll cover this next).</p>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.5em;" data-fragment-index="2">
+                        <strong>Optimize the cheap layer first.</strong><br>
+                        Get your CLAUDE.md right before spending tokens on multi-agent workflows.
+                    </div>
+                    <aside class="notes">This is the most cost-effective improvement students can make today</aside>
+                </section>
+            </section>
+
+            <!-- ==================== BLOCK 2: SUB-AGENTS & VERIFICATION ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future" data-previous-indexv="0">
+                <section class="image-reveal has-dark-background" data-auto-animate="" data-background-color="#1e3a5f" style="top: 450px; display: none;">
+                    <h1>Sub-Agents &amp; Verification</h1>
+                    <img src="./Building Your AI Workflow System_files/Agent orchestrator.png" alt="Agent orchestrator" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <h2 class="part-header">Block 2</h2>
+                        <p class="part-subtitle">The Power Layer</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Supervisor-Worker Pattern</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;">In Units 7-8, you <strong>built agents</strong> that use tools to accomplish goals.</p>
+                    <p style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-bottom:0.5em;">Now flip the perspective: <strong>YOU are the supervisor agent.</strong> AI sessions are your workers.</p>
+                    <img src="./Building Your AI Workflow System_files/supervisor-worker.svg" alt="Supervisor-Worker Pattern" style="max-width:650px; margin:0.5em auto; display:block;">
+                </section>
+
+                <section class="image-reveal future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Verification Cycle</h2>
+                    <img src="./Building Your AI Workflow System_files/Robot sleuths.png" alt="Robot sleuths investigating" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <div class="code-box" style="margin-top:0.3em;">
+                            <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="" style="font-size:0.65em;">"Deploy a sub-agent to implement what we just discussed."
+    → [Sub-agent implements]
+"Now deploy another sub-agent to verify we got it right."
+    → Almost always finds at least one issue
+"Deploy another sub-agent to verify from a different angle."
+    → Often still finds something the first missed</code></pre>
+                        </div>
+                        <p style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.3em;">Nothing is 100% — but you get very close.</p>
+                    </div>
+                    <aside class="notes">The key: each verifier has independent context. They can't confirm each other's blind spots.</aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Law of Witnesses</h2>
+                    <blockquote style="font-size:0.85em; margin-bottom:0.5em;">"In the mouth of two or three witnesses shall every word be established"</blockquote>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.3em;">Applied to AI verification:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto 0.5em;">
+                        <li class="fragment fade-up" data-fragment-index="0">Different AI sessions hallucinate <strong>independently</strong></li>
+                        <li class="fragment fade-up" data-fragment-index="1">Agreement across independent sessions = <strong>high confidence</strong></li>
+                        <li class="fragment fade-up" data-fragment-index="2">Disagreement = <strong>investigate</strong></li>
+                    </ul>
+                    <table class="feature-table fragment fade-up" style="font-size:0.75em;" data-fragment-index="3">
+                        <thead>
+                            <tr>
+                                <th>Risk Level</th>
+                                <th>Witnesses</th>
+                                <th>Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Low</strong> (routine code)</td><td>1</td><td>Single AI session</td></tr>
+                            <tr><td><strong>Medium</strong> (important feature)</td><td>2</td><td>2 sessions or 2 models</td></tr>
+                            <tr><td><strong>High</strong> (security-critical)</td><td>3+</td><td>Multiple sessions + tests + human review</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary); margin-top:0.4em;" data-fragment-index="4"><strong>Example:</strong> Team building a healthcare app — one agent reviews for correctness, a separate agent reviews for data privacy compliance. They don't share context. That's the point.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Token Tax — Real Numbers</h2>
+                    <img src="./Building Your AI Workflow System_files/token-tax.svg" alt="Token Tax Multiplier bar chart" style="max-width:700px; margin:0.5em auto; display:block;">
+                    <aside class="notes">Sources: arxiv.org/html/2510.26585v1, arxiv.org/pdf/2510.26585.pdf, snorkel.ai/blog/multi-agents-in-the-context-of-enterprise-tool-use/</aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why It Costs More</h2>
+                    <ol style="font-size:0.85em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Each sub-agent gets its own <strong>system prompt + project context</strong> (re-sent every call)</li>
+                        <li class="fragment fade-up" data-fragment-index="1"><strong>"Communication tax"</strong> — agents restate goals and results to each other</li>
+                        <li class="fragment fade-up" data-fragment-index="2"><strong>Context replay</strong> — each tool call replays the entire conversation</li>
+                    </ol>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Budget-Conscious Patterns</h2>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.3em;">On Pro plans ($20/month):</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto 0.5em;">
+                        <li class="fragment fade-up" data-fragment-index="0">Limited messages per 5-hour window</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Supervisor + 2 sub-agents ≈ 4-8 messages per verification cycle</li>
+                        <li class="fragment fade-up" data-fragment-index="2">You'll hit limits quickly if aggressive with sub-agents</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.4em;" data-fragment-index="3">Practical strategies:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="4"><strong>Fewer, specialized agents</strong> &gt; many generic agents (40-60% savings)</li>
+                        <li class="fragment fade-up" data-fragment-index="5">Use sub-agents for <strong>high-stakes verification</strong>, not routine tasks</li>
+                        <li class="fragment fade-up" data-fragment-index="6">Instruction files are <strong>free</strong> — optimize the cheap layer first</li>
+                        <li class="fragment fade-up" data-fragment-index="7">Start manual, automate only when the pattern is proven</li>
+                    </ul>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>"In Practice" — The Verification Cycle</h2>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.3em;">Live Demo</p>
+                    <ol style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Ask AI to implement a small feature</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Deploy sub-agent to verify</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Sub-agent finds an issue (they almost always do)</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Fix the issue</li>
+                        <li class="fragment fade-up" data-fragment-index="4">Deploy another sub-agent to verify from a different angle</li>
+                        <li class="fragment fade-up" data-fragment-index="5">Clean result</li>
+                    </ol>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.5em;" data-fragment-index="6">
+                        <strong>Connection to Block 1:</strong> This entire pattern can be codified into an instruction file → eventually a slash command.
+                    </div>
+                    <aside class="notes">That's the foundation → power layer connection</aside>
+                </section>
+            </section>
+
+            <!-- ==================== BLOCK 3: MULTI-SESSION DISCIPLINE ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future" data-previous-indexv="0">
+                <section class="image-reveal has-dark-background" data-auto-animate="" data-background-color="#1e3a5f" style="top: 450px; display: none;">
+                    <h1>Multi-Session Discipline</h1>
+                    <img src="./Building Your AI Workflow System_files/The Reset.png" alt="The Reset" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <h2 class="part-header">Block 3</h2>
+                        <p class="part-subtitle">Survival Skills for Final Projects</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Context Pollution — The Silent Killer</h2>
+                    <p style="font-size:0.85em; margin-bottom:0.4em;"><strong>What it is:</strong> Old conversation details confuse current work.</p>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.3em;">Signs you're polluted:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Conversation has been going 30+ minutes</li>
+                        <li class="fragment fade-up" data-fragment-index="1">AI seems confused about current goals</li>
+                        <li class="fragment fade-up" data-fragment-index="2">You've pivoted direction significantly</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Previous approaches failed multiple times</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary); margin-top:0.4em;" data-fragment-index="4"><strong>Bounded rationality made visible:</strong> AI can only reason about what's in its context window. Polluted context = rationality bounded by garbage. Fresh session resets the bounds.</p>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.4em;" data-fragment-index="5">
+                        <strong>The golden rule: When in doubt, fresh session.</strong>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Three-Session Pattern</h2>
+                    <img src="./Building Your AI Workflow System_files/three-session-pattern.svg" alt="Three-Session Pattern: Plan → Build → Review" style="max-width:700px; margin:0.5em auto; display:block;">
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="0">Why separate sessions?</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="1">Planning context ≠ implementing context (different mental modes)</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Implementation starts clean — only reads plan documents</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Review provides genuinely fresh perspective</li>
+                    </ul>
+                </section>
+
+                <section data-auto-animate="" class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Three-Session Prompts</h2>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.3em;">Planning session:</p>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code data-trim="" class="hljs language-pgsql">Review aiDocs/context.md. Her<span class="hljs-string">e's what we need to build:
+[requirements]. Give me your expert opinion first.
+Don'</span>t make <span class="hljs-keyword">any</span> changes yet.</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-top:0.4em; margin-bottom:0.3em;" data-fragment-index="0">Implementation session (NEW session):</p>
+                    <div class="prompt-box fragment fade-up" data-fragment-index="1">
+                        <pre class="code-wrapper"><code data-trim="" class="hljs language-gradle">Review aiDocs/context.md. Then implement the work described in:
+- ai<span class="hljs-regexp">/roadmaps/</span>[date]_feature_plan.md
+- ai<span class="hljs-regexp">/roadmaps/</span>[date]_feature_roadmap.md
+Check tasks off as you complete them. Run tests after <span class="hljs-keyword">each</span> <span class="hljs-keyword">step</span>.</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-top:0.4em; margin-bottom:0.3em;" data-fragment-index="2">Review session:</p>
+                    <div class="prompt-box fragment fade-up" data-fragment-index="3">
+                        <pre class="code-wrapper"><code data-trim="" class="hljs language-pgsql">We just completed implementation. Please <span class="hljs-keyword">do</span> a PR review <span class="hljs-keyword">of</span> <span class="hljs-keyword">all</span>
+<span class="hljs-keyword">uncommitted</span> changes. Report findings <span class="hljs-keyword">before</span> making <span class="hljs-keyword">any</span> changes.</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.4em;" data-fragment-index="4">For final projects: Every major feature should follow this pattern.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Escalation Ladder</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;">When AI gets stuck — <strong>use in order:</strong></p>
+                    <table class="feature-table" style="font-size:0.75em;">
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th>Action</th>
+                                <th>When to Escalate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><strong>1</strong></td>
+                                <td><strong>Re-prompt</strong> with more context</td>
+                                <td>After 2 failed re-prompts</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td><strong>2</strong></td>
+                                <td><strong>Fresh session</strong> with context.md</td>
+                                <td>If fresh session also gets stuck</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td><strong>3</strong></td>
+                                <td><strong>Sub-agent review</strong> to diagnose</td>
+                                <td>If sub-agent doesn't find clear fix</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td><strong>4</strong></td>
+                                <td><strong>Manual intervention</strong> — you fix it</td>
+                                <td>Last resort</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.78em; color:var(--text-secondary); margin-top:0.4em;" data-fragment-index="4"><strong>Unit 3.5 callback:</strong> You already know Levels 1 and 4. Today adds Levels 2 and 3.</p>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.3em;" data-fragment-index="5">
+                        <strong>Most developers never get past Level 1.</strong> They keep rephrasing in a polluted session.
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Pitfall Prevention</h2>
+                    <table class="feature-table" style="font-size:0.72em; margin-bottom:0.4em;">
+                        <thead><tr><th>Pitfall</th><th>Why</th><th>Fix</th></tr></thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0"><td><strong>Over-engineering</strong></td><td>AI adds unrequested features</td><td>Behavioral guidelines in CLAUDE.md</td></tr>
+                            <tr class="fragment fade-up" data-fragment-index="1"><td><strong>Scope creep</strong></td><td>"While we're at it" grows beyond MVP</td><td>"This is MVP only" in every prompt</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.82em; color:var(--primary-blue); font-weight:600; margin-bottom:0.2em;" data-fragment-index="2">When to Put the AI Down</p>
+                    <ol style="font-size:0.72em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="3"><strong>Deep learning needed</strong> — skill erosion is real</li>
+                        <li class="fragment fade-up" data-fragment-index="4"><strong>Genuinely novel problem</strong> — AI gives confident wrong answers</li>
+                        <li class="fragment fade-up" data-fragment-index="5"><strong>Security-critical code</strong> — the Confidence Trap (Unit 4)</li>
+                        <li class="fragment fade-up" data-fragment-index="6"><strong>Stuck 20+ min</strong> — step away, think manually</li>
+                        <li class="fragment fade-up" data-fragment-index="7"><strong>Team alignment matters</strong> — shared struggle builds shared knowledge</li>
+                    </ol>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.3em; font-size:0.9em;" data-fragment-index="8">
+                        These are all <em>wicked-domain</em> signals. AI dominates kind domains. <strong>You own the wicked ones.</strong>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BLOCK 4: ADVANCED PATTERNS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future" data-previous-indexv="0">
+                <section data-background-color="#1e3a5f" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Block 4</h2>
+                    <h1>Advanced Patterns</h1>
+                    <p class="part-subtitle">What's Possible</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Universal Agent Loop</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;">Every major AI coding tool converges on the same pattern:</p>
+                    <div class="key-concept" style="margin-bottom:0.5em;">
+                        <strong>Normalize → Plan → Execute → Verify → Repeat</strong>
+                    </div>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0"><strong>Claude Code:</strong> Single-threaded master loop with natural-language TODO list</li>
+                        <li class="fragment fade-up" data-fragment-index="1"><strong>Cursor:</strong> Same loop, more human-in-the-loop at each step</li>
+                        <li class="fragment fade-up" data-fragment-index="2"><strong>Codex-based tools:</strong> Same pattern, orchestration varies</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="3">You already built this. Units 7-8: think → act → observe → repeat.</p>
+                    <p class="fragment fade-up" style="font-size:0.85em; margin-top:0.3em;" data-fragment-index="4">When you run <code>/roadmap</code> → <code>/implement-roadmap</code>, you're deliberately running this same loop — but with more control and better verification.</p>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.4em;" data-fragment-index="5">
+                        <strong>You are the outer loop. AI is the inner loop.</strong><br>
+                        Instruction files (Block 1) are how you program the outer loop.
+                    </div>
+                    <aside class="notes">Sources: anthropic.com/engineering/building-agents-with-the-claude-agent-sdk, youtube.com/watch?v=RFKCzGlAU6Q</aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Inside Real Commands: /roadmap → /implement-roadmap</h2>
+                    <p style="font-size:0.7em; color:var(--text-secondary); margin-bottom:0.3em;">Claude Code commands (<code>.claude/commands/</code>) — condensed from 135 and 248 lines:</p>
+                    <div style="display:flex; gap:0.5em;">
+                        <div style="flex:1;">
+                            <p style="font-size:0.65em; color:var(--primary-blue); font-weight:600; margin-bottom:0.2em;">/roadmap — plan then verify:</p>
+                            <div class="code-box" style="margin-bottom:0.3em;">
+                                <pre class="code-wrapper"><code class="language-markdown hljs" data-trim="" style="font-size:0.42em;">---
+description: Create a plan doc and roadmap doc
+<span class="hljs-section">  for implementing updates
+---</span>
+<span class="hljs-section"># Roadmap Command</span>
+Create a plan doc and concise roadmap doc.
+Save under ai/roadmaps/, prefix with date.
+
+<span class="hljs-section">## Phase 1: Planning</span>
+<span class="hljs-bullet">1.</span> Understand the request
+<span class="hljs-bullet">2.</span> Research the codebase
+<span class="hljs-bullet">3.</span> Create the plan doc (approach, rationale,
+   design decisions)
+<span class="hljs-bullet">4.</span> Create the roadmap doc (specific tasks
+   with checkboxes)
+
+<span class="hljs-section">## Phase 2: Expert Review</span>
+Launch a review sub-agent to validate
+before implementation:
+<span class="hljs-bullet">-</span> Check alignment with codebase reality
+<span class="hljs-bullet">-</span> Find over-engineering concerns
+<span class="hljs-bullet">-</span> Identify missed opportunities
+<span class="hljs-bullet">-</span> Auto-fix factual errors; ask user about
+  design changes</code></pre>
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <p style="font-size:0.65em; color:var(--primary-blue); font-weight:600; margin-bottom:0.2em;">/implement-roadmap — orchestrate execution:</p>
+                            <div class="code-box" style="margin-bottom:0.3em;">
+                                <pre class="code-wrapper"><code class="language-markdown hljs" data-trim="" style="font-size:0.42em;">---
+description: Implement a roadmap using sub-agents
+<span class="hljs-section">  with progress tracking
+---</span>
+<span class="hljs-section"># Implement Roadmap Command</span>
+You are the orchestrating agent.
+Sub-agents do the coding.
+
+<span class="hljs-section">## Phase 1: Preparation</span>
+  Read roadmap, plan, and CLAUDE.md
+<span class="hljs-section">## Phase 2: Implementation</span>
+  Delegate to sub-agents in parallel
+<span class="hljs-section">## Phase 2.5: Verification</span>
+  Launch verification sub-agents
+  for high-risk work
+<span class="hljs-section">## Phase 3: Build &amp; Test</span>
+  npm run build, npm test, fix failures
+<span class="hljs-section">## Phase 4: PR Review</span>
+  Review everything, fix minor issues,
+  escalate drift
+<span class="hljs-section">## Phase 5: Archive</span>
+  Move to complete/, update changelog, commit
+
+Key principle: You orchestrate,
+sub-agents implement. Never skip Phase 5.</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.2em; font-size:0.82em;" data-fragment-index="0">
+                        <strong>Block 2’s supervisor-worker pattern as commands:</strong> /roadmap creates the plan → /implement-roadmap executes it with delegation, verification, review, and archival.
+                    </div>
+                </section>
+
+                <section class="scrollable future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>/roadmap &amp; /implement-roadmap — Full Definitions</h2>
+                    <p style="font-size:0.65em; color:var(--text-secondary); margin-bottom:0.3em;">Full command files — scroll to read, copy from slide source or course repo.</p>
+                    <div style="display:flex; gap:0.3em; max-width:100%; overflow:hidden;">
+                        <div style="flex:1; min-width:0;">
+                            <p style="font-size:0.6em; color:var(--primary-blue); font-weight:600; margin-bottom:0.2em;">/roadmap (135 lines):</p>
+                            <div class="code-box">
+                                <pre style="max-height:60vh; overflow-y:auto; overflow-x:hidden;" class="code-wrapper"><code class="language-markdown hljs" data-trim="" style="font-size:0.42em; white-space:pre-wrap; word-wrap:break-word;">---
+<span class="hljs-section">description: Create a plan doc and roadmap doc for implementing updates
+---</span>
+
+<span class="hljs-section"># Roadmap Command</span>
+
+Create a plan doc and concise roadmap doc to implement the requested updates. Save them under <span class="hljs-code">`ai/roadmaps/`</span>, and prefix the file names with the date (e.g., <span class="hljs-code">`01.16.feature-name-plan.md`</span> and <span class="hljs-code">`01.16.feature-name-roadmap.md`</span>).
+
+<span class="hljs-section">## Phase 1: Planning</span>
+
+<span class="hljs-bullet">1.</span> <span class="hljs-strong">**Understand the request**</span> - Clarify requirements with the user if needed
+<span class="hljs-bullet">2.</span> <span class="hljs-strong">**Research the codebase**</span> - Explore relevant files to understand current state and patterns
+<span class="hljs-bullet">3.</span> <span class="hljs-strong">**Create the plan doc**</span> - Document the approach, rationale, and design decisions
+<span class="hljs-bullet">4.</span> <span class="hljs-strong">**Create the roadmap doc**</span> - List specific implementation tasks with checkboxes
+
+Both documents must:
+<span class="hljs-bullet">-</span> Reference each other
+<span class="hljs-bullet">-</span> Include this note at the top: <span class="hljs-emphasis">*"Clean Code Project: Avoid cruft, over-engineering, and backward-compatibility features or comments."*</span>
+
+<span class="hljs-section">## Phase 2: Expert Review</span>
+
+After creating the plan and roadmap, launch a <span class="hljs-strong">**review sub-agent**</span> to validate the approach before implementation begins.
+
+<span class="hljs-section">### Review Sub-Agent Instructions</span>
+
+Launch a sub-agent with the Task tool using this prompt structure:
+
+You are a senior engineer reviewing a proposed implementation plan. Your job is to catch issues BEFORE implementation begins.
+
+<span class="hljs-section">## Context</span>
+<span class="hljs-bullet">-</span> Plan document: [path to plan]
+<span class="hljs-bullet">-</span> Roadmap document: [path to roadmap]
+<span class="hljs-bullet">-</span> This is a clean-code project with no backward compatibility requirements
+
+<span class="hljs-section">## Your Review Tasks</span>
+
+<span class="hljs-bullet">1.</span> <span class="hljs-strong">**Read the plan and roadmap thoroughly**</span>
+
+<span class="hljs-bullet">2.</span> <span class="hljs-strong">**Examine the codebase for alignment:**</span>
+<span class="hljs-bullet">   -</span> Read files that will be modified (listed in the roadmap)
+<span class="hljs-bullet">   -</span> Check adjacent/related files that might be affected
+<span class="hljs-bullet">   -</span> Look for existing patterns the plan should follow
+<span class="hljs-bullet">   -</span> Find similar implementations that could be reused
+
+<span class="hljs-bullet">3.</span> <span class="hljs-strong">**Check for these specific issues:**</span>
+
+   <span class="hljs-strong">**Alignment Issues**</span> - Does the plan match reality?
+<span class="hljs-bullet">   -</span> Files referenced actually exist?
+<span class="hljs-bullet">   -</span> Current code state matches assumptions?
+<span class="hljs-bullet">   -</span> Dependencies/imports are accurate?
+
+   <span class="hljs-strong">**Missing Considerations**</span>
+<span class="hljs-bullet">   -</span> Edge cases not accounted for?
+<span class="hljs-bullet">   -</span> Error handling gaps?
+<span class="hljs-bullet">   -</span> Test coverage plans adequate?
+<span class="hljs-bullet">   -</span> Documentation updates needed?
+
+   <span class="hljs-strong">**Over-Engineering Concerns**</span>
+<span class="hljs-bullet">   -</span> Features beyond what was requested?
+<span class="hljs-bullet">   -</span> Unnecessary abstractions?
+<span class="hljs-bullet">   -</span> Premature optimization?
+<span class="hljs-bullet">   -</span> Configurable when it should be simple?
+
+   <span class="hljs-strong">**Cruft/Compatibility Risks**</span>
+<span class="hljs-bullet">   -</span> Backward compatibility code that isn't needed?
+<span class="hljs-bullet">   -</span> Legacy patterns being preserved unnecessarily?
+<span class="hljs-bullet">   -</span> Dead code being left in place?
+<span class="hljs-bullet">   -</span> Comments explaining removed code?
+
+   <span class="hljs-strong">**Missed Opportunities**</span>
+<span class="hljs-bullet">   -</span> Existing utilities that should be reused?
+<span class="hljs-bullet">   -</span> Patterns elsewhere in codebase that should be followed?
+<span class="hljs-bullet">   -</span> Simpler approaches available?
+
+<span class="hljs-bullet">4.</span> <span class="hljs-strong">**Produce a structured review**</span>
+
+<span class="hljs-section">### Processing the Review</span>
+
+After the sub-agent returns its review:
+
+<span class="hljs-strong">**Auto-fix (do without asking):**</span>
+<span class="hljs-bullet">-</span> Factual errors (wrong file paths, incorrect assumptions about current state)
+<span class="hljs-bullet">-</span> Missing files from scope that are clearly needed
+<span class="hljs-bullet">-</span> Adding obviously missing error handling or edge cases
+<span class="hljs-bullet">-</span> Removing cruft/compatibility code the reviewer identified
+<span class="hljs-bullet">-</span> HIGH confidence issues with clear fixes
+
+<span class="hljs-strong">**Ask user (use AskUserQuestion):**</span>
+<span class="hljs-bullet">-</span> Design approach changes
+<span class="hljs-bullet">-</span> Adding or removing scope items
+<span class="hljs-bullet">-</span> Architectural disagreements
+<span class="hljs-bullet">-</span> MEDIUM/LOW confidence suggestions where tradeoffs exist
+<span class="hljs-bullet">-</span> Anything under "Questions for User"
+
+<span class="hljs-strong">**Apply fixes:**</span>
+<span class="hljs-bullet">1.</span> Update the plan and/or roadmap documents with corrections
+<span class="hljs-bullet">2.</span> Note what was changed and why (brief comment at bottom of doc)
+<span class="hljs-bullet">3.</span> If significant changes were made, consider a quick re-review
+
+<span class="hljs-section">### Completion</span>
+
+Once the review is processed and any fixes applied:
+<span class="hljs-bullet">1.</span> Inform the user the plan and roadmap are ready
+<span class="hljs-bullet">2.</span> Summarize any changes made based on the review
+<span class="hljs-bullet">3.</span> List any open questions that need user input
+<span class="hljs-bullet">4.</span> Provide the paths to both documents</code></pre>
+                            </div>
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <p style="font-size:0.6em; color:var(--primary-blue); font-weight:600; margin-bottom:0.2em;">/implement-roadmap (248 lines):</p>
+                            <div class="code-box">
+                                <pre style="max-height:60vh; overflow-y:auto; overflow-x:hidden;" class="code-wrapper"><code class="language-markdown hljs" data-trim="" style="font-size:0.42em; white-space:pre-wrap; word-wrap:break-word;">---
+<span class="hljs-section">description: Implement a roadmap using sub-agents with progress tracking, PR review, fix cycles, and completion archival
+---</span>
+
+<span class="hljs-section"># Implement Roadmap Command</span>
+
+You are the <span class="hljs-strong">**orchestrating agent**</span> responsible for implementing a roadmap document. You coordinate sub-agents to do the implementation work, track progress, and ensure quality.
+
+<span class="hljs-section">## Phase 1: Preparation</span>
+
+<span class="hljs-bullet">1.</span> <span class="hljs-strong">**Read the roadmap**</span> specified by the user (or ask which roadmap to implement)
+<span class="hljs-bullet">2.</span> <span class="hljs-strong">**Read the related plan document**</span> if one exists (roadmaps usually reference their plan for context)
+<span class="hljs-bullet">3.</span> <span class="hljs-strong">**Check dependencies**</span> - if the roadmap depends on another roadmap, verify that dependency is complete first (check that its items are marked <span class="hljs-code">`[x]`</span>)
+<span class="hljs-bullet">4.</span> <span class="hljs-strong">**Read `CLAUDE.md`**</span> and relevant project docs to understand conventions
+<span class="hljs-bullet">5.</span> <span class="hljs-strong">**Create a mental model**</span> of the work: identify independent vs dependent tasks, estimate parallelization opportunities
+
+<span class="hljs-section">## Phase 2: Implementation with Sub-Agents</span>
+
+Use the Task tool to delegate implementation work. You are the orchestrator - sub-agents do the coding.
+
+<span class="hljs-section">### Delegation Strategy</span>
+
+<span class="hljs-bullet">1.</span> <span class="hljs-strong">**Group related tasks**</span> from the roadmap into logical work packages
+<span class="hljs-bullet">2.</span> <span class="hljs-strong">**Launch sub-agents in parallel**</span> for independent work packages
+<span class="hljs-bullet">3.</span> <span class="hljs-strong">**Run sequentially**</span> when tasks depend on outputs from previous work
+<span class="hljs-bullet">4.</span> <span class="hljs-strong">**Batch appropriately**</span> - not too granular (overhead) or too broad (loses parallelism)
+
+<span class="hljs-section">### Sub-Agent Instructions</span>
+
+When launching a sub-agent, provide:
+<span class="hljs-bullet">-</span> The specific roadmap tasks to implement (copy the relevant section)
+<span class="hljs-bullet">-</span> Context from the plan document explaining the <span class="hljs-emphasis">*why*</span> behind decisions
+<span class="hljs-bullet">-</span> Clear boundaries: what files to create/modify, what NOT to touch
+<span class="hljs-bullet">-</span> Instruction to report back: what was done, any deviations, any blockers
+
+<span class="hljs-strong">**Important:**</span> Sub-agents implement and report back. They do NOT update the roadmap checkboxes.
+
+<span class="hljs-section">### Progress Tracking (Your Responsibility)</span>
+
+As the orchestrator, YOU manage the roadmap document:
+<span class="hljs-bullet">-</span> When a sub-agent reports successful completion, <span class="hljs-strong">**you check off the items**</span> (<span class="hljs-code">`- [ ]`</span> to <span class="hljs-code">`- [x]`</span>)
+<span class="hljs-bullet">-</span> If a task cannot be completed as specified, <span class="hljs-strong">**you add a note**</span> in the roadmap explaining the deviation
+<span class="hljs-bullet">-</span> This prevents race conditions and ensures accurate tracking
+
+<span class="hljs-section">### Handling Deviations</span>
+
+Reality doesn't always match the plan. When sub-agents encounter issues:
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**Minor adjustments**</span> (implementation details) - proceed and document
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**Significant deviations**</span> (different approach, missing prerequisite) - pause, assess, document in roadmap
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**Blockers**</span> (can't proceed) - stop that work stream, note in roadmap, continue other tasks
+
+The goal is <span class="hljs-strong">**faithful implementation with pragmatic flexibility**</span>. Document deviations, don't hide them.
+
+<span class="hljs-section">## Phase 2.5: Targeted Verification (High-Risk Work)</span>
+
+For high-risk implementations, launch a <span class="hljs-strong">**verification sub-agent**</span> after the implementation sub-agent completes. This catches issues early before they compound.
+
+<span class="hljs-section">### When to Verify</span>
+
+Launch a verification sub-agent for:
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**Security-sensitive code**</span> (authentication, authorization, crypto, input validation)
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**Complex business logic**</span> or algorithms
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**External API integrations**</span> (hallucinated APIs are common)
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**Database migrations**</span> or schema changes
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**Core infrastructure changes**</span> that many other components depend on
+
+Skip verification for:
+<span class="hljs-bullet">-</span> Simple/mechanical changes (renaming, moving files)
+<span class="hljs-bullet">-</span> Test file additions (tests themselves are verification)
+<span class="hljs-bullet">-</span> Documentation updates
+<span class="hljs-bullet">-</span> Configuration changes
+
+<span class="hljs-section">### Verification Sub-Agent Instructions</span>
+
+Provide explicit error-seeking criteria:
+
+Verify the implementation of [task description]. Check for:
+<span class="hljs-bullet">-</span> Hallucinated API calls or non-existent methods
+<span class="hljs-bullet">-</span> Missing error handling and edge cases
+<span class="hljs-bullet">-</span> Security vulnerabilities (injection, XSS, auth bypass)
+<span class="hljs-bullet">-</span> Logic that doesn't match the stated requirements
+<span class="hljs-bullet">-</span> Missing or inadequate tests for the new code
+
+Report: what looks correct, what issues you found, severity of each issue.
+
+<span class="hljs-strong">**Important:**</span> Do NOT tell the verifier to "be skeptical because this was AI-generated" - research shows this doesn't improve review quality. Instead, give specific criteria to check.
+
+<span class="hljs-section">### Handling Verification Results</span>
+
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**No issues found**</span>: Proceed, check off roadmap items
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**Minor issues found**</span>: Launch fix sub-agent, then proceed
+<span class="hljs-bullet">-</span> <span class="hljs-strong">**Significant issues found**</span>: Re-implement with clearer instructions, then re-verify
+
+<span class="hljs-section">## Phase 3: Verification</span>
+
+After all implementation is complete:
+
+<span class="hljs-bullet">1.</span> <span class="hljs-strong">**Run the build**</span>: <span class="hljs-code">`npm run build`</span>
+<span class="hljs-bullet">2.</span> <span class="hljs-strong">**Run all tests**</span>: <span class="hljs-code">`npm test`</span>
+<span class="hljs-bullet">3.</span> <span class="hljs-strong">**Fix any failures**</span> before proceeding to review
+<span class="hljs-bullet">4.</span> <span class="hljs-strong">**Verify all roadmap items**</span> are checked off or have documented exceptions
+
+<span class="hljs-section">## Phase 4: PR Review and Remediation</span>
+
+Once implementation is complete and tests pass, <span class="hljs-strong">**do a thorough PR review of everything that was implemented to make sure we got it right**</span>.
+
+<span class="hljs-section">### Review Focus</span>
+
+<span class="hljs-bullet">-</span> Does the implementation match what the roadmap specified?
+<span class="hljs-bullet">-</span> Are there bugs, missing edge cases, or logic errors?
+<span class="hljs-bullet">-</span> Is the code quality acceptable (no cruft, no over-engineering)?
+<span class="hljs-bullet">-</span> Are tests adequate for the new functionality?
+
+<span class="hljs-section">### Fix vs Escalate</span>
+
+<span class="hljs-strong">**Fix directly**</span> (minor issues):
+<span class="hljs-bullet">-</span> Typos, formatting, lint issues
+<span class="hljs-bullet">-</span> Missing error handling for obvious edge cases
+<span class="hljs-bullet">-</span> Small bugs with clear fixes
+<span class="hljs-bullet">-</span> Missing or incomplete tests
+
+<span class="hljs-strong">**Escalate to user**</span> (drift from plan):
+<span class="hljs-bullet">-</span> Changes that would alter the design or approach
+<span class="hljs-bullet">-</span> New risks or security concerns
+<span class="hljs-bullet">-</span> Ambiguous requirements
+<span class="hljs-bullet">-</span> Issues suggesting the original plan was flawed
+
+<span class="hljs-section">### Remediation Process</span>
+
+<span class="hljs-strong">**Maximum 3 iterations**</span> to prevent infinite loops.
+
+<span class="hljs-bullet">1.</span> Fix minor issues yourself or via sub-agents
+<span class="hljs-bullet">2.</span> Ask user about escalated issues
+<span class="hljs-bullet">3.</span> Re-verify after fixes (build + test must pass)
+<span class="hljs-bullet">4.</span> Repeat or conclude
+
+<span class="hljs-section">## Phase 5: Completion (Archive and Changelog)</span>
+
+When all roadmap items are checked off and review is clean:
+
+<span class="hljs-section">### Final Verification</span>
+<span class="hljs-bullet">1.</span> Confirm all items complete
+<span class="hljs-bullet">2.</span> Build and tests pass
+<span class="hljs-bullet">3.</span> No outstanding review issues
+
+<span class="hljs-section">### Archive Roadmap Files</span>
+<span class="hljs-bullet">1.</span> Move the roadmap file to <span class="hljs-code">`ai/roadmaps/complete/`</span>
+<span class="hljs-bullet">2.</span> Move the associated plan file to <span class="hljs-code">`ai/roadmaps/complete/`</span>
+
+<span class="hljs-section">### Update Changelog</span>
+Add entry to <span class="hljs-code">`ai/CHANGELOG.md`</span>:
+
+<span class="hljs-section">## YYYY-MM-DD: [Brief Title]</span>
+[1-3 sentence summary]
+<span class="hljs-strong">**Details:**</span> See <span class="hljs-code">`ai/roadmaps/complete/[roadmap-filename].md`</span>
+
+<span class="hljs-section">### Commit Changes</span>
+Stage moved files + changelog, commit with message:
+<span class="hljs-code">`feat: [brief description of what was implemented]`</span>
+
+<span class="hljs-section">### Notify User</span>
+"Implementation complete. Files moved to ai/roadmaps/complete/, changelog updated, changes committed."
+
+<span class="hljs-section">## Important Principles</span>
+
+<span class="hljs-bullet">1.</span> <span class="hljs-strong">**Never skip Phase 5**</span> - archival and changelog are REQUIRED
+<span class="hljs-bullet">2.</span> <span class="hljs-strong">**You orchestrate, sub-agents implement**</span> - clear separation
+<span class="hljs-bullet">3.</span> <span class="hljs-strong">**You own the roadmap updates**</span> - single source of truth
+<span class="hljs-bullet">4.</span> <span class="hljs-strong">**Document everything**</span> - deviations, decisions, blockers
+<span class="hljs-bullet">5.</span> <span class="hljs-strong">**Pragmatic flexibility**</span> - follow the plan, deviate when reality demands it
+<span class="hljs-bullet">6.</span> <span class="hljs-strong">**Verify high-risk work early**</span> - catch issues before they compound
+<span class="hljs-bullet">7.</span> <span class="hljs-strong">**Fix minor issues, escalate drift**</span> - handle small fixes, ask about plan changes
+<span class="hljs-bullet">8.</span> <span class="hljs-strong">**Iterate with limits**</span> - max 3 fix cycles, then escalate</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="image-reveal future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Playwright + Persona UX Review</h2>
+                    <img src="./Building Your AI Workflow System_files/Robot meeting.png" alt="Robot meeting for persona UX review" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <table class="feature-table" style="font-size:0.68em; margin-bottom:0.3em;">
+                            <thead><tr><th>Persona</th><th>Role</th><th>Focus</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Sarah</strong></td><td>VP of Engineering</td><td>Time-to-value, adoption</td></tr>
+                                <tr><td><strong>Jake</strong></td><td>Junior Developer</td><td>Onboarding, confusion</td></tr>
+                                <tr><td><strong>Marcus</strong></td><td>QA Manager</td><td>Evidence quality, data trust</td></tr>
+                                <tr><td><strong>Mei</strong></td><td>UX Designer</td><td>Visual hierarchy, consistency</td></tr>
+                            </tbody>
+                        </table>
+                        <p style="font-size:0.72em;"><strong>Workflow:</strong> Launch personas in parallel → each navigates live UI → structured reviews → consensus matrix (3/5 agree = real) → frenemy reviews feasibility</p>
+                        <div class="key-concept" style="margin-top:0.2em; font-size:0.9em;">
+                            <strong>Built using the Block 1 progression:</strong> ad-hoc → codified process doc → reusable workflow.
+                        </div>
+                    </div>
+                </section>
+
+                <section class="image-reveal future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Git Worktrees — What They Are</h2>
+                    <img src="./Building Your AI Workflow System_files/Multi-dimensional.png" alt="Multi-dimensional git worktrees" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <p style="font-size:0.8em; margin-bottom:0.3em;">A <strong>second working directory</strong> tied to the same repo, on a different branch. No switching. No stashing.</p>
+                        <div class="code-box" style="margin-top:0.2em;">
+                            <pre class="code-wrapper"><code class="language-bash hljs" data-trim="" style="font-size:0.65em;">git worktree add ../project-feature-B feature-B
+<span class="hljs-comment"># Now: project/ (feature-A) + project-feature-B/ (feature-B)</span></code></pre>
+                        </div>
+                        <p style="font-size:0.75em; margin-top:0.2em;">Each directory is a full checkout — separate terminals, separate AI sessions. Clean up: <code>git worktree remove ../project-feature-B</code></p>
+                    </div>
+                </section>
+
+                <section data-auto-animate="" class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>AI + Worktrees — The Pattern</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;">Instead of waiting for one AI agent to finish:</p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Terminal 1: project/              ← You + AI on feature A
+Terminal 2: project-feature-B/    ← Separate AI session on feature B
+Terminal 3: project-hotfix/       ← Another AI session on a quick fix</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; margin-top:0.5em;" data-fragment-index="0"><strong>Claude Code</strong> supports this natively with the <code>--worktree</code> flag — creates the worktree and launches an agent session in it automatically.</p>
+                    <p class="fragment fade-up" style="font-size:0.85em; margin-top:0.3em;" data-fragment-index="1"><strong>AI handles merges well</strong> — it reads changelogs, commit messages, and roadmaps to understand the <em>intent</em> behind changes, not just the diff.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Worktrees — When to Use vs. Skip</h2>
+                    <p style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-bottom:0.3em;">Use when:</p>
+                    <ul style="font-size:0.78em; text-align:left; max-width:800px; margin:0 auto 0.5em;">
+                        <li class="fragment fade-up" data-fragment-index="0">Tasks are independent (different files, different features)</li>
+                        <li class="fragment fade-up" data-fragment-index="1">You're blocked waiting for one agent and want to stay productive</li>
+                        <li class="fragment fade-up" data-fragment-index="2">You need a <strong>clean directory for a verification agent</strong> without touching your working state</li>
+                        <li class="fragment fade-up" data-fragment-index="3">You have the token budget for parallel sessions</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.3em;" data-fragment-index="4">Skip when:</p>
+                    <ul style="font-size:0.78em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="5">Tasks overlap the same files heavily (merge pain &gt; parallelism gain)</li>
+                        <li class="fragment fade-up" data-fragment-index="6">You're on Pro with limited messages remaining</li>
+                        <li class="fragment fade-up" data-fragment-index="7">The feature is small enough for one session</li>
+                    </ul>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.5em;" data-fragment-index="8">
+                        <strong>Lightweight pattern for Pro plans:</strong> Spin up a worktree for a quick verification agent — it reviews your work in an isolated copy while you keep working in main.
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== CLOSING: CHEAT SHEET & WRAP-UP ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future" data-previous-indexv="0">
+                <section data-background-color="#1e3a5f" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Your Workflow Cheat Sheet</h2>
+                    <h1>Connecting to Final Projects</h1>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>This Lecture Maps to Your Grade</h2>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.3em;">Casey's technical grading (45%):</p>
+                    <table class="feature-table" style="font-size:0.75em;">
+                        <thead>
+                            <tr>
+                                <th>Grading Area</th>
+                                <th>Today's Lecture</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td>AI development infrastructure</td>
+                                <td>CLAUDE.md, instruction files, project structure</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td>Phase-by-phase implementation</td>
+                                <td>Multi-session workflows, roadmap execution</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td>Debugging discipline</td>
+                                <td>Escalation ladder, systematic troubleshooting (logging was Unit 4)</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td>Process documentation</td>
+                                <td>Evidence of systematic AI workflow</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.5em;" data-fragment-index="4">
+                        <strong>A well-structured CLAUDE.md and multi-session discipline aren't just good practice — they're what we're looking for in final evaluations.</strong>
+                    </div>
+                    <div class="note-box fragment fade-up" style="margin-top:0.4em;" data-fragment-index="5">
+                        Check the rubric's "What Changed from Midterm" section — the bar has been raised on logging integration, falsification tests, and customer interviews.
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Quick Reference Card</h2>
+                    <div class="code-box" style="max-height: 75vh;">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">INSTRUCTION FILES               SUB-AGENTS &amp; VERIFICATION
+=================               ==========================
+CLAUDE.md    → Always loaded    Pattern  → You supervise, agents execute
+ai/instruc./ → On demand        Witness  → Match count to risk (1/2/3+)
+Slash cmds   → After 3+ uses    Cost     → 3-5x normal (controlled)
+Progression  → Ad-hoc →         Budget   → Specialized &gt; generic
+               Codify →                    (40-60% savings)
+               Automate
+
+MULTI-SESSION                   ESCALATION LADDER
+=============                   =================
+Session 1: Plan → plan.md      1. Re-prompt with context
+Session 2: Build → code        2. Fresh session + context.md
+  (FRESH context!)              3. Sub-agent review
+Session 3: Review → refined    4. Manual intervention
+Golden rule: when in doubt,
+  fresh session                 WHEN TO STOP USING AI
+                                =====================
+PITFALL PREVENTION              1. Deep learning needed
+==================              2. Genuinely novel problem
+Over-engineering → CLAUDE.md    3. Security-critical code
+Scope creep → PRD reality check 4. Stuck in a loop (20+ min)
+Context pollution → fresh       5. Team understanding matters</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Meta-Lesson</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">Everything follows the same progression:</p>
+                    <div class="key-concept" style="margin-bottom:0.5em;">
+                        <h3 style="margin:0;">Dynamic → Codified → Automated</h3>
+                    </div>
+                    <ul style="font-size:0.85em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0"><strong>Experiment</strong> with AI dynamically</li>
+                        <li class="fragment fade-up" data-fragment-index="1"><strong>Codify</strong> what works into a process document</li>
+                        <li class="fragment fade-up" data-fragment-index="2"><strong>Automate</strong> into a slash command after repeated success</li>
+                        <li class="fragment fade-up" data-fragment-index="3"><strong>Build</strong> on that automation to create more complex workflows</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="4">This applies to every AI tool, every project, every team.</p>
+                </section>
+
+                <section class="image-reveal future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Forklift, Revisited</h2>
+                    <img src="./Building Your AI Workflow System_files/Automation Warehouse.png" alt="Automation Warehouse with forklift" class="hero-image">
+                    <div class="fragment" data-fragment-index="0">
+                        <div class="key-concept" style="margin-bottom:0.4em;">
+                            <strong>The best forklift drivers don't just drive — they design the warehouse.</strong>
+                        </div>
+                        <ul style="font-size:0.8em; text-align:left; max-width:700px; margin:0 auto;">
+                            <li><strong>Instruction files</strong> = your warehouse layout</li>
+                            <li><strong>Sub-agents</strong> = your fleet</li>
+                            <li><strong>Multi-session discipline</strong> = your logistics plan</li>
+                            <li><strong>The escalation ladder</strong> = your emergency procedures</li>
+                        </ul>
+                        <p style="font-size:0.8em; margin-top:0.3em;">Together: a <em>system</em> that lets you move faster than anyone carrying boxes by hand.</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>What You Should Do This Week</h2>
+                    <div class="homework-list">
+                        <div class="homework-item fragment fade-up" data-fragment-index="0">
+                            <span class="homework-check">1.</span>
+                            <span><strong>Create a CLAUDE.md</strong> for your team project (use the template handout)</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="1">
+                            <span class="homework-check">2.</span>
+                            <span><strong>Try the three-session pattern</strong> on your next feature</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="2">
+                            <span class="homework-check">3.</span>
+                            <span><strong>Write one instruction file</strong> for a workflow you'll repeat</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="3">
+                            <span class="homework-check">4.</span>
+                            <span><strong>Bookmark the cheat sheet</strong> — use the escalation ladder when stuck</span>
+                        </div>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.5em;" data-fragment-index="4">
+                        These aren't suggestions. They're how you demonstrate AI development process in your final presentation.
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Resources</h2>
+                    <div class="resources-list">
+                        <a href="https://arxiv.org/html/2510.26585v1" target="_blank" class="resource-item">
+                            <span class="resource-icon">📚</span>
+                            <span class="resource-name">AgentTaxo (ICML 2025)</span>
+                            <span class="resource-url">arxiv.org/html/2510.26585v1</span>
+                        </a>
+                        <a href="https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk" target="_blank" class="resource-item">
+                            <span class="resource-icon">🛠</span>
+                            <span class="resource-name">Anthropic Agent SDK</span>
+                            <span class="resource-url">anthropic.com/engineering/building-agents-with-the-claude-agent-sdk</span>
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=RFKCzGlAU6Q" target="_blank" class="resource-item">
+                            <span class="resource-icon">🎥</span>
+                            <span class="resource-name">Claude Code Analysis</span>
+                            <span class="resource-url">youtube.com/watch?v=RFKCzGlAU6Q</span>
+                        </a>
+                        <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" class="resource-item">
+                            <span class="resource-icon">🛠</span>
+                            <span class="resource-name">Claude Code Docs</span>
+                            <span class="resource-url">docs.anthropic.com/en/docs/claude-code</span>
+                        </a>
+                        <a href="https://playwright.dev/" target="_blank" class="resource-item">
+                            <span class="resource-icon">🎭</span>
+                            <span class="resource-name">Playwright</span>
+                            <span class="resource-url">playwright.dev</span>
+                        </a>
+                    </div>
+                    <p style="font-size:0.75em; color:var(--text-muted); margin-top:0.5em;"><strong>Course connections:</strong> Units 1 (ReAct), 2 (PRD/docs), 3 (Frenemy/context.md), 4 (Security/Confidence Trap), 7-8 (Agent architecture). Jason: Systems Thinking, Bias &amp; Rationality, Problem Quality.</p>
+                </section>
+            </section>
+
+            <!-- ==================== END SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Go build your systems.</h2>
+                <h3 class="next-session">Then go build something amazing.</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+        </div>
+    <div class="backgrounds"><div class="slide-background present" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: block;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background scrollable future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background future" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: none;"><div class="slide-background-content"></div></div></div><div class="slide-number" style="display: none;"><a href="https://d1dtpagvh0qhqn.cloudfront.net/agentic5WebSlides/#/">
+					<span class="slide-number-a">1</span>
+					<span class="slide-number-delimiter">/</span>
+					<span class="slide-number-b">47</span>
+					</a></div><aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded" style="display: block;"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down" aria-label="below slide" disabled="disabled"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div class="aria-status" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">Dev Unit 5: Building Your AI Workflow System From ad-hoc AI to systematic workflows Agentic Development Course </div></div>
+
+    <!-- Reveal.js -->
+    <script src="./Building Your AI Workflow System_files/reveal.min.js"></script>
+    <script src="./Building Your AI Workflow System_files/notes.min.js"></script>
+    <script src="./Building Your AI Workflow System_files/highlight.min.js"></script>
+    <script src="./Building Your AI Workflow System_files/zoom.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'speaker',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+
+            // Slide dimensions - taller to fit more content
+            width: 1300,
+            height: 900,
+            margin: 0.02,
+
+            // Scale settings - allow shrinking to fit
+            minScale: 0.1,
+            maxScale: 2.0,
+
+            // Center vertically
+            center: true,
+
+            // Vertical slides
+            navigationMode: 'default',
+
+            // Speaker notes
+            showNotes: false,
+
+            // Auto-animate
+            autoAnimateEasing: 'ease-out',
+            autoAnimateDuration: 0.8,
+
+            // Plugins
+            plugins: [ RevealNotes, RevealHighlight, RevealZoom ]
+        });
+    </script>
+
+
+</body></html>

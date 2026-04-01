@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<!-- saved from url=(0058)https://d1dtpagvh0qhqn.cloudfront.net/agentic375WebSlides/ -->
+<html lang="en" class="reveal-full-page" style="--vsc-domain: &quot;d1dtpagvh0qhqn.cloudfront.net&quot;;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Unit 3.75: AI-Powered Meeting Capture - Agentic Development Course</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="./AI-Powered Meeting Capture_files/reveal.min.css">
+    <link rel="stylesheet" href="./AI-Powered Meeting Capture_files/night.min.css">
+
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet" href="./AI-Powered Meeting Capture_files/monokai.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./AI-Powered Meeting Capture_files/css2" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./AI-Powered Meeting Capture_files/custom.css">
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style></head>
+<body class="reveal-viewport" style="transition: transform 0.8s; --slide-width: 1300px; --slide-height: 900px; --slide-scale: 0.9734666666666667;">
+    <div class="reveal slide center focused has-vertical-slides has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade" style="">
+        <div class="slides" style="width: 1300px; height: 900px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(0.973467);">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 6px; display: block;" class="present">
+                <h1 class="title-main">Dev Unit 3.75: AI-Powered Meeting Capture</h1>
+                <h3 class="title-sub">Never lose a decision again</h3>
+                <img src="./AI-Powered Meeting Capture_files/boringMeeting.jpg" alt="Boring Meeting" class="funny-image" style="max-width:65%; max-height:450px; margin-top:0.3em;">
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section style="top: 194.5px; display: block;" hidden="" aria-hidden="true" class="future">
+                <h2>What We'll Cover Today</h2>
+                <div class="agenda-grid">
+                    <div class="agenda-item fragment fade-up" data-fragment-index="0">
+                        <span class="agenda-number">1</span>
+                        <div class="agenda-content">
+                            <strong>The Problem with Meetings</strong>
+                            <span>Why human notes fail</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="1">
+                        <span class="agenda-number">2</span>
+                        <div class="agenda-content">
+                            <strong>The Record → Transcribe → Extract Workflow</strong>
+                            <span>Zero-effort capture</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="2">
+                        <span class="agenda-number">3</span>
+                        <div class="agenda-content">
+                            <strong>What AI Can Do With Transcripts</strong>
+                            <span>The real superpower</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="3">
+                        <span class="agenda-number">4</span>
+                        <div class="agenda-content">
+                            <strong>Pro Tips &amp; Real Examples</strong>
+                            <span>Making it stick</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== LEARNING OBJECTIVES ==================== -->
+            <section style="top: 233px; display: block;" hidden="" aria-hidden="true" class="future">
+                <h2>What You Should Be Able to DO by End of Today</h2>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">1.</span>
+                        <span><strong>Record any meeting or lecture</strong> using your phone or computer</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">2.</span>
+                        <span><strong>Transcribe recordings</strong> using free/cheap AI tools</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">3.</span>
+                        <span><strong>Extract key details, decisions, and action items</strong> using AI</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="3">
+                        <span class="homework-check">4.</span>
+                        <span><strong>Transform meeting content</strong> into project artifacts (specs, slides, study guides)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PART 1: THE PROBLEM WITH MEETINGS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#1e3a5f" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 1</h2>
+                    <h1>The Problem with Meetings</h1>
+                    <p class="part-subtitle">Why human notes fail</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why Human Notes Fail</h2>
+                    <ul style="font-size:0.85em; text-align:left; max-width:900px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Notes are <strong>incomplete</strong>, biased by what the note-taker thought was important</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Multiple attendees leave with <strong>different understandings</strong></li>
+                        <li class="fragment fade-up" data-fragment-index="2">By the next day, <strong>most details are forgotten</strong></li>
+                    </ul>
+                    <blockquote class="fragment fade-up" style="margin-top:0.8em;" data-fragment-index="3">
+                        Raise your hand if you've left a meeting unsure what was actually decided.
+                    </blockquote>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="4">
+                        <strong>The solution isn't better note-taking — it's recording.</strong>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 2: THE WORKFLOW ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#2d4a22" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 2</h2>
+                    <h1>The Workflow</h1>
+                    <p class="part-subtitle">Zero-effort capture</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Record → Transcribe → AI Extract → Share</h2>
+                    <p style="font-size:0.8em; color:var(--primary-blue); font-weight:600; margin-bottom:0.4em;">Recording Tools:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Phone voice memo (free, always in your pocket)</li>
+                        <li class="fragment fade-up" data-fragment-index="1">OS recording (QuickTime, Sound Recorder)</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Otter.ai (records + transcribes automatically)</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Zoom / Teams / Meet (built-in recording)</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.6em; margin-bottom:0.4em;" data-fragment-index="4">Transcription Tools:</p>
+                    <ul class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="5">
+                        <li>Whisper (free, local, open source)</li>
+                        <li>Otter.ai (free tier — 600 min/month)</li>
+                        <li>Phone built-in transcription</li>
+                    </ul>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.6em;" data-fragment-index="6">
+                        <strong>Recording is free and takes zero effort. Transcription is nearly free. The real value is in step 3.</strong>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 3: WHAT AI CAN DO WITH TRANSCRIPTS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#4a1942" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 3</h2>
+                    <h1>What AI Can Do With Transcripts</h1>
+                    <p class="part-subtitle">The real superpower</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Extract All Important Details</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Here is a transcript from a meeting. Extract:
+- All decisions made
+- Action items with owners
+- Open questions that weren't resolved
+- Key discussion points
+- Any deadlines mentioned
+
+Format as organized markdown with clear sections.</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="0">
+                        <strong>A structured summary in 30 seconds that would take 20 minutes to write manually.</strong>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Compare to Existing Project</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Here is a meeting transcript and here is our current
+project PRD.
+
+Identify:
+- What needs to change in the PRD based on this meeting
+- New requirements discussed
+- Any conflicts with current plans
+- Decisions that affect our architecture</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="0">
+                        <strong>Automatic change detection — no more "wait, didn't we change that requirement last Tuesday?"</strong>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Create Specs &amp; Slides</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Based on this meeting transcript, create a technical
+specification document for the features discussed.
+Include: requirements, acceptance criteria, technical
+approach, and dependencies.</code></pre>
+                    </div>
+                    <div class="prompt-box fragment fade-up" style="margin-top:0.5em;" data-fragment-index="0">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Convert this meeting transcript into presentation slides.
+Use the key points as slide content. Put the full
+conversational context into speaker notes so nothing
+is lost.</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Cross-Meeting Synthesis</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Here are transcripts from 3 meetings. Identify:
+- Common themes across meetings
+- Evolving decisions (what changed between meetings)
+- Action items that are still open
+- Create a consolidated status update</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="0">
+                        <strong>Most people can summarize one meeting. Almost nobody can synthesize across multiple meetings consistently. AI does this effortlessly.</strong>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Live demo — show the meme generator discussion from earlier. Record it on phone. Throw transcript into Cursor/Claude. Generate a roadmap of updates based on the discussion.
+                    </aside>
+                </section>
+            </section>
+
+            <!-- ==================== PART 4: PRO TIPS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#4a3520" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 4</h2>
+                    <h1>Pro Tips &amp; Real Examples</h1>
+                    <p class="part-subtitle">Making it stick</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Pro Tips</h2>
+                    <ul style="font-size:0.85em; text-align:left; max-width:900px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0"><strong>Always record</strong> — it's free and takes zero effort</li>
+                        <li class="fragment fade-up" data-fragment-index="1"><strong>Transcription + AI summary takes 5 minutes</strong></li>
+                        <li class="fragment fade-up" data-fragment-index="2"><strong>Share the AI summary</strong>, not the raw transcript</li>
+                        <li class="fragment fade-up" data-fragment-index="3"><strong>Use this for lectures too</strong> — "Create me a study guide"</li>
+                        <li class="fragment fade-up" data-fragment-index="4"><strong>Stack recordings with your codebase</strong> for context-aware updates</li>
+                    </ul>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Real Example</h2>
+                    <blockquote style="margin-bottom:0.8em;">
+                        "I recorded 8 meetings at a hackathon across 6 teams. Fed them all to AI. Published consolidated plans within an hour."
+                    </blockquote>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="0">
+                        <strong>This is a real competitive advantage. Most people walk out of meetings and immediately start forgetting.</strong>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== KEY TAKEAWAYS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Key Takeaways</h2>
+                <div class="takeaways">
+                    <div class="takeaway fragment fade-up" data-fragment-index="0">
+                        <span class="takeaway-num">1</span>
+                        <div class="takeaway-content">
+                            <strong>Record everything — meetings, lectures, brainstorms</strong>
+                            <span>It's free and always available</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="1">
+                        <span class="takeaway-num">2</span>
+                        <div class="takeaway-content">
+                            <strong>Transcribe + AI extract takes 5 minutes — near-zero effort</strong>
+                            <span>The ROI is enormous</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="2">
+                        <span class="takeaway-num">3</span>
+                        <div class="takeaway-content">
+                            <strong>AI can create specs, slides, study guides, action items from any transcript</strong>
+                            <span>Transform raw conversation into polished artifacts</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="3">
+                        <span class="takeaway-num">4</span>
+                        <div class="takeaway-content">
+                            <strong>Compare transcripts against your project docs for automatic updates</strong>
+                            <span>Never miss a requirement change again</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="4">
+                        <span class="takeaway-num">5</span>
+                        <div class="takeaway-content">
+                            <strong>This is one of the highest-ROI AI skills you can develop</strong>
+                            <span>A true competitive advantage</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== RESOURCES ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Resources</h2>
+                <div class="resources-list">
+                    <a href="https://github.com/openai/whisper" target="_blank" class="resource-item">
+                        <span class="resource-icon">🎙</span>
+                        <span class="resource-name">Whisper (OpenAI)</span>
+                        <span class="resource-url">github.com/openai/whisper</span>
+                    </a>
+                    <a href="https://otter.ai/" target="_blank" class="resource-item">
+                        <span class="resource-icon">📝</span>
+                        <span class="resource-name">Otter.ai</span>
+                        <span class="resource-url">otter.ai</span>
+                    </a>
+                    <a href="https://rev.com/" target="_blank" class="resource-item">
+                        <span class="resource-icon">🔊</span>
+                        <span class="resource-name">Rev.com</span>
+                        <span class="resource-url">rev.com</span>
+                    </a>
+                    <a href="https://d1dtpagvh0qhqn.cloudfront.net/agentic375WebSlides/#" class="resource-item">
+                        <span class="resource-icon">📱</span>
+                        <span class="resource-name">Apple Voice Memos</span>
+                        <span class="resource-url">built-in</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ==================== END SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>See you next time!</h2>
+                <h3 class="next-session">Next: Building AI-Friendly Code</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+        </div>
+    <div class="backgrounds"><div class="slide-background present" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: block;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#2d4a22nullnullnullnullnull" style="background-color: rgb(45, 74, 34); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a1942nullnullnullnullnull" style="background-color: rgb(74, 25, 66); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a3520nullnullnullnullnull" style="background-color: rgb(74, 53, 32); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: none;"><div class="slide-background-content"></div></div></div><div class="slide-number" style="display: none;"><a href="https://d1dtpagvh0qhqn.cloudfront.net/agentic375WebSlides/#/">
+					<span class="slide-number-a">1</span>
+					<span class="slide-number-delimiter">/</span>
+					<span class="slide-number-b">19</span>
+					</a></div><aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded" style="display: block;"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled highlight" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down" aria-label="below slide" disabled="disabled"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div class="aria-status" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">Dev Unit 3.75: AI-Powered Meeting Capture Never lose a decision again Agentic Development Course </div></div>
+
+    <!-- Reveal.js -->
+    <script src="./AI-Powered Meeting Capture_files/reveal.min.js"></script>
+    <script src="./AI-Powered Meeting Capture_files/notes.min.js"></script>
+    <script src="./AI-Powered Meeting Capture_files/highlight.min.js"></script>
+    <script src="./AI-Powered Meeting Capture_files/zoom.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'speaker',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+
+            // Slide dimensions - taller to fit more content
+            width: 1300,
+            height: 900,
+            margin: 0.02,
+
+            // Scale settings - allow shrinking to fit
+            minScale: 0.1,
+            maxScale: 2.0,
+
+            // Center vertically
+            center: true,
+
+            // Vertical slides
+            navigationMode: 'default',
+
+            // Speaker notes
+            showNotes: false,
+
+            // Auto-animate
+            autoAnimateEasing: 'ease-out',
+            autoAnimateDuration: 0.8,
+
+            // Plugins
+            plugins: [ RevealNotes, RevealHighlight, RevealZoom ]
+        });
+    </script>
+
+</body></html>

@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://d1dtpagvh0qhqn.cloudfront.net/agentic3WebSlides/ -->
+<html lang="en" class="reveal-full-page" style="--vsc-domain: &quot;d1dtpagvh0qhqn.cloudfront.net&quot;;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Unit 3: Development Setup &amp; Tools - Agentic Development Course</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/reveal.min.css">
+    <link rel="stylesheet" href="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/night.min.css">
+
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet" href="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/monokai.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/css2" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/custom.css">
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style></head>
+<body class="reveal-viewport" style="transition: transform 0.8s; --slide-width: 1300px; --slide-height: 900px; --slide-scale: 0.9745555555555556;">
+    <div class="reveal slide center focused has-vertical-slides has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade" style="">
+        <div class="slides" style="width: 1300px; height: 900px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(0.974556);">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 261.5px; display: block;" class="present">
+                <h1 class="title-main">Dev Unit 3: Development Setup &amp; Tools</h1>
+                <h3 class="title-sub">Setting up your AI-powered workspace</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section style="top: 9px; display: block;" class="future" data-fragment="-1" hidden="" aria-hidden="true">
+                <h2>What We'll Cover Today</h2>
+                <div class="agenda-grid">
+                    <div class="agenda-item fragment fade-up" data-fragment-index="0">
+                        <span class="agenda-number">1</span>
+                        <div class="agenda-content">
+                            <strong>Claude Code vs Cursor</strong>
+                            <span>Choosing your AI platform</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="1">
+                        <span class="agenda-number">2</span>
+                        <div class="agenda-content">
+                            <strong>GitHub Setup</strong>
+                            <span>Repository essentials</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="2">
+                        <span class="agenda-number">3</span>
+                        <div class="agenda-content">
+                            <strong>The Two-Folder Pattern</strong>
+                            <span>aiDocs/ (tracked) vs ai/ (gitignored)</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="3">
+                        <span class="agenda-number">4</span>
+                        <div class="agenda-content">
+                            <strong>MCP Overview</strong>
+                            <span>Extending AI capabilities</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="4">
+                        <span class="agenda-number">5</span>
+                        <div class="agenda-content">
+                            <strong>Cross-Platform &amp; Retrofitting</strong>
+                            <span>Real-world considerations</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="5">
+                        <span class="agenda-number">6</span>
+                        <div class="agenda-content">
+                            <strong>Collaborative Prompting &amp; Bias Toward Truth</strong>
+                            <span>Working WITH AI</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="6">
+                        <span class="agenda-number">7</span>
+                        <div class="agenda-content">
+                            <strong>Setup Verification</strong>
+                            <span>Hands-on practice (15 min)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="note-box fragment fade-up" style="margin-top:0.3em;" data-fragment-index="7">
+                    <strong>Note:</strong> This isn't the only way to achieve agentic development - but it's an evolved workflow I've had high personal success with.
+                </div>
+            </section>
+
+            <!-- ==================== FORKLIFTS ==================== -->
+            <section style="top: 0px; display: block;" class="future" hidden="" aria-hidden="true">
+                <h2>Forklifts</h2>
+                <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/forklifts.png" alt="Forklifts" class="funny-image" style="max-width:55%; max-height:550px;">
+                <blockquote style="margin-top:0.5em;">"Everyone's going to become a forklift driver. No one's going to be carrying boxes anymore."</blockquote>
+            </section>
+
+            <!-- ==================== PART 1: CLAUDE CODE VS CURSOR ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#1e3a5f" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 1</h2>
+                    <h1>Claude Code vs Cursor</h1>
+                    <p class="part-subtitle">Choosing your AI development platform</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 71.5px; display: none;" hidden="">
+                    <h2>Two Paths to AI Development</h2>
+                    <p style="font-size:0.85em; color:#94a3b8; margin-bottom:0.6em;"><strong>Many tools exist:</strong> Cursor, Claude Code, GitHub Copilot, Codex, Augment, Cody, Windsurf...</p>
+                    <p style="font-size:0.8em; color:var(--text-secondary); margin-bottom:0.6em;"><strong>Why we focus on Cursor and Claude Code:</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:900px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">State-of-the-art for agentic development</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Support the workflows we'll teach (instruction files, sub-agents, MCP)</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Concepts transfer to other tools as they mature</li>
+                    </ul>
+                    <table class="feature-table fragment fade-up" style="margin-top:0.8em;" data-fragment-index="3">
+                        <thead>
+                            <tr>
+                                <th>Tool</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Claude Code</strong></td>
+                                <td>Terminal-first developers, script automation, MCP power users</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cursor</strong></td>
+                                <td>IDE-first developers, visual editing, integrated workflow</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="4">Bottom line: Both can reach the same capability level</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 30.5px; display: none;" hidden="">
+                    <h2>Claude Code vs Cursor: Feature Comparison</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <table class="feature-table">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Claude Code</th>
+                                        <th>Cursor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="fragment fade-up" data-fragment-index="0">
+                                        <td>Auto-read file</td>
+                                        <td><code>claude.md</code></td>
+                                        <td><code>.cursorrules</code></td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="1">
+                                        <td>MCP support</td>
+                                        <td>Native, extensive</td>
+                                        <td>Limited/developing</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="2">
+                                        <td>Environment</td>
+                                        <td>Terminal-based</td>
+                                        <td>IDE (VS Code fork)</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="3">
+                                        <td>Multi-model</td>
+                                        <td>Claude only</td>
+                                        <td>Claude, GPT, others</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="4">
+                                        <td>Code context</td>
+                                        <td>Manual file reading</td>
+                                        <td>Automatic file awareness</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="5">
+                                        <td>CLI scripts</td>
+                                        <td>Excellent</td>
+                                        <td>Good</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="content-img" style="flex:0 0 40%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/aiRobotFight.png" alt="AI Robot Fight">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Reaching Equivalent Setup</h2>
+                    <div style="display:flex; gap:1em; justify-content:center; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:400px; max-width:500px;">
+                            <p style="font-size:0.8em; color:var(--primary-blue); font-weight:600;">In Claude Code:</p>
+                            <div class="code-box" style="width:100%; max-width:100%;">
+                                <pre class="code-wrapper"><code class="language-markdown hljs" data-trim=""><span class="hljs-section"># claude.md</span>
+Read aiDocs/context.md for project context.
+Follow coding style in aiDocs/coding-style.md
+Ask for opinion before complex work.</code></pre>
+                            </div>
+                        </div>
+                        <div style="flex:1; min-width:400px; max-width:500px;">
+                            <p style="font-size:0.8em; color:var(--primary-purple); font-weight:600;">In Cursor:</p>
+                            <div class="code-box" style="width:100%; max-width:100%;">
+                                <pre class="code-wrapper"><code class="language-markdown hljs" data-trim=""><span class="hljs-section"># .cursorrules</span>
+Read aiDocs/context.md for project context.
+Follow coding style in aiDocs/coding-style.md
+Ask for opinion before complex work.</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.8em;" data-fragment-index="0">Same core instructions — MCP tools are configured separately and available automatically.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Open meme-generator in Claude Code or Cursor. Show it reading context.md. Verify AI has project context loaded.
+                    </aside>
+                </section>
+            </section>
+
+            <!-- ==================== PART 2: GITHUB SETUP ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#2d4a22" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 2</h2>
+                    <h1>GitHub Setup</h1>
+                    <p class="part-subtitle">Repository essentials</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 267.5px; display: none;" hidden="">
+                    <h2>Creating a Repository</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-bash hljs" data-trim=""><span class="hljs-comment"># Create new repo on GitHub (via web or CLI)</span>
+gh repo create meme-generator --public
+
+<span class="hljs-comment"># Or initialize locally</span>
+git init
+git add .
+git commit -m <span class="hljs-string">"Initial commit"</span>
+git branch -M main
+git remote add origin https://github.com/you/repo
+git push -u origin main</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 151.5px; display: none;" hidden="">
+                    <h2>Essential .gitignore</h2>
+                    <p style="font-size:0.8em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Critical patterns for AI development:</strong></p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-gitignore" data-trim=""># AI working space (local process artifacts)
+ai/
+
+# Tool-specific config (personal workflow)
+claude.md
+.cursorrules
+
+# Test environment (may contain secrets)
+.testEnvVars
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+
+# Environment
+.env
+.env.local</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>What IS and ISN'T Tracked</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <table class="feature-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tracked (committed)</th>
+                                        <th>Gitignored (local only)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="fragment fade-up" data-fragment-index="0">
+                                        <td><code>aiDocs/</code> - permanent project knowledge</td>
+                                        <td><code>ai/</code> - temporary working space</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="1">
+                                        <td>Source code</td>
+                                        <td><code>claude.md</code> / <code>.cursorrules</code> - personal tool config</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="2">
+                                        <td><code>.gitignore</code></td>
+                                        <td><code>.testEnvVars</code> - secrets</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.6em;" data-fragment-index="3">aiDocs/ is shared. ai/ is personal.</p>
+                        </div>
+                        <div class="content-img" style="flex:0 0 45%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/disorganizedDesk.png" alt="Disorganized Desk">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Branching Basics</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <div class="code-box" style="width:100%; max-width:100%;">
+                                <pre class="code-wrapper"><code class="language-bash hljs" data-trim=""><span class="hljs-comment"># Create feature branch</span>
+git checkout -b feature/add-caption-generator
+
+<span class="hljs-comment"># Make changes, commit</span>
+git add .
+git commit -m <span class="hljs-string">"Add caption generation script"</span>
+
+<span class="hljs-comment"># Push to remote</span>
+git push -u origin feature/add-caption-generator
+
+<span class="hljs-comment"># Create PR (via GitHub or gh CLI)</span>
+gh <span class="hljs-built_in">pr</span> create</code></pre>
+                            </div>
+                        </div>
+                        <div class="content-img" style="flex:0 0 40%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/git-branching.svg" alt="Git Branching" style="background:rgba(255,255,255,0.05); padding:1em; border-radius:8px;">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>When to Commit</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>Good commit triggers:</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Feature complete and tested</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Before trying something risky ("checkpoint")</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Before switching contexts</li>
+                        <li class="fragment fade-up" data-fragment-index="3">End of work session</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-blue); margin-top:0.8em;" data-fragment-index="4"><strong>AI can help:</strong></p>
+                    <ul class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="5">
+                        <li>"Review my changes and suggest a commit message"</li>
+                        <li>"What should be in this commit vs the next one?"</li>
+                    </ul>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Create meme-generator repo. Set up .gitignore with ai/, claude.md, .cursorrules, .testEnvVars. Initial commit and push to GitHub.
+                    </aside>
+                </section>
+            </section>
+
+            <!-- ==================== PART 3: TWO-FOLDER PATTERN ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#4a1942" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 3</h2>
+                    <h1>The Two-Folder Pattern</h1>
+                    <p class="part-subtitle">aiDocs/ vs ai/</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 73.5px; display: none;" hidden="">
+                    <h2>aiDocs/ vs ai/</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <table class="feature-table">
+                                <thead>
+                                    <tr>
+                                        <th>Folder</th>
+                                        <th>Tracked?</th>
+                                        <th>Purpose</th>
+                                        <th>Contents</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="fragment fade-up" data-fragment-index="0">
+                                        <td><code>aiDocs/</code></td>
+                                        <td><strong>Yes</strong></td>
+                                        <td>Permanent project knowledge</td>
+                                        <td>context.md, PRD, MVP, architecture, coding style, changelog</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="1">
+                                        <td><code>ai/</code></td>
+                                        <td><strong>No</strong></td>
+                                        <td>Temporary working space</td>
+                                        <td>Roadmaps, plans, research, brainstorming</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); margin-top:0.8em;" data-fragment-index="2"><strong>Rule of thumb:</strong> Would a new engineer need this to understand the project? → <code>aiDocs/</code>. Is it a process artifact? → <code>ai/</code>.</p>
+                        </div>
+                        <div class="content-img" style="flex:0 0 40%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/aiDocs.png" alt="aiDocs">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 215.5px; display: none;" hidden="">
+                    <h2>Project Structure</h2>
+                    <div class="doc-hierarchy">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">project-root/
+├── aiDocs/                # ← TRACKED in git
+│   ├── context.md         # THE most important file
+│   ├── prd.md             # Product requirements (immutable)
+│   ├── mvp.md             # MVP definition
+│   ├── architecture.md    # System architecture
+│   ├── coding-style.md    # Code style guide
+│   └── changelog.md       # Concise change history
+├── ai/                    # ← GITIGNORED
+│   ├── guides/            # Library docs, research output
+│   ├── roadmaps/          # Task checklists, plans
+│   └── notes/             # Brainstorming
+├── claude.md              # ← GITIGNORED (personal config)
+├── .cursorrules           # ← GITIGNORED (personal config)
+└── scripts/               # CLI scripts</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Why claude.md is Gitignored</h2>
+                    <p style="font-size:0.85em; color:#94a3b8; margin-bottom:0.5em;"><strong>It's personal tool config, not project knowledge:</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Different team members may use different tools</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Different MCP setups per person</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Just a local pointer: "read <code>aiDocs/context.md</code>"</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Project knowledge belongs in <code>aiDocs/</code></li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.8em;" data-fragment-index="4"><strong>Exception:</strong> If entire team uses same tool, you <em>could</em> track it</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>The Most Important File: context.md</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-markdown hljs" data-trim=""><span class="hljs-section"># Project Context</span>
+
+<span class="hljs-section">## Critical Files to Review</span>
+<span class="hljs-bullet">-</span> PRD: aiDocs/prd.md
+<span class="hljs-bullet">-</span> Architecture: aiDocs/architecture.md
+<span class="hljs-bullet">-</span> Style Guide: aiDocs/coding-style.md
+
+<span class="hljs-section">## Tech Stack</span>
+<span class="hljs-bullet">-</span> Frontend: React, TypeScript
+<span class="hljs-bullet">-</span> Backend: Node.js, Express
+<span class="hljs-bullet">-</span> Image Analysis: OpenAI GPT-5 Vision
+
+<span class="hljs-section">## Important Notes</span>
+<span class="hljs-bullet">-</span> All scripts return JSON to stdout
+<span class="hljs-bullet">-</span> Use structured logging to files
+<span class="hljs-bullet">-</span> Never commit .testEnvVars
+
+<span class="hljs-section">## Current Focus</span>
+Building caption generation CLI script</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>The Concise Changelog</h2>
+                    <p style="font-size:0.8em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Purpose:</strong> Quick historical context without parsing git log</p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-markdown hljs" data-trim=""><span class="hljs-section"># Changelog</span>
+
+<span class="hljs-section">## 2026-02-01</span>
+<span class="hljs-bullet">-</span> Added caption generation CLI (JPG/PNG input, JSON output)
+<span class="hljs-bullet">-</span> Switched from OpenAI to Anthropic Vision API for cost
+
+<span class="hljs-section">## 2026-01-28</span>
+<span class="hljs-bullet">-</span> Initial project setup: React frontend, Express backend
+<span class="hljs-bullet">-</span> Created PRD and MVP definition</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.5em;" data-fragment-index="0"><strong>Rules:</strong> What changed and why (not how). 1-2 lines each. AI tends verbose - trim it.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Key Principles for context.md</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <ul style="font-size:0.8em;">
+                                <li class="fragment fade-up" data-fragment-index="0"><strong>Keep it concise</strong> - bullet points, not essays</li>
+                                <li class="fragment fade-up" data-fragment-index="1"><strong>List references with 1-2 sentence descriptions</strong> - like a bookshelf with labeled spines</li>
+                                <li class="fragment fade-up" data-fragment-index="2"><strong>Update regularly</strong> - especially "Current Focus"</li>
+                                <li class="fragment fade-up" data-fragment-index="3">AI reads files on demand - picks only what's relevant to the task</li>
+                            </ul>
+                            <div class="fragment fade-up" style="margin-top:0.8em;" data-fragment-index="4">
+                                <p style="font-size:0.8em; color:var(--primary-purple);"><strong>The Bookshelf Analogy:</strong></p>
+                                <p style="font-size:0.75em; color:var(--text-muted);">You don't read every book on a shelf - you scan titles and pick the relevant ones. AI does the same with context.md: scans descriptions, reads only what's needed.</p>
+                                <p style="font-size:0.75em; color:var(--primary-green);"><strong>Why?</strong> Prevents "context pollution" - too much unneeded data for any given task.</p>
+                            </div>
+                        </div>
+                        <div class="content-img" style="flex:0 0 40%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/bookPile.png" alt="Book Pile">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>The claude.md / .cursorrules File</h2>
+                    <p style="font-size:0.8em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Auto-read on every prompt (local, gitignored)</strong></p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-markdown hljs" data-trim=""><span class="hljs-section"># Project Instructions</span>
+
+<span class="hljs-section">## Context</span>
+Read the context file: aiDocs/context.md
+
+<span class="hljs-section">## Required Tools</span>
+<span class="hljs-bullet">-</span> Web Research: Use Firecrawl MCP
+<span class="hljs-bullet">-</span> Library Docs: Use Context7 MCP
+
+<span class="hljs-section">## Behavioral Guidelines</span>
+<span class="hljs-bullet">-</span> Ask for opinion before complex work
+<span class="hljs-bullet">-</span> Don't make changes during review phase
+<span class="hljs-bullet">-</span> Avoid over-engineering
+<span class="hljs-bullet">-</span> Match style in aiDocs/coding-style.md</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Plans vs Roadmaps (Brief Recap)</h2>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Plan</th>
+                                <th>Roadmap</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><strong>The WHAT and HOW</strong></td>
+                                <td><strong>The checklist</strong></td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td>Detailed approach</td>
+                                <td>Task list by phases</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td>Technical decisions</td>
+                                <td>Progress tracking</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.6em;" data-fragment-index="3"><strong>Both go in <code>ai/roadmaps/</code></strong> (gitignored) - process artifacts, not permanent docs</p>
+                    <div class="fragment fade-up" style="margin-top:0.6em;" data-fragment-index="4">
+                        <p style="font-size:0.8em; color:var(--primary-green);"><strong>Why Both?</strong></p>
+                        <ul style="font-size:0.75em; text-align:left; max-width:800px; margin:0 auto;">
+                            <li>Without roadmap, AI misses tasks</li>
+                            <li>Plan provides depth; roadmap ensures completeness</li>
+                            <li>Create plan first, then roadmap from the plan</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Creating Plans &amp; Roadmaps</h2>
+                    <p style="font-size:0.8em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Example prompt:</strong></p>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">"Create a plan doc and then a concise roadmap doc
+in ai/roadmaps for what we just discussed.
+Prefix the filenames with the current date.
+Make sure they reference each other.
+Include a note in each file to avoid over-engineering,
+cruft, and legacy-compatibility features or comments
+in this clean-code project."</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary); margin-top:0.6em;" data-fragment-index="0"><strong>Add this if you're using sub-agents:</strong></p>
+                    <div class="prompt-box fragment fade-up" data-fragment-index="1">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">"Deploy a sub-agent to thoroughly examine the plans
+and the files they would change to verify that we're
+not missing anything and that the plans are in
+alignment with the codebase."</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Create aiDocs/ and ai/ folder structure in meme-generator. Write aiDocs/context.md with PRD reference and tech stack. Create claude.md (show it's gitignored). Show AI automatically reading these files.
+                    </aside>
+                </section>
+            </section>
+
+            <!-- ==================== PART 4: MCP OVERVIEW ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#1a4731" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 4</h2>
+                    <h1>MCP Overview</h1>
+                    <p class="part-subtitle">Model Context Protocol - Extending AI capabilities</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 217.5px; display: none;" hidden="">
+                    <h2>What is MCP?</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>Model Context Protocol</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Standard for extending AI capabilities beyond text</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Gives AI access to tools (like browser extensions for AI)</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Tools run locally, results fed back to AI</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Developed by Anthropic, open standard</li>
+                    </ul>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="4">
+                        <strong>Simple mental model:</strong> AI can REQUEST actions → Tools EXECUTE → AI sees results
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 171.5px; display: none;" hidden="">
+                    <h2>MCP Architecture (High Level)</h2>
+                    <div class="mcp-diagram">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">┌─────────────────┐
+│   Your Prompt   │
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│   AI (Claude)   │ → "I need React docs..."
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│   MCP Router    │
+└────────┬────────┘
+    ┌────┴────┬────────────┐
+    ▼         ▼            ▼
+┌───────┐ ┌────────┐ ┌───────────┐
+│Context│ │Perplex │ │Playwright │
+│   7   │ │  ity   │ │           │
+└───────┘ └────────┘ └───────────┘</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Context7: Library Documentation</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>What it does:</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Searches and retrieves latest library docs</li>
+                        <li class="fragment fade-up" data-fragment-index="1">More current than AI training data</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Stores docs locally for future reference</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.6em;" data-fragment-index="3"><strong>When to use:</strong></p>
+                    <ul class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="4">
+                        <li>Learning a new library</li>
+                        <li>Checking current API syntax</li>
+                        <li>Finding library-specific best practices</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.6em;" data-fragment-index="5"><strong>Alternative tools:</strong> Official docs (manual), library websites, Stack Overflow (less reliable)</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Context7: Example</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Use Context7 to research the best React
+state management libraries for our use case.
+
+Pull the documentation for the top recommendation
+and store it in ai/guides/ with suffix _context7.md</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.6em;" data-fragment-index="0"><strong>AI will:</strong></p>
+                    <ol class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="1">
+                        <li>Search Context7 for React state management options</li>
+                        <li>Retrieve documentation for the best fit</li>
+                        <li>Save to ai/guides/zustand_context7.md (for example)</li>
+                        <li>Use that documentation to answer your question</li>
+                    </ol>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Perplexity: Deep Research (Optional)</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>What it does:</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Web-connected search with citations</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Synthesizes multiple sources</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Great for best practices and "how people solve X"</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-orange); margin-top:0.6em;" data-fragment-index="3"><strong>Cost note:</strong> Perplexity MCP requires a paid API. For most research, it's cheaper to search yourself and paste results into Claude.</p>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.5em;" data-fragment-index="4"><strong>When to use:</strong> General research (not specific library docs), best practices, "How do people typically handle OAuth2 in React?"</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Web Scraper MCPs: Firecrawl &amp; Bright Data</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>What they do:</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Search the web and fetch pages</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Parse web pages into markdown AI can read</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Free tiers available - good for students</li>
+                    </ul>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.8em;" data-fragment-index="3">
+                        <strong>Our recommendation:</strong> Use Firecrawl as your primary web research tool. It can search and scrape, then Claude synthesizes the results.
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>MCP Tool Comparison</h2>
+                    <table class="strategy-table">
+                        <thead>
+                            <tr>
+                                <th>Tool</th>
+                                <th>Type</th>
+                                <th>Best For</th>
+                                <th>Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><strong>Context7</strong></td>
+                                <td>Library docs</td>
+                                <td>Specific package API docs</td>
+                                <td>Free</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td><strong>Firecrawl</strong></td>
+                                <td>Web research</td>
+                                <td>Search + scrape, Claude synthesizes</td>
+                                <td>Free tier</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td><strong>Bright Data</strong></td>
+                                <td>Web research</td>
+                                <td>Similar to Firecrawl</td>
+                                <td>Free tier</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td><strong>Perplexity</strong></td>
+                                <td>Deep research</td>
+                                <td>Pre-synthesized answers (optional)</td>
+                                <td>Paid</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.5em;" data-fragment-index="4"><strong>All store results in ai/guides/</strong> (gitignored working reference)</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>How to Add an MCP Server</h2>
+                    <p style="font-size:0.8em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Config location:</strong> <code>~/.config/claude/mcp.json</code> (Claude Code)</p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-json hljs" data-trim=""><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"mcpServers"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"context7"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"command"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"npx"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"args"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"-y"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"@context7/mcp"</span><span class="hljs-punctuation">]</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">"perplexity"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"command"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"npx"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"args"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"-y"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"@perplexity/mcp"</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"env"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">"PERPLEXITY_API_KEY"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"your-key-here"</span>
+      <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.75em; color:var(--text-muted); margin-top:0.4em;" data-fragment-index="0"><strong>For Cursor:</strong> Check Cursor documentation for MCP configuration</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>...Or Ask the AI to Add It</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>Example prompt:</strong></p>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">"Please add the MCP server for 'chrome-devtools'
+following the guide under
+ai/guides/external/chromeDevToolsMcp_perplexity.md"</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); margin-top:0.6em;" data-fragment-index="0">The AI will read the guide and update your MCP config for you.</p>
+                </section>
+            </section>
+
+            <!-- ==================== PART 5: CROSS-PLATFORM & RETROFITTING ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#4a3520" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 5</h2>
+                    <h1>Cross-Platform &amp; Retrofitting</h1>
+                    <p class="part-subtitle">Real-world considerations</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 180px; display: none;" hidden="">
+                    <h2>Windows vs Mac/Linux Gotchas</h2>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Issue</th>
+                                <th>Mac/Linux</th>
+                                <th>Windows</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td>Shell scripts</td>
+                                <td><code>./script.sh</code> works</td>
+                                <td>May need WSL or Git Bash</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td>Path separators</td>
+                                <td><code>/</code></td>
+                                <td><code>\</code> (but <code>/</code> often works)</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td>Line endings</td>
+                                <td>LF</td>
+                                <td>CRLF (configure git)</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td>Environment vars</td>
+                                <td><code>export VAR=value</code></td>
+                                <td><code>set VAR=value</code> or PowerShell</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="4">
+                                <td>Shebangs</td>
+                                <td><code>#!/bin/bash</code> works</td>
+                                <td>Ignored (use explicit <code>bash</code>)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); margin-top:0.5em;" data-fragment-index="5"><strong>Best practice:</strong> Use Node.js scripts when possible (cross-platform)</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 107px; display: none;" hidden="">
+                    <h2>Retrofitting AI into Existing Projects</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>You inherit a codebase. Now what?</strong></p>
+                            <ol style="font-size:0.8em; text-align:left;">
+                                <li class="fragment fade-up" data-fragment-index="0"><strong>Add aiDocs/ folder</strong> - Start with context.md</li>
+                                <li class="fragment fade-up" data-fragment-index="1"><strong>Add ai/ folder</strong> - Even if empty at first</li>
+                                <li class="fragment fade-up" data-fragment-index="2"><strong>Create context.md</strong> - Document what you discover</li>
+                                <li class="fragment fade-up" data-fragment-index="3"><strong>Add .gitignore</strong> - Protect ai/, claude.md, .cursorrules, .testEnvVars</li>
+                                <li class="fragment fade-up" data-fragment-index="4"><strong>Ask AI to analyze</strong> - "Review this codebase and create a context.md"</li>
+                            </ol>
+                            <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-blue); margin-top:0.6em;" data-fragment-index="5"><strong>AI can help reverse-engineer:</strong> Architecture patterns, tech stack details, testing approaches</p>
+                        </div>
+                        <div class="content-img" style="flex:0 0 40%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/storageShed.png" alt="Storage Shed">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Mermaid Diagrams for Codebase Understanding</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>Ask AI to generate diagrams and store in <code>aiDocs/diagrams/</code>:</strong></p>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Diagram Type</th>
+                                <th>What It Shows</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td>Class Diagram</td>
+                                <td>Classes, inheritance, relationships</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td>Sequence Diagram</td>
+                                <td>Process flow between components</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td>ER Diagram</td>
+                                <td>Database tables and relationships</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td>Flowchart</td>
+                                <td>Logic and decision paths</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="prompt-box fragment fade-up" style="margin-top:0.6em;" data-fragment-index="4">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">"Analyze this codebase and create Mermaid diagrams
+for the class structure and main request flow.
+Save them in aiDocs/diagrams/"</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.75em; color:var(--text-muted); margin-top:0.4em;" data-fragment-index="5"><strong>Benefits:</strong> You can visually review to understand the codebase - and AI benefits too when diagrams are referenced in context.md.</p>
+                </section>
+            </section>
+
+            <!-- ==================== PART 6: COLLABORATIVE PROMPTING ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#3d2066" style="top: 291px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 6</h2>
+                    <h1>Collaborative Prompting &amp; Bias Toward Truth</h1>
+                    <p class="part-subtitle">Working WITH AI effectively</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 178px; display: none;" hidden="">
+                    <h2>Collaborative Prompting: Tentative Approach</h2>
+                    <div style="display:flex; gap:1.5em; justify-content:center; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:350px; max-width:450px;">
+                            <p style="font-size:0.8em; color:var(--primary-red);"><strong>Don't do this:</strong></p>
+                            <div class="prompt-box" style="width:100%; max-width:100%;">
+                                <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">"Add JWT authentication to the API"</code></pre>
+                            </div>
+                        </div>
+                        <div style="flex:1; min-width:350px; max-width:500px;">
+                            <p style="font-size:0.8em; color:var(--primary-green);"><strong>Do this instead:</strong></p>
+                            <div class="prompt-box" style="width:100%; max-width:100%;">
+                                <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">"We need to add authentication.
+I'm thinking JWT tokens but I'm not sure
+if that's the best approach here.
+What do you think?"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.8em;" data-fragment-index="0"><strong>Why this works:</strong></p>
+                    <ul class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="1">
+                        <li>Invites AI to provide expert opinion</li>
+                        <li>AI can identify better approaches you hadn't considered</li>
+                        <li>Reduces risk of implementing wrong solution</li>
+                    </ul>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 248.5px; display: none;" hidden="">
+                    <h2>Pattern: Context-First</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <div class="prompt-box" style="width:100%; max-width:100%;">
+                                <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Review the context file.
+Then review how [feature] currently works.
+Understand it thoroughly.
+
+Now here's what we need to change:
+[requirements]
+
+What's your opinion on the best approach?
+Don't make any code changes yet.</code></pre>
+                            </div>
+                        </div>
+                        <div class="content-img" style="flex:0 0 40%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/context-first-pattern.svg" alt="Context-First Pattern" style="background:rgba(255,255,255,0.05); padding:1em; border-radius:8px;">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Positivity Matters</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <div style="margin-bottom:0.8em;">
+                                <p style="font-size:0.8em; color:var(--primary-red);"><strong>Don't:</strong></p>
+                                <div class="prompt-box" style="width:100%; max-width:100%;">
+                                    <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">"This code is terrible. Fix it."</code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p style="font-size:0.8em; color:var(--primary-green);"><strong>Do:</strong></p>
+                                <div class="prompt-box" style="width:100%; max-width:100%;">
+                                    <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">"This code has some issues we need to address.
+Can you help identify what needs improvement?"</code></pre>
+                                </div>
+                            </div>
+                            <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary); margin-top:0.6em;" data-fragment-index="0"><strong>Why:</strong></p>
+                            <ul class="fragment fade-up" style="font-size:0.75em;" data-fragment-index="1">
+                                <li>Research shows negativity causes erratic AI behavior</li>
+                                <li>Positivity produces more neutral, focused results</li>
+                                <li>Clear and positive = best combination</li>
+                            </ul>
+                            <p class="fragment fade-up" style="font-size:0.75em; color:var(--text-muted); margin-top:0.4em;" data-fragment-index="2">You don't need to flatter AI, just stay positive, unaccusing, and clear (same as with people!)</p>
+                        </div>
+                        <div class="content-img" style="flex:0 0 35%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/sayPlease.png" alt="Say Please">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Bias Toward Truth</h2>
+                    <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/bias-toward-truth.svg" alt="Bias Toward Truth" class="svg-diagram" style="max-height:650px; background:rgba(255,255,255,0.05); padding:0.5em; border-radius:8px;">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Hallucinations Happen</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>Why AI generates plausible but wrong answers:</strong></p>
+                            <ul style="font-size:0.8em;">
+                                <li class="fragment fade-up" data-fragment-index="0">LLMs predict "likely next tokens" - plausible does not equal true</li>
+                                <li class="fragment fade-up" data-fragment-index="1">Gaps in training data get filled with confident guesses</li>
+                                <li class="fragment fade-up" data-fragment-index="2">No built-in fact-checking mechanism</li>
+                            </ul>
+                            <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); margin-top:0.8em;" data-fragment-index="3"><strong>Your job:</strong> Create prompting habits that bias AI toward truth</p>
+                        </div>
+                        <div class="content-img" style="flex:0 0 40%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/safari.png" alt="Safari Guide">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>5 Strategies You Can Use Today</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <table class="strategy-table">
+                                <thead>
+                                    <tr>
+                                        <th>Strategy</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="fragment fade-up" data-fragment-index="0">
+                                        <td><strong>Chain-of-Thought</strong></td>
+                                        <td>"Show your reasoning step by step"</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="1">
+                                        <td><strong>Structured Output</strong></td>
+                                        <td>Request JSON - reduces creative drift</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="2">
+                                        <td><strong>Explicit Uncertainty</strong></td>
+                                        <td>"Say 'I don't know' rather than guessing"</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="3">
+                                        <td><strong>Context Clarification</strong></td>
+                                        <td>Give AI the files and facts it needs</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="4">
+                                        <td><strong>Multi-Step Verification</strong></td>
+                                        <td>Generate → Verify → Refine → Present</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="content-img" style="flex:0 0 35%;">
+                            <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/multi-step-verification.svg" alt="Multi-Step Verification" style="background:rgba(255,255,255,0.05); padding:1em; border-radius:8px;">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;" hidden="">
+                    <h2>Bias Toward Truth: In Practice</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Before implementing, please:
+1. Show your reasoning step by step
+2. Flag anything you're uncertain about
+3. If you don't know something, say so
+   rather than guessing
+4. Before you answer, verify against
+   the project context</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); margin-top:0.8em;" data-fragment-index="0"><strong>Add this pattern to your claude.md or .cursorrules</strong></p>
+                </section>
+            </section>
+
+            <!-- ==================== PART 7: SETUP VERIFICATION ==================== -->
+            <section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" hidden="" aria-hidden="true">
+                <section data-background-color="#2a3f5f" style="top: 334.5px; display: none;" class="has-dark-background" aria-hidden="true">
+                    <h2 class="part-header">Part 7</h2>
+                    <h1>Setup Verification</h1>
+                    <p class="part-subtitle">Hands-on practice (15 min)</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 117.5px; display: none;" hidden="">
+                    <h2>Your Turn.</h2>
+                    <img src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/gitignore.png" alt="Epic" class="funny-image" style="max-width:55%; max-height:550px;">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 77px; display: none;" hidden="">
+                    <h2>Hands-On Activity (15 min)</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>Goal:</strong> Verify your AI development environment is ready</p>
+                    <div class="homework-list">
+                        <div class="homework-item fragment fade-up" data-fragment-index="0">
+                            <span class="homework-check">1.</span>
+                            <span>Create a GitHub repository for your project</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="1">
+                            <span class="homework-check">2.</span>
+                            <span>Add .gitignore with ai/, claude.md, .cursorrules, .testEnvVars</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="2">
+                            <span class="homework-check">3.</span>
+                            <span>Create aiDocs/ with context.md (reference PRD, list tech stack)</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="3">
+                            <span class="homework-check">4.</span>
+                            <span>Create ai/ folder structure (guides/, roadmaps/, notes/)</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="4">
+                            <span class="homework-check">5.</span>
+                            <span>Create claude.md or .cursorrules pointing to aiDocs/context.md</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="5">
+                            <span class="homework-check">6.</span>
+                            <span>Ask AI to read context.md and summarize your project</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="6">
+                            <span class="homework-check">7.</span>
+                            <span>Verify AI can see your project context</span>
+                        </div>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); margin-top:0.6em;" data-fragment-index="7"><strong>Success criteria:</strong> AI can describe your project from aiDocs/context.md</p>
+                </section>
+            </section>
+
+            <!-- ==================== KEY TAKEAWAYS ==================== -->
+            <section style="top: 24.5px; display: none;" class="future" data-fragment="-1" hidden="" aria-hidden="true">
+                <h2>Key Takeaways</h2>
+                <div class="takeaways">
+                    <div class="takeaway fragment fade-up" data-fragment-index="0">
+                        <span class="takeaway-num">1</span>
+                        <div class="takeaway-content">
+                            <strong>Claude Code vs Cursor</strong>
+                            <span>Both excellent, choose based on workflow preference</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="1">
+                        <span class="takeaway-num">2</span>
+                        <div class="takeaway-content">
+                            <strong>Two-folder pattern</strong>
+                            <span>aiDocs/ (tracked) vs ai/ (gitignored)</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="2">
+                        <span class="takeaway-num">3</span>
+                        <div class="takeaway-content">
+                            <strong>context.md is your AI brain</strong>
+                            <span>Lives in aiDocs/, shared with team</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="3">
+                        <span class="takeaway-num">4</span>
+                        <div class="takeaway-content">
+                            <strong>claude.md is personal config</strong>
+                            <span>Gitignored, points to aiDocs/context.md</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="4">
+                        <span class="takeaway-num">5</span>
+                        <div class="takeaway-content">
+                            <strong>MCP extends AI</strong>
+                            <span>Context7 for docs, Firecrawl for web research</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="5">
+                        <span class="takeaway-num">6</span>
+                        <div class="takeaway-content">
+                            <strong>Bias toward truth</strong>
+                            <span>Prompt habits that reduce hallucinations</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="6">
+                        <span class="takeaway-num">7</span>
+                        <div class="takeaway-content">
+                            <strong>Collaborate, don't command</strong>
+                            <span>"What do you think?" gets better results</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== QUICK REFERENCE ==================== -->
+            <section style="top: 203px; display: none;" class="future" hidden="" aria-hidden="true">
+                <h2>Quick Reference</h2>
+                <div class="quick-reference">
+                    <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">PROJECT STRUCTURE
+aiDocs/               ← TRACKED (permanent knowledge)
+├── context.md        ← Main AI context
+├── prd.md            ← Product requirements
+├── coding-style.md   ← Code style guide
+└── changelog.md      ← Concise change history
+
+ai/                   ← GITIGNORED (working space)
+├── guides/           ← Library docs, research
+├── roadmaps/         ← Plans, task checklists
+└── notes/            ← Brainstorming
+
+claude.md             ← GITIGNORED (personal config)
+
+MCP TOOLS
+Context7  → Library docs → ai/guides/
+Firecrawl → Web research → ai/guides/</code></pre>
+                </div>
+            </section>
+
+            <!-- ==================== HOMEWORK ==================== -->
+            <section style="top: 13.5px; display: none;" class="future" data-fragment="-1" hidden="" aria-hidden="true">
+                <h2>Before Next Time</h2>
+                <p style="font-size:0.8em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>Do this individually</strong> (even if you're in a project group - everyone needs the practice):</p>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">1.</span>
+                        <span><strong>Complete workspace setup</strong> - repo, aiDocs/, ai/, .gitignore, claude.md</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">2.</span>
+                        <span><strong>Have AI generate your planning docs</strong> (then review &amp; refine collaboratively):<br>
+                        - <code>aiDocs/prd.md</code> - product requirements<br>
+                        - <code>aiDocs/mvp.md</code> - MVP scope definition<br>
+                        - <code>aiDocs/architecture.md</code> - system design<br>
+                        - <code>aiDocs/coding-style.md</code> - code style guide</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">3.</span>
+                        <span><strong>Create context.md</strong> - reference all docs with 1-2 sentence descriptions</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="3">
+                        <span class="homework-check">4.</span>
+                        <span><strong>Plan implementation phases with AI:</strong><br>
+                        "Review my PRD and MVP. Break down the MVP into logical phases. How many phases? Should each have its own plan/roadmap, or group some together?"</span>
+                    </div>
+                </div>
+                <p class="fragment fade-up" style="font-size:0.75em; color:var(--text-muted); margin-top:0.6em;" data-fragment-index="4"><strong>For groups:</strong> Later, use AI to compare/contrast and merge your individual ideas together.</p>
+            </section>
+
+            <!-- ==================== RESOURCES ==================== -->
+            <section style="top: 111.5px; display: none;" class="future" hidden="" aria-hidden="true">
+                <h2>Resources</h2>
+                <div class="resources-list">
+                    <a href="https://docs.anthropic.com/claude-code" target="_blank" class="resource-item">
+                        <span class="resource-icon">💻</span>
+                        <span class="resource-name">Claude Code</span>
+                        <span class="resource-url">docs.anthropic.com/claude-code</span>
+                    </a>
+                    <a href="https://cursor.sh/" target="_blank" class="resource-item">
+                        <span class="resource-icon">🖥</span>
+                        <span class="resource-name">Cursor</span>
+                        <span class="resource-url">cursor.sh</span>
+                    </a>
+                    <a href="https://modelcontextprotocol.io/" target="_blank" class="resource-item">
+                        <span class="resource-icon">🔌</span>
+                        <span class="resource-name">MCP Protocol</span>
+                        <span class="resource-url">modelcontextprotocol.io</span>
+                    </a>
+                    <a href="https://context7.io/" target="_blank" class="resource-item">
+                        <span class="resource-icon">📚</span>
+                        <span class="resource-name">Context7</span>
+                        <span class="resource-url">context7.io</span>
+                    </a>
+                    <a href="https://cli.github.com/" target="_blank" class="resource-item">
+                        <span class="resource-icon">🛠</span>
+                        <span class="resource-name">GitHub CLI</span>
+                        <span class="resource-url">cli.github.com</span>
+                    </a>
+                    <a href="https://mermaid.js.org/" target="_blank" class="resource-item">
+                        <span class="resource-icon">📈</span>
+                        <span class="resource-name">Mermaid Diagrams</span>
+                        <span class="resource-url">mermaid.js.org</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ==================== END SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 333.5px; display: none;" class="future" hidden="" aria-hidden="true">
+                <h2>See you next time!</h2>
+                <h3 class="next-session">Next: Implementation &amp; Iteration</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+        </div>
+    <div class="backgrounds"><div class="slide-background present" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: block;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#2d4a22nullnullnullnullnull" style="background-color: rgb(45, 74, 34); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a1942nullnullnullnullnull" style="background-color: rgb(74, 25, 66); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1a4731nullnullnullnullnull" style="background-color: rgb(26, 71, 49); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a3520nullnullnullnullnull" style="background-color: rgb(74, 53, 32); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#3d2066nullnullnullnullnull" style="background-color: rgb(61, 32, 102); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#2a3f5fnullnullnullnullnull" style="background-color: rgb(42, 63, 95); display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: none;" data-loaded="true"><div class="slide-background-content"></div></div></div><div class="slide-number" style="display: none;"><a href="https://d1dtpagvh0qhqn.cloudfront.net/agentic3WebSlides/#/">
+					<span class="slide-number-a">1</span>
+					<span class="slide-number-delimiter">/</span>
+					<span class="slide-number-b">56</span>
+					</a></div><aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded" style="display: block;"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down" aria-label="below slide" disabled="disabled"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div class="aria-status" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">Dev Unit 3: Development Setup &amp; Tools Setting up your AI-powered workspace Agentic Development Course </div></div>
+
+    <!-- Reveal.js -->
+    <script src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/reveal.min.js"></script>
+    <script src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/notes.min.js"></script>
+    <script src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/highlight.min.js"></script>
+    <script src="./Dev Unit 3_ Development Setup &amp; Tools - Agentic Development Course_files/zoom.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'speaker',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+
+            // Slide dimensions - taller to fit more content
+            width: 1300,
+            height: 900,
+            margin: 0.02,
+
+            // Scale settings - allow shrinking to fit
+            minScale: 0.1,
+            maxScale: 2.0,
+
+            // Center vertically
+            center: true,
+
+            // Vertical slides
+            navigationMode: 'default',
+
+            // Speaker notes
+            showNotes: false,
+
+            // Auto-animate
+            autoAnimateEasing: 'ease-out',
+            autoAnimateDuration: 0.8,
+
+            // Plugins
+            plugins: [ RevealNotes, RevealHighlight, RevealZoom ]
+        });
+    </script>
+
+
+</body></html>

@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://d1dtpagvh0qhqn.cloudfront.net/agentic2WebSlides/ -->
+<html lang="en" class="reveal-full-page" style="--vsc-domain: &quot;d1dtpagvh0qhqn.cloudfront.net&quot;;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ideation &amp; Planning with AI - Agentic Development Course</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="./Ideation &amp; Planning with AI - Agentic Development Course_files/reveal.min.css">
+    <link rel="stylesheet" href="./Ideation &amp; Planning with AI - Agentic Development Course_files/night.min.css">
+
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet" href="./Ideation &amp; Planning with AI - Agentic Development Course_files/monokai.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./Ideation &amp; Planning with AI - Agentic Development Course_files/css2" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./Ideation &amp; Planning with AI - Agentic Development Course_files/custom.css">
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style></head>
+<body class="reveal-viewport" style="transition: transform 0.8s; --slide-width: 1300px; --slide-height: 900px; --slide-scale: 0.9745555555555556;">
+    <div class="reveal slide center focused has-vertical-slides has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade">
+        <div class="slides" style="width: 1300px; height: 900px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(0.974556);">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 314.5px; display: block;" class="present">
+                <h1 class="title-main">Ideation &amp; Planning with AI</h1>
+                <h3 class="title-sub">Using AI to plan before you build</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+            <!-- ==================== OPENING SLIDES ==================== -->
+            <section style="top: 114px; display: block;" hidden="" aria-hidden="true" class="future">
+                <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/cruiseArrow.jpg" alt="The Far Side" class="funny-image" style="max-width:55%; max-height:600px;">
+            </section>
+
+            <section style="top: 324px; display: block;" hidden="" aria-hidden="true" class="future">
+                <h2>Top engineers at Anthropic, OpenAI say AI now writes 100% of their code</h2>
+                <a href="https://fortune.com/2026/01/29/100-percent-of-code-at-anthropic-and-openai-is-now-ai-written-boris-cherny-roon/" target="_blank" class="news-link">Fortune - January 29, 2026</a>
+            </section>
+
+            <!-- ==================== READING RECAP ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Reading Recap: "Management as AI Superpower"</h2>
+                <p style="font-size:0.85em; color:#94a3b8; margin-bottom:0.6em;">Ethan Mollick's key insight: As AI handles more execution, your job shifts from <em>doing</em> to <em>delegating</em></p>
+                <ul style="font-size:0.8em; text-align:left; max-width:900px; margin:0 auto;">
+                    <li class="fragment fade-up" data-fragment-index="0"><strong>The equation:</strong> Human Baseline Time vs. AI Process Time x Probability of Success</li>
+                    <li class="fragment fade-up" data-fragment-index="1"><strong>Management skills are AI skills</strong> — scoping problems, defining deliverables, evaluating output</li>
+                    <li class="fragment fade-up" data-fragment-index="2"><strong>Subject matter expertise matters</strong> — experts give better instructions, spot errors faster</li>
+                    <li class="fragment fade-up" data-fragment-index="3"><strong>"Soft" skills are the hard ones</strong> — knowing what good looks like and explaining it clearly</li>
+                </ul>
+                <blockquote class="fragment fade-up" style="font-size:0.75em; border-left:3px solid #6366f1; padding-left:0.8em; margin-top:0.8em; color:#a5b4fc; font-style:italic;" data-fragment-index="4">"The people who thrive will be the ones who know what good looks like — and can explain it clearly enough that even an AI can deliver it."</blockquote>
+                <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.6em;" data-fragment-index="5">Today we practice exactly this: scoping, planning, and defining deliverables with AI</p>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>What We'll Cover Today</h2>
+                <div class="agenda-grid">
+                    <div class="agenda-item fragment fade-up" data-fragment-index="0">
+                        <span class="agenda-number">1</span>
+                        <div class="agenda-content">
+                            <strong>Ideation with AI</strong>
+                            <span>Brainstorming techniques</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="1">
+                        <span class="agenda-number">2</span>
+                        <div class="agenda-content">
+                            <strong>Market Research</strong>
+                            <span>Using Perplexity</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="2">
+                        <span class="agenda-number">3</span>
+                        <div class="agenda-content">
+                            <strong>Project Documentation</strong>
+                            <span>PRD, plan docs, roadmap docs, MVP</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="3">
+                        <span class="agenda-number">4</span>
+                        <div class="agenda-content">
+                            <strong>Git Workflow Concepts</strong>
+                            <span>Branching, commits, PRs with AI</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="4">
+                        <span class="agenda-number">5</span>
+                        <div class="agenda-content">
+                            <strong>Iterative Refinement</strong>
+                            <span>Making docs better</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PART 1: IDEATION WITH AI ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#1e3a5f" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 1</h2>
+                    <h1>Ideation with AI</h1>
+                    <p class="part-subtitle">Generate ideas you wouldn't think of alone</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Ideation Funnel</h2>
+                    <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/ideation-funnel.svg" alt="Ideation Funnel" class="svg-diagram" style="max-height:650px; display:block; margin:0 auto;">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why Ideate with AI?</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <ul>
+                                <li class="fragment fade-up" data-fragment-index="0">Broad knowledge across domains</li>
+                                <li class="fragment fade-up" data-fragment-index="1">Generates ideas you wouldn't think of</li>
+                                <li class="fragment fade-up" data-fragment-index="2">Fast iteration on concepts</li>
+                                <li class="fragment fade-up" data-fragment-index="3">No judgment - explore "bad" ideas safely</li>
+                                <li class="fragment fade-up" data-fragment-index="4">Combines concepts from different fields</li>
+                            </ul>
+                        </div>
+                        <div class="content-img">
+                            <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/tooManyIdeas.png" alt="Too Many Ideas">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Technique: Quantity Generation</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">I want to build something that helps
+college students manage their time.
+
+Give me 15 different product ideas, ranging
+from simple apps to ambitious platforms.
+
+Include at least 3 ideas that seem
+"weird" or unusual.</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Technique: Constraint-Based Ideation</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">I need a solution for [problem] that:
+- Can be built by 3 students in 8 weeks
+- Requires no budget for infrastructure
+- Works offline
+- Doesn't require user accounts
+
+Generate 10 ideas that fit ALL these constraints.</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Technique: Combination Ideation</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Combine these two concepts:
+- Concept A: Habit tracking apps
+- Concept B: Social accountability
+
+What would a product look like
+that merges these approaches?
+
+Generate 5 product ideas.</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Expanding Ideas: Deep Dive</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">I'm considering building [idea].
+
+Help me explore:
+1. 5 different ways this could work
+2. 3 different user personas it might serve
+3. The simplest possible version
+4. The most ambitious version
+5. Similar products and how this differs</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Challenging Ideas: Devil's Advocate</h2>
+                    <div class="content-with-image">
+                        <div class="content-text" style="flex:1 1 55%;">
+                            <div class="prompt-box" style="max-width:100%; width:100%;">
+                                <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Here's my product idea: [description]
+
+Play devil's advocate. Tell me:
+- Why this might fail
+- What assumptions might be wrong
+- Who wouldn't want to use this
+- What's the hardest part
+  I'm underestimating</code></pre>
+                            </div>
+                        </div>
+                        <div class="content-img" style="flex:0 0 45%;">
+                            <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/devilsAdvocate.png" alt="Devil&#39;s Advocate">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Assumption Testing</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">My product assumes that [assumption].
+
+Is this assumption valid?
+
+What evidence supports or contradicts it?
+
+What would happen if this assumption is wrong?</code></pre>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 2: MARKET RESEARCH ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#2d4a22" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 2</h2>
+                    <h1>Market Research with Perplexity</h1>
+                    <p class="part-subtitle">Web-connected research with citations</p>
+                    <p style="font-size:0.6em; color:#94a3b8; margin-top:0.5em;">Claude and Gemini also work well for this when used in web search mode</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Research to PRD Flow</h2>
+                    <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/research-to-prd-flow.svg" alt="Research to PRD Flow" class="svg-diagram">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why Perplexity?</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <table class="feature-table">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Benefit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="fragment fade-up" data-fragment-index="0">
+                                        <td>Web-connected</td>
+                                        <td>Current information</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="1">
+                                        <td>Citations</td>
+                                        <td>Verify sources</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="2">
+                                        <td>Synthesis</td>
+                                        <td>Multiple sources combined</td>
+                                    </tr>
+                                    <tr class="fragment fade-up" data-fragment-index="3">
+                                        <td>Structured</td>
+                                        <td>Good for analysis</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="4">Perfect for competitive research</p>
+                        </div>
+                        <div class="content-img">
+                            <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/researchDog.png" alt="Research Dog">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Finding Competitors <span style="font-size:0.5em; color:#a5b4fc;">(Remember - from Click!)</span></h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">What companies and products currently solve [problem]?
+
+For each, tell me:
+- Company name and product
+- Pricing model
+- Target audience
+- Key features
+- What users complain about (from reviews)
+
+Also identify:
+- Substitute solutions (workarounds instead of a product)
+- The "do nothing" option (tolerating the problem)
+- The "800-pound gorilla" (strongest alternative)</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Competitive Positioning</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">I'm building [product description].
+
+Compare to [Competitor A], [B], and [C].
+
+Create a comparison table:
+- Features
+- Pricing
+- Target user
+- Strengths
+- Weaknesses
+
+Where is the gap in the market?</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Market Size (TAM/SAM/SOM)</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Help me estimate market size for [category]:
+
+TAM (Total Addressable Market):
+  Everyone who could possibly use this
+
+SAM (Serviceable Addressable Market):
+  The segment we can reach
+
+SOM (Serviceable Obtainable Market):
+  Realistic first-year target
+
+Provide numbers with sources.</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>User Personas</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">I'm building [product] for [general audience].
+
+Develop 3 detailed user personas:
+- Name and demographics
+- Job/role and daily challenges
+- Goals and motivations
+- Pain points my product addresses
+- How they currently solve this
+- What would make them switch
+- Potential objections</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Trend Analysis</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">What are the trends in [industry/category]
+over the past 3 years?
+
+Is this market growing, shrinking, or stable?
+
+What's driving the changes?
+
+What do analysts predict for the next 2-3 years?</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Founding Hypothesis <span style="font-size:0.5em; color:#a5b4fc;">(Remember - from Click!)</span></h2>
+                    <p style="font-size:0.85em; color:#94a3b8; margin-bottom:0.5em;">Synthesize your research into one testable statement</p>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">For [target customer], who has [problem],
+our [approach] will solve it better than [competition]
+because [differentiation].</code></pre>
+                    </div>
+                    <div style="margin-top:0.6em;">
+                        <p class="fragment fade-up" style="font-size:0.8em;" data-fragment-index="0"><strong>Score it:</strong></p>
+                        <ul style="font-size:0.75em; text-align:left; max-width:800px; margin:0 auto;">
+                            <li class="fragment fade-up" data-fragment-index="1">Is the customer specific enough?</li>
+                            <li class="fragment fade-up" data-fragment-index="2">Is the problem verified, not assumed?</li>
+                            <li class="fragment fade-up" data-fragment-index="3">Will people choose this over alternatives AND doing nothing?</li>
+                            <li class="fragment fade-up" data-fragment-index="4">Is the differentiation radical or incremental?</li>
+                        </ul>
+                        <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="5">If you can't write a compelling hypothesis, you don't understand your market yet</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 3: PROJECT DOCUMENTATION ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#4a1942" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 3</h2>
+                    <h1>Project Documentation</h1>
+                    <p class="part-subtitle">PRD, plans, roadmaps, and MVP</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Document Hierarchy</h2>
+                    <div class="doc-hierarchy">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">┌───────────────────────────────────┐
+│ Project Description               │  ← 1-2 paragraphs
+├───────────────────────────────────┤
+│ PRD (Product Requirements Doc)    │  ← What &amp; Why
+├───────────────────────────────────┤
+│ Plan Doc                          │  ← What &amp; How
+├───────────────────────────────────┤
+│ Roadmap Doc                       │  ← Checklist
+├───────────────────────────────────┤
+│ MVP Definition                    │  ← Minimum viable
+├───────────────────────────────────┤
+│ Architecture Doc                  │  ← How it's built
+└───────────────────────────────────┘</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Project Description</h2>
+                    <h3>The Elevator Pitch</h3>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Help me write a project description for:
+[explain your idea in casual terms]
+
+Create 2 paragraphs including:
+- What problem it solves
+- Who it's for
+- How it works (high level)
+- Why it's different/better
+
+Make it compelling in 30 seconds.</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>PRD Structure</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">1. Problem Statement
+2. Target Users
+3. Goals and Success Metrics
+4. Key Features (P0, P1, P2)
+5. User Stories
+6. Out of Scope
+7. Risks and Mitigations
+8. Timeline and Milestones</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>PRD Creation Prompt</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Based on this project idea: [description]
+
+Create a PRD with:
+- Problem statement
+- Target users (primary, secondary, NOT for)
+- Success metrics
+- Features by priority (P0/P1/P2)
+- 5+ user stories
+- What's explicitly out of scope
+- Key risks</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>PRD as Immutable Source of Truth</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <h3>Why?</h3>
+                            <ul>
+                                <li class="fragment fade-up" data-fragment-index="0">PRD captures original requirements and intent</li>
+                                <li class="fragment fade-up" data-fragment-index="1">Other docs change; PRD should not</li>
+                                <li class="fragment fade-up" data-fragment-index="2">Maintains "long-term memory" of what we agreed</li>
+                                <li class="fragment fade-up" data-fragment-index="3">If requirements change: new PRD version or addendum</li>
+                            </ul>
+                        </div>
+                        <div class="content-img">
+                            <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/productRequirementsDoc.png" alt="PRD as Source of Truth">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Create PRD for meme generator live with AI. Start with casual description, use PRD creation prompt, iterate on output, save to repo.
+                    </aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Plan Documents: The WHAT and HOW</h2>
+                    <p style="font-size:0.8em; color:var(--text-secondary);"><strong>Purpose:</strong> Detailed work breakdown and implementation approach</p>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Prompt: "Create a detailed plan doc for this work.
+Store it in ai/roadmaps/ with date prefix (YYYY-MM-DD).
+
+The plan should include:
+- Work breakdown (what needs to be done)
+- Implementation approach (how it will be done)
+- Technical considerations
+- Dependencies and prerequisites</code></pre>
+                    </div>
+                    <div class="file-naming fragment fade-up" data-fragment-index="0">
+                        <strong>File naming:</strong> <code>ai/roadmaps/2025-12-05_feature-name_plan.md</code>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Roadmap Documents: The Checklist</h2>
+                    <p style="font-size:0.8em; color:var(--text-secondary);"><strong>Purpose:</strong> Task checklist organized by phases to keep on track</p>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Prompt: "Create a concise roadmap doc for this work.
+Store it in ai/roadmaps/ with date prefix (YYYY-MM-DD).
+
+The roadmap should include:
+- Checklist of tasks organized by phases
+- Clear completion criteria for each task
+- Dependencies between tasks</code></pre>
+                    </div>
+                    <div class="file-naming fragment fade-up" data-fragment-index="0">
+                        <strong>File naming:</strong> <code>ai/roadmaps/2025-12-05_feature-name_roadmap.md</code>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Plan vs Roadmap</h2>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Plan</th>
+                                <th>Roadmap</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><strong>The WHAT and HOW</strong></td>
+                                <td><strong>The checklist</strong></td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td>Detailed work breakdown</td>
+                                <td>Task list by phases</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td>Implementation approach</td>
+                                <td>Clear completion criteria</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td>Technical considerations</td>
+                                <td>Progress tracking</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="4">
+                                <td>For understanding</td>
+                                <td>For execution</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="key-concept fragment fade-up" data-fragment-index="5">
+                        <strong>Why both?</strong> Keeps AI organized and ensures nothing is missed
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Research Phase</h2>
+                    <h3>Document before you plan</h3>
+                    <p style="font-size:0.85em; color:#94a3b8; margin-bottom:0.5em;">For complex tasks, research first — document what exists with <strong style="color:#e0e7ff;">no opinions</strong></p>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Review ai/context.md.
+Then research how [feature/area] currently works.
+
+Document what you find. DO NOT suggest changes.
+Save to ai/roadmaps/YYYY-MM-DD_topic_research.md</code></pre>
+                    </div>
+                    <div style="margin-top:0.6em;">
+                        <p class="fragment fade-up" style="font-size:0.8em;" data-fragment-index="0"><strong style="color:var(--primary-green);">External research:</strong> Use Context7/Perplexity MCP tools to pull current library docs into <code>ai/guides/</code></p>
+                        <p class="fragment fade-up" style="font-size:0.75em; color:#94a3b8;" data-fragment-index="1"><strong>When to use:</strong> Complex changes, unfamiliar code, third-party libraries &nbsp;|&nbsp; <strong>Skip for:</strong> Simple changes, greenfield projects</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>PRD → Research → Plan → Roadmap Pipeline</h2>
+                    <div class="pipeline-flow">
+                        <div class="pipeline-step fragment fade-right" data-fragment-index="0">
+                            <span class="step-title">PRD</span>
+                            <span class="step-desc">What &amp; Why</span>
+                        </div>
+                        <span class="pipeline-arrow fragment" data-fragment-index="1">→</span>
+                        <div class="pipeline-step fragment fade-right" data-fragment-index="1">
+                            <span class="step-title">Research</span>
+                            <span class="step-desc">What exists now</span>
+                        </div>
+                        <span class="pipeline-arrow fragment" data-fragment-index="2">→</span>
+                        <div class="pipeline-step fragment fade-right" data-fragment-index="2">
+                            <span class="step-title">Plan</span>
+                            <span class="step-desc">What &amp; How</span>
+                        </div>
+                        <span class="pipeline-arrow fragment" data-fragment-index="3">→</span>
+                        <div class="pipeline-step fragment fade-right" data-fragment-index="3">
+                            <span class="step-title">Roadmap</span>
+                            <span class="step-desc">Checklist to execute</span>
+                        </div>
+                    </div>
+                    <div class="numbered-list" style="margin-top:0.6em;">
+                        <div class="num-item fragment fade-up" data-fragment-index="4">
+                            <span class="num-badge">1</span>
+                            <span>PRD defines requirements (immutable)</span>
+                        </div>
+                        <div class="num-item fragment fade-up" data-fragment-index="5">
+                            <span class="num-badge">2</span>
+                            <span>Research documents current state (facts only, no opinions)</span>
+                        </div>
+                        <div class="num-item fragment fade-up" data-fragment-index="6">
+                            <span class="num-badge">3</span>
+                            <span>Plan describes implementation strategy</span>
+                        </div>
+                        <div class="num-item fragment fade-up" data-fragment-index="7">
+                            <span class="num-badge">4</span>
+                            <span>Roadmap provides execution checklist</span>
+                        </div>
+                        <div class="num-item fragment fade-up" data-fragment-index="8">
+                            <span class="num-badge">5</span>
+                            <span>AI implements following the roadmap</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Generate plan and roadmap from the PRD. Reference PRD created earlier, use plan doc prompt, then roadmap doc prompt, show file naming in ai/roadmaps/.
+                    </aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>MVP Definition</h2>
+                    <h3>Be Ruthless About Scope</h3>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <div class="prompt-box">
+                                <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Here's my PRD: [reference]
+
+Define the MVP:
+1. What's the ONE core problem to solve?
+2. Minimum feature set?
+3. What can we cut that feels
+   important but isn't?
+4. Simplest technical approach?
+5. How will we validate with users?
+
+We have [X weeks] and [Y team members].</code></pre>
+                            </div>
+                        </div>
+                        <div class="content-img" style="flex:0 0 40%;">
+                            <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/appSculpting.png" alt="App Sculpting">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>MVP Reality Check</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Here's my MVP feature list:
+[list features]
+
+I have [X weeks] with [Y developers].
+
+Is this realistic?
+- What should I cut?
+- What am I underestimating?
+- What's the TRUE minimum?</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>MVP Scope</h2>
+                    <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/mvp-scope-rings.svg" alt="MVP Scope Rings" class="svg-diagram" style="max-height:600px; display:block; margin:0 auto;">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Mermaid Diagrams <span style="font-size:0.6em; color:var(--text-muted);">(Optional)</span></h2>
+                    <ul>
+                        <li class="fragment fade-up" data-fragment-index="0"><strong>Why Mermaid?</strong></li>
+                        <li class="fragment fade-up" data-fragment-index="1">Text-based diagrams in markdown</li>
+                        <li class="fragment fade-up" data-fragment-index="2">AI can create, read, and modify them</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Version controllable (just text)</li>
+                        <li class="fragment fade-up" data-fragment-index="4">De facto standard for documentation</li>
+                    </ul>
+                    <div class="prompt-box fragment fade-up" style="margin-top:0.5em;" data-fragment-index="5">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Create a Mermaid diagram showing the
+system architecture for [project].</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Business Model Canvas <span style="font-size:0.6em; color:var(--text-muted);">(Optional)</span></h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Create a Business Model Canvas for [project]:
+
+1. Value Proposition
+2. Customer Segments
+3. Channels
+4. Customer Relationships
+5. Revenue Streams
+6. Key Resources
+7. Key Activities
+8. Key Partners
+9. Cost Structure</code></pre>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 4: GIT WORKFLOW CONCEPTS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#1a4731" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 4</h2>
+                    <h1>Git Workflow Concepts</h1>
+                    <p class="part-subtitle">Version control for AI-assisted development</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why Git Matters for AI Development</h2>
+                    <div class="content-with-image">
+                        <div class="content-text">
+                            <p style="font-size:0.8em; color:var(--text-secondary);"><strong>AI needs to understand version control:</strong></p>
+                            <ul>
+                                <li class="fragment fade-up" data-fragment-index="0">Reads your git history to understand changes</li>
+                                <li class="fragment fade-up" data-fragment-index="1">Can commit code with meaningful messages</li>
+                                <li class="fragment fade-up" data-fragment-index="2">Can create branches for features</li>
+                                <li class="fragment fade-up" data-fragment-index="3">Can review uncommitted changes</li>
+                                <li class="fragment fade-up" data-fragment-index="4">Works with PR workflows</li>
+                            </ul>
+                            <p class="fragment fade-up" style="font-size:0.75em; color:var(--primary-green); margin-top:0.5em; font-weight:600;" data-fragment-index="5">Not just a backup system - it's collaboration infrastructure</p>
+                        </div>
+                        <div class="content-img">
+                            <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/robotTrainConductor.png" alt="Robot Train Conductor">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Branching Mental Model</h2>
+                    <div class="branch-diagram">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">main ─────●───────●───────●────────▶
+           \             /
+            \           /
+    feature  ●─────●───●
+            [AI develops here]</code></pre>
+                    </div>
+                    <ul style="margin-top:0.5em;">
+                        <li class="fragment fade-up" data-fragment-index="0"><code>main</code> = production-ready code</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Feature branches = isolated work</li>
+                        <li class="fragment fade-up" data-fragment-index="2">AI can work on branches without breaking main</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Merge when ready</li>
+                    </ul>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Commit Patterns with AI</h2>
+                    <p style="font-size:0.8em; color:var(--text-secondary);"><strong>AI can create meaningful commits:</strong></p>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Prompt: "Please commit the changes we just made
+with a clear commit message explaining what was done."</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary); margin-top:0.4em;" data-fragment-index="0"><strong>AI generates:</strong></p>
+                    <div class="prompt-box fragment fade-up" data-fragment-index="1">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">git commit -m "Add user authentication with JWT
+
+- Implement login/logout endpoints
+- Add token validation middleware
+- Update user model with password hashing"</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>PR Workflow (Conceptual)</h2>
+                    <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/pr-workflow-flow.svg" alt="PR Workflow" class="svg-diagram">
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-blue); font-weight:500; margin-top:0.5em;" data-fragment-index="0">We'll practice this hands-on in Dev Unit 3</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Git as Your Review Tool</h2>
+                    <p style="font-size:0.85em; color:#94a3b8; margin-bottom:0.5em;">When AI modifies your codebase, <strong style="color:#e0e7ff;">git diff</strong> is how you understand what it actually did</p>
+                    <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/git-review-safety.svg" alt="Git Review and Safety Workflow" class="svg-diagram" style="max-height:500px; display:block; margin:0 auto;">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Reviewing AI's Work</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-bash hljs" data-trim="">git status          <span class="hljs-comment"># What files were changed?</span>
+git diff            <span class="hljs-comment"># What exactly changed?</span>
+git diff --<span class="hljs-built_in">stat</span>     <span class="hljs-comment"># Summary: files and lines changed</span>
+git <span class="hljs-built_in">log</span> --oneline   <span class="hljs-comment"># What has AI committed so far?</span></code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.8em;" data-fragment-index="0">This is your most important job as the human in the loop</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Git as Your Safety Net</h2>
+                    <div class="numbered-list">
+                        <div class="fragment fade-up" data-fragment-index="0"><strong style="color:#10b981;">1.</strong> Commit your current working state <span style="color:#94a3b8;">(checkpoint)</span></div>
+                        <div class="fragment fade-up" data-fragment-index="1"><strong style="color:#6366f1;">2.</strong> Let AI attempt something risky or complex</div>
+                        <div class="fragment fade-up" data-fragment-index="2"><strong style="color:#f59e0b;">3.</strong> Review the result with <code>git diff</code></div>
+                        <div class="fragment fade-up" data-fragment-index="3"><strong style="color:#10b981;">4.</strong> If it works → <code>git commit</code></div>
+                        <div class="fragment fade-up" data-fragment-index="4"><strong style="color:#f43f5e;">5.</strong> If it breaks → <code>git checkout -- .</code> <span style="color:#94a3b8;">(revert to checkpoint)</span></div>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-blue); font-weight:500; margin-top:0.8em;" data-fragment-index="5">Rule of thumb: Commit before every major AI task — treat commits as save points</p>
+                </section>
+            </section>
+
+            <!-- ==================== PART 5: ITERATIVE REFINEMENT ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#4a3520" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 5</h2>
+                    <h1>Iterative Refinement</h1>
+                    <p class="part-subtitle">Making documentation better through iteration</p>
+                    <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/newFeature.jpg" alt="New Feature Stairs" style="max-height:350px; display:block; margin:0.5em auto 0;">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Refinement Cycle</h2>
+                    <img src="./Ideation &amp; Planning with AI - Agentic Development Course_files/iterative-refinement-cycle.svg" alt="Iterative Refinement Cycle" class="svg-diagram" style="max-height:700px; display:block; margin:0 auto;">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Gap Analysis</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Review this PRD: [paste]
+
+What's missing?
+
+What questions would a developer have
+that aren't answered here?
+
+What assumptions need to be stated explicitly?</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Clarity Check</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Read this spec as if you're a developer
+who needs to implement it.
+
+What's unclear?
+What could be interpreted multiple ways?
+
+Rewrite any ambiguous sections
+to be crystal clear.</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Scope Creep Detection</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Compare this MVP definition to the
+original problem statement.
+
+Are we solving the original problem,
+or have we drifted?
+
+What features don't directly serve
+the core problem?</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Stakeholder Perspectives</h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Review this PRD from these perspectives:
+
+1. As the CEO: Is the business case strong?
+2. As lead developer: Is this buildable?
+3. As a user: Would I actually use this?
+4. As an investor: Is this worth funding?
+
+What concerns would each raise?</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Differentiation Check <span style="font-size:0.5em; color:#a5b4fc;">(Remember - from Click!)</span></h2>
+                    <div class="prompt-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">Look at our product positioning:
+1. Two most important dimensions customers use
+   to evaluate solutions in this space?
+2. Plot our product and 3 competitors on a 2x2
+3. Are we in a quadrant alone, or clustered?
+4. If clustered: differentiation isn't radical enough.
+   How could we reframe to stand alone?</code></pre>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== KEY TAKEAWAYS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Key Takeaways</h2>
+                <div class="takeaways">
+                    <div class="takeaway fragment fade-up" data-fragment-index="0">
+                        <span class="takeaway-num">1</span>
+                        <div class="takeaway-content">
+                            <strong>AI excels at ideation</strong>
+                            <span>Generate quantity, filter for quality</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="1">
+                        <span class="takeaway-num">2</span>
+                        <div class="takeaway-content">
+                            <strong>Perplexity = research assistant</strong>
+                            <span>Web-connected, with citations</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="2">
+                        <span class="takeaway-num">3</span>
+                        <div class="takeaway-content">
+                            <strong>Document pipeline matters</strong>
+                            <span>PRD → Research → Plan → Roadmap</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="3">
+                        <span class="takeaway-num">4</span>
+                        <div class="takeaway-content">
+                            <strong>Plans describe WHAT and HOW</strong>
+                            <span>Detailed implementation strategy</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="4">
+                        <span class="takeaway-num">5</span>
+                        <div class="takeaway-content">
+                            <strong>Roadmaps are checklists</strong>
+                            <span>Keep AI organized during execution</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="5">
+                        <span class="takeaway-num">6</span>
+                        <div class="takeaway-content">
+                            <strong>Be ruthless about MVP scope</strong>
+                            <span>You can always add later</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="6">
+                        <span class="takeaway-num">7</span>
+                        <div class="takeaway-content">
+                            <strong>Git is your review tool and safety net</strong>
+                            <span>Use git diff to review AI work, commits as checkpoints</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== HOMEWORK ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Before Next Time</h2>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">☐</span>
+                        <span><strong>Meet with your team for 1 hour</strong> - Use AI to brainstorm ideas, do market research, assess customer fit, and sketch MVPs using the process from today</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">☐</span>
+                        <span><strong>Narrow down to 2-3 top ideas</strong> - Come to next session with your strongest candidates ready to discuss</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">☐</span>
+                        <span><strong>Prepare for hands-on setup</strong> - Dev Unit 3 we'll configure tools and repos</span>
+                    </div>
+                </div>
+                <div class="next-preview fragment fade-up" data-fragment-index="3">
+                    <strong>Next time:</strong> Development Setup &amp; Tools — Dev Unit 3 we'll configure your environment
+                </div>
+            </section>
+
+            <!-- ==================== RESOURCES ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Resources</h2>
+                <div class="resources-list">
+                    <a href="https://perplexity.ai/" target="_blank" class="resource-item">
+                        <span class="resource-icon">🔍</span>
+                        <span class="resource-name">Perplexity AI</span>
+                        <span class="resource-url">perplexity.ai</span>
+                    </a>
+                    <a href="https://strategyzer.com/" target="_blank" class="resource-item">
+                        <span class="resource-icon">📊</span>
+                        <span class="resource-name">Business Model Canvas</span>
+                        <span class="resource-url">strategyzer.com</span>
+                    </a>
+                    <a href="https://svpg.com/" target="_blank" class="resource-item">
+                        <span class="resource-icon">📋</span>
+                        <span class="resource-name">PRD Best Practices</span>
+                        <span class="resource-url">svpg.com</span>
+                    </a>
+                    <a href="https://git-scm.com/" target="_blank" class="resource-item">
+                        <span class="resource-icon">🛠</span>
+                        <span class="resource-name">Git Documentation</span>
+                        <span class="resource-url">git-scm.com</span>
+                    </a>
+                    <a href="https://mermaid.js.org/" target="_blank" class="resource-item">
+                        <span class="resource-icon">📈</span>
+                        <span class="resource-name">Mermaid Diagrams</span>
+                        <span class="resource-url">mermaid.js.org</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ==================== END SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>See you next time!</h2>
+                <h3 class="next-session">Next: Development Setup &amp; Tools</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+        </div>
+    <div class="backgrounds"><div class="slide-background present" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: block;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#2d4a22nullnullnullnullnull" style="background-color: rgb(45, 74, 34); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a1942nullnullnullnullnull" style="background-color: rgb(74, 25, 66); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1a4731nullnullnullnullnull" style="background-color: rgb(26, 71, 49); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a3520nullnullnullnullnull" style="background-color: rgb(74, 53, 32); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: none;"><div class="slide-background-content"></div></div></div><div class="slide-number" style="display: none;"><a href="https://d1dtpagvh0qhqn.cloudfront.net/agentic2WebSlides/#/">
+					<span class="slide-number-a">1</span>
+					<span class="slide-number-delimiter">/</span>
+					<span class="slide-number-b">60</span>
+					</a></div><aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded" style="display: block;"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled highlight" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down" aria-label="below slide" disabled="disabled"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div class="aria-status" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">Ideation &amp; Planning with AI Using AI to plan before you build Agentic Development Course </div></div>
+
+    <!-- Reveal.js -->
+    <script src="./Ideation &amp; Planning with AI - Agentic Development Course_files/reveal.min.js"></script>
+    <script src="./Ideation &amp; Planning with AI - Agentic Development Course_files/notes.min.js"></script>
+    <script src="./Ideation &amp; Planning with AI - Agentic Development Course_files/highlight.min.js"></script>
+    <script src="./Ideation &amp; Planning with AI - Agentic Development Course_files/zoom.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'speaker',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+
+            // Slide dimensions - taller to fit more content
+            width: 1300,
+            height: 900,
+            margin: 0.02,
+
+            // Scale settings - allow shrinking to fit
+            minScale: 0.1,
+            maxScale: 2.0,
+
+            // Center vertically
+            center: true,
+
+            // Vertical slides
+            navigationMode: 'default',
+
+            // Speaker notes
+            showNotes: false,
+
+            // Auto-animate
+            autoAnimateEasing: 'ease-out',
+            autoAnimateDuration: 0.8,
+
+            // Plugins
+            plugins: [ RevealNotes, RevealHighlight, RevealZoom ]
+        });
+    </script>
+
+
+</body></html>

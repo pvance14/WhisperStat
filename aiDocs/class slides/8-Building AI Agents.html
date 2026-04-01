@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://d1dtpagvh0qhqn.cloudfront.net/agentic7WebSlides/ -->
+<html lang="en" class="reveal-full-page" style="--vsc-domain: &quot;d1dtpagvh0qhqn.cloudfront.net&quot;;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Unit 7: Building AI Agents - Agentic Development Course</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="./Building AI Agents_files/reveal.min.css">
+    <link rel="stylesheet" href="./Building AI Agents_files/night.min.css">
+
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet" href="./Building AI Agents_files/monokai.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./Building AI Agents_files/css2" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./Building AI Agents_files/custom.css">
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style></head>
+<body class="reveal-viewport" style="transition: transform 0.8s; --slide-width: 1300px; --slide-height: 900px; --slide-scale: 0.9745555555555556;">
+    <div class="reveal slide center focused has-vertical-slides has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade" style="">
+        <div class="slides" style="width: 1300px; height: 900px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(0.974556);">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="image-reveal present" data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 6.5px; display: block;" data-fragment="-1">
+                <img src="./Building AI Agents_files/wizardAprentice.png" alt="Wizard&#39;s apprentice picking up a glowing wand" class="hero-image">
+                <div class="fragment fade-up" data-fragment-index="0">
+                    <h1 class="title-main">Dev Unit 7: Building AI Agents</h1>
+                    <h3 class="title-sub">From using agents to programming them</h3>
+                    <div class="title-meta">
+                        <span class="course-name">Agentic Development Course</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section style="top: 93.5px; display: block;" hidden="" aria-hidden="true" class="future">
+                <h2>What We'll Cover Today</h2>
+                <div class="agenda-grid">
+                    <div class="agenda-item fragment fade-up" data-fragment-index="0">
+                        <span class="agenda-number">1</span>
+                        <div class="agenda-content">
+                            <strong>Why Build Agents?</strong>
+                            <span>From user to creator</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="1">
+                        <span class="agenda-number">2</span>
+                        <div class="agenda-content">
+                            <strong>The ReAct Pattern in Code</strong>
+                            <span>Implementing Reasoning + Acting</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="2">
+                        <span class="agenda-number">3</span>
+                        <div class="agenda-content">
+                            <strong>LangChain Fundamentals</strong>
+                            <span>Tools, agents, and the execution loop</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="3">
+                        <span class="agenda-number">4</span>
+                        <div class="agenda-content">
+                            <strong>Building Your First Tools</strong>
+                            <span>Calculator and web search</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="4">
+                        <span class="agenda-number">5</span>
+                        <div class="agenda-content">
+                            <strong>Important Concepts &amp; Gotchas</strong>
+                            <span>Error handling and common pitfalls</span>
+                        </div>
+                    </div>
+                    <div class="agenda-item fragment fade-up" data-fragment-index="5">
+                        <span class="agenda-number">6</span>
+                        <div class="agenda-content">
+                            <strong>Homework</strong>
+                            <span>Start building your agent</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== LEARNING OBJECTIVES ==================== -->
+            <section style="top: 120.5px; display: block;" hidden="" aria-hidden="true" class="future">
+                <h2>What You Should Be Able to DO After Today</h2>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">1.</span>
+                        <span><strong>Build an agent from scratch</strong> using the ReAct pattern (Think → Act → Observe)</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">2.</span>
+                        <span><strong>Create custom tools</strong> with proper names, descriptions, and Zod schemas</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">3.</span>
+                        <span><strong>Wire tools into an agent</strong> using LangChain's createAgent</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="3">
+                        <span class="homework-check">4.</span>
+                        <span><strong>Build a two-tool agent</strong> with calculator and web search</span>
+                    </div>
+                </div>
+                <blockquote class="fragment fade-up" style="margin-top:0.6em;" data-fragment-index="4">Today you go from using agents to building them. This is where it gets fun.</blockquote>
+            </section>
+
+            <!-- ==================== FROM USER TO CREATOR ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#1e3a5f" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 1</h2>
+                    <h1>Why Build Agents?</h1>
+                    <p class="part-subtitle">From user to creator</p>
+                </section>
+
+                <section class="image-reveal future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>From User to Creator</h2>
+                    <img src="./Building AI Agents_files/portal.png" alt="Stepping through a portal from consumer to builder" class="hero-image">
+                    <div class="fragment fade-up" data-fragment-index="0">
+                        <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">In previous units, you learned to <strong>use</strong> AI agents:</p>
+                        <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                            <li>Claude Code and Cursor as pre-built agents</li>
+                            <li>MCP tools as pre-built extensions</li>
+                            <li>Sub-agents as pre-built orchestration</li>
+                        </ul>
+                        <p style="font-size:0.9em; color:var(--primary-green); font-weight:600; margin-top:0.8em;"><strong>Today:</strong> You learn to <strong>build</strong> agents from scratch</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Single-Shot → Agent-Powered</h2>
+                    <img src="./Building AI Agents_files/single-shot-vs-agent.svg" alt="Single-Shot vs Agent-Powered comparison" style="max-width:90%; max-height:70vh; margin:0.5em auto; display:block;">
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Single-Shot → Agent-Powered</h2>
+                    <div style="display:flex; gap:1.5em; justify-content:center; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:400px; max-width:500px;">
+                            <p style="font-size:0.8em; color:var(--primary-blue); font-weight:600;">Most apps use AI like this (single-shot):</p>
+                            <ul style="font-size:0.75em; text-align:left;">
+                                <li>One prompt → structured JSON back → display result</li>
+                                <li class="fragment fade-up" data-fragment-index="0">Generate a schedule, extract data from an image, produce an analysis</li>
+                            </ul>
+                        </div>
+                        <div style="flex:1; min-width:400px; max-width:500px;">
+                            <p style="font-size:0.8em; color:var(--primary-green); font-weight:600;">Today you learn to build AI that does this (agents):</p>
+                            <ul style="font-size:0.75em; text-align:left;">
+                                <li>Decides which tool to use → calls it → reasons about result → decides next step</li>
+                                <li class="fragment fade-up" data-fragment-index="1">A scheduling app: agent calls <code>check_calendar</code> → <code>find_open_slot</code> → <code>create_block</code></li>
+                                <li class="fragment fade-up" data-fragment-index="2">A data extraction app: agent retrieves similar records to resolve ambiguous inputs</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="key-concept fragment fade-up" style="margin-top:0.6em;" data-fragment-index="3">
+                        <strong>The difference:</strong> Single-shot = you do the thinking. Agents = the AI does the thinking.
+                    </div>
+                    <blockquote class="fragment fade-up" style="margin-top:0.5em; font-size:0.8em; border-left:3px solid var(--primary-blue); padding-left:0.8em;" data-fragment-index="4">
+                        <strong>Design check:</strong> Not every feature needs an agent. Ask: “What task will this handle better than a single prompt?” If you can’t answer clearly, a single LLM call is the right choice.
+                    </blockquote>
+                </section>
+
+                <section class="image-reveal future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why Does This Matter?</h2>
+                    <img src="./Building AI Agents_files/buildingForklifts.png" alt="From driving a forklift to building forklifts" class="hero-image">
+                    <div class="fragment fade-up" data-fragment-index="0">
+                        <table class="feature-table">
+                            <thead>
+                                <tr>
+                                    <th>As an Agent User</th>
+                                    <th>As an Agent Builder</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Use tools someone else made</td>
+                                    <td>Create custom tools for any API or system</td>
+                                </tr>
+                                <tr>
+                                    <td>Limited to existing workflows</td>
+                                    <td>Design any reasoning workflow</td>
+                                </tr>
+                                <tr>
+                                    <td>Depend on platform features</td>
+                                    <td>Build exactly what you need</td>
+                                </tr>
+                                <tr>
+                                    <td>Consume AI products</td>
+                                    <td>Create AI products</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;"><strong>The shift:</strong> From operating the forklift to <em>building</em> forklifts</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>What You Already Know</h2>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.4em;">From Dev Unit 1:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">LLMs are "world's best autocomplete"</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Agents = LLM + Tools + Reasoning Loop</li>
+                        <li class="fragment fade-up" data-fragment-index="2">ReAct: Think → Act → Observe → Repeat</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.9em; color:var(--primary-green); font-weight:600; margin-top:0.8em;" data-fragment-index="3">Today we turn that theory into running code</p>
+                </section>
+            </section>
+
+            <!-- ==================== PART 1: REACT PATTERN IN CODE ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#2d4a22" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 2</h2>
+                    <h1>The ReAct Pattern in Code</h1>
+                    <p class="part-subtitle">From theory to implementation</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Quick Refresher: Remember Unit 1?</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">In <strong>Dev Unit 1</strong>, you learned:</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">LLMs are "world's best autocomplete" — predicting likely next tokens</li>
+                        <li class="fragment fade-up" data-fragment-index="1"><strong>Agents</strong> = LLM + Tools + Reasoning Loop</li>
+                        <li class="fragment fade-up" data-fragment-index="2"><strong>ReAct</strong>: Think → Act → Observe → Repeat</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.6em;" data-fragment-index="3"><strong>Today:</strong> We turn that theory into running code. Same concepts, real implementation.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Quick Recap: ReAct</h2>
+                    <img src="./Building AI Agents_files/react-loop.svg" alt="ReAct Loop: Think → Act → Observe → Repeat" style="max-width:700px; margin:0.5em auto; display:block;">
+                    <p style="font-size:0.8em; color:var(--text-muted); margin-top:0.4em;">Now let's see how it actually works under the hood.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>How Tool Calling Works</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Step 1:</strong> You send a message + tool definitions to the LLM</p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-comment">// You tell the model: "Here are tools you can use"</span>
+<span class="hljs-keyword">const</span> tools = [
+  {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"calculator"</span>,
+    <span class="hljs-attr">description</span>: <span class="hljs-string">"Evaluate math expressions"</span>,
+    <span class="hljs-attr">schema</span>: { <span class="hljs-attr">expression</span>: <span class="hljs-string">"string"</span> }
+  },
+  {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"web_search"</span>,
+    <span class="hljs-attr">description</span>: <span class="hljs-string">"Search the web"</span>,
+    <span class="hljs-attr">schema</span>: { <span class="hljs-attr">query</span>: <span class="hljs-string">"string"</span> }
+  }
+];</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>How Tool Calling Works (cont.)</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Step 2:</strong> Model decides — respond with text OR request a tool call</p>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-json hljs" data-trim=""><span class="hljs-comment">// User asks: "What is 1523 * 456?"</span>
+
+<span class="hljs-comment">// Model returns (NOT text — a structured tool call):</span>
+<span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"tool_calls"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"calculator"</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">"arguments"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">"expression"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"1523 * 456"</span> <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span></code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary); margin-top:0.5em;" data-fragment-index="0"><strong>Step 3:</strong> Your code executes the tool, returns the result</p>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-secondary);" data-fragment-index="1"><strong>Step 4:</strong> Model sees the result, decides if it needs more tools or can answer</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Tool Calling Flow</h2>
+                    <img src="./Building AI Agents_files/tool-calling-flow.svg" alt="Tool Calling Flow: 4-step sequence between Your Code, LLM, and Tool" style="max-width:700px; margin:0.5em auto; display:block;">
+                    <p style="font-size:0.75em; color:var(--text-muted); margin-top:0.4em;">The complete request-response cycle between your code, the LLM, and the tool.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The Agent Loop (Pseudocode)</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">function runAgent(userMessage, tools):
+    messages = [userMessage]
+
+    while true:
+        response = llm.call(messages, tools)
+
+        if response.hasToolCalls:
+            for each toolCall in response.toolCalls:
+                result = execute(toolCall)
+                messages.append(result)
+        else:
+            return response.text   // Final answer!</code></pre>
+                    </div>
+                    <div class="key-concept fragment fade-up" data-fragment-index="0">
+                        <strong>This is the core of every agent framework.</strong> LangChain just makes it robust, with error handling, streaming, and state management.
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PART 2: LANGCHAIN FUNDAMENTALS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section data-background-color="#4a1942" style="top: 450px; display: none;" class="has-dark-background">
+                    <h2 class="part-header">Part 3</h2>
+                    <h1>LangChain Fundamentals</h1>
+                    <p class="part-subtitle">Tools, agents, and the execution loop</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>What is LangChain?</h2>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0"><strong>The dominant agent framework</strong> — 90M+ monthly downloads</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Available in <strong>Python</strong> and <strong>JavaScript/TypeScript</strong></li>
+                        <li class="fragment fade-up" data-fragment-index="2">Provides abstractions for models, tools, agents, memory, and more</li>
+                        <li class="fragment fade-up" data-fragment-index="3">We'll use <strong>LangChain.js</strong> (TypeScript)</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.6em;" data-fragment-index="4"><strong>Key packages:</strong></p>
+                    <div class="code-box fragment fade-up" data-fragment-index="5">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">langchain               — Main package (createAgent)
+@langchain/anthropic    — Claude model integration
+@langchain/openai       — OpenAI model integration (alternative)
+@langchain/langgraph    — Agent graph execution engine
+@langchain/core         — Tool definitions, prompts
+@langchain/classic      — Vector stores (in-memory, etc.)</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.75em; color:var(--text-muted); margin-top:0.4em;" data-fragment-index="6"><strong>Note:</strong> Older tutorials may reference <code>createReactAgent</code> from <code>@langchain/langgraph/prebuilt</code>. This still works but the modern API uses <code>createAgent</code> from <code>langchain</code>.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Installing LangChain</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-bash hljs" data-trim=""><span class="hljs-comment"># Core packages</span>
+npm install langchain @langchain/anthropic @langchain/openai @langchain/langgraph @langchain/core
+
+<span class="hljs-comment"># For homework tools</span>
+npm install @langchain/tavily          <span class="hljs-comment"># Web search</span>
+npm install @langchain/classic         <span class="hljs-comment"># In-memory vector store</span>
+
+<span class="hljs-comment"># Schema validation</span>
+npm install zod
+
+<span class="hljs-comment"># Environment (use ONE of these model providers)</span>
+<span class="hljs-built_in">export</span> ANTHROPIC_API_KEY=<span class="hljs-string">"your-key-here"</span>  <span class="hljs-comment"># If using Claude</span>
+<span class="hljs-built_in">export</span> OPENAI_API_KEY=<span class="hljs-string">"your-key-here"</span>     <span class="hljs-comment"># If using OpenAI</span>
+<span class="hljs-built_in">export</span> TAVILY_API_KEY=<span class="hljs-string">"your-key-here"</span></code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Your First Tool</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">import</span> { tool } <span class="hljs-keyword">from</span> <span class="hljs-string">"@langchain/core/tools"</span>;
+<span class="hljs-keyword">import</span> { z } <span class="hljs-keyword">from</span> <span class="hljs-string">"zod"</span>;
+
+<span class="hljs-keyword">const</span> greetingTool = <span class="hljs-title function_">tool</span>(
+  <span class="hljs-function">(<span class="hljs-params">{ name }</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">`Hello, <span class="hljs-subst">${name}</span>! Welcome to BYU.`</span>;
+  },
+  {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"greeting"</span>,
+    <span class="hljs-attr">description</span>: <span class="hljs-string">"Greet a person by name"</span>,
+    <span class="hljs-attr">schema</span>: z.<span class="hljs-title function_">object</span>({
+      <span class="hljs-attr">name</span>: z.<span class="hljs-title function_">string</span>().<span class="hljs-title function_">describe</span>(<span class="hljs-string">"The person's name"</span>),
+    }),
+  }
+);</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="0"><strong>Three parts:</strong> Function, name + description, schema (Zod)</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Anatomy of a Tool</h2>
+                    <img src="./Building AI Agents_files/tool-anatomy.svg" alt="Anatomy of a Tool: Function, Description, Schema" style="max-width:400px; margin:0.5em auto; display:block;">
+                    <div class="key-concept fragment fade-up" data-fragment-index="0">
+                        <strong>The description is the most important part.</strong> It tells the LLM <em>when</em> this tool should be used.
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Good vs Bad Tool Descriptions</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">✗ "Searches the web"
+
+✓ "Search the web for current information that is not
+    available in your training data, such as recent events,
+    current prices, or real-time data"</code></pre>
+                    </div>
+                    <div class="code-box fragment fade-up" data-fragment-index="0">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">✗ "Does math"
+
+✓ "Evaluate mathematical expressions. Use this for any
+    arithmetic, percentages, or calculations where
+    precision matters"</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.5em;" data-fragment-index="1"><strong>Think of it as instructions for a coworker:</strong> When should they use this tool vs. figure it out themselves?</p>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-blue); font-weight:600; margin-top:0.5em;" data-fragment-index="2">Another example — a scheduling app:</p>
+                    <div class="code-box fragment fade-up" data-fragment-index="3">
+                        <pre class="code-wrapper"><code class="language-text hljs language-plaintext" data-trim="">✗ "Handles scheduling"
+
+✓ "Find available time slots in the user's calendar between
+    their existing events. Use when the user needs to schedule
+    a new task and you need to know what times are open."</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Creating a ReAct Agent</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">import</span> { <span class="hljs-title class_">ChatAnthropic</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"@langchain/anthropic"</span>;
+<span class="hljs-comment">// Or: import { ChatOpenAI } from "@langchain/openai";</span>
+<span class="hljs-keyword">import</span> { createAgent } <span class="hljs-keyword">from</span> <span class="hljs-string">"langchain"</span>;
+
+<span class="hljs-comment">// 1. Choose your model</span>
+<span class="hljs-keyword">const</span> model = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ChatAnthropic</span>({
+  <span class="hljs-attr">model</span>: <span class="hljs-string">"claude-sonnet-4-5"</span>,
+  <span class="hljs-attr">temperature</span>: <span class="hljs-number">0</span>,
+});
+<span class="hljs-comment">// Or: const model = new ChatOpenAI({ model: "gpt-4o", temperature: 0 });</span>
+
+<span class="hljs-comment">// 2. Define your tools (we'll build real ones next)</span>
+<span class="hljs-keyword">const</span> tools = [greetingTool, calculatorTool, searchTool];
+
+<span class="hljs-comment">// 3. Create the agent</span>
+<span class="hljs-keyword">const</span> agent = <span class="hljs-title function_">createAgent</span>({
+  <span class="hljs-attr">model</span>: model,
+  <span class="hljs-attr">tools</span>: tools,
+});</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="0"><strong>That's it.</strong> LangChain handles the ReAct loop, tool routing, and state management.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Running the Agent</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-comment">// Simple invocation</span>
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> agent.<span class="hljs-title function_">invoke</span>({
+  <span class="hljs-attr">messages</span>: [{ <span class="hljs-attr">role</span>: <span class="hljs-string">"user"</span>, <span class="hljs-attr">content</span>: <span class="hljs-string">"What is 42 * 58?"</span> }],
+});
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(result.<span class="hljs-property">messages</span>[result.<span class="hljs-property">messages</span>.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>].<span class="hljs-property">content</span>);
+<span class="hljs-comment">// → "42 × 58 = 2,436"</span></code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.5em;" data-fragment-index="0"><strong>What happened behind the scenes:</strong></p>
+                    <ol class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="1">
+                        <li>Model saw the question + available tools</li>
+                        <li>Model chose <code>calculator</code> tool with <code>"42 * 58"</code></li>
+                        <li>Agent executed the tool → got <code>2436</code></li>
+                        <li>Model saw the result → generated a human-friendly answer</li>
+                    </ol>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Streaming Agent Output</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-comment">// Stream for real-time UI updates</span>
+<span class="hljs-keyword">const</span> stream = <span class="hljs-keyword">await</span> agent.<span class="hljs-title function_">stream</span>({
+  <span class="hljs-attr">messages</span>: [{ <span class="hljs-attr">role</span>: <span class="hljs-string">"user"</span>, <span class="hljs-attr">content</span>: <span class="hljs-string">"What is 42 * 58?"</span> }],
+});
+
+<span class="hljs-keyword">for</span> <span class="hljs-keyword">await</span> (<span class="hljs-keyword">const</span> chunk <span class="hljs-keyword">of</span> stream) {
+  <span class="hljs-comment">// See each step as it happens</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"Step:"</span>, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(chunk, <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>));
+}</code></pre>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="0"><strong>Why stream?</strong> In a chatbot UI, users see the agent "thinking" in real time instead of waiting for the final answer.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>The LangGraph State Machine</h2>
+                    <p style="font-size:0.8em; color:var(--text-secondary); margin-bottom:0.4em;">Under the hood, <code>createAgent</code> builds a graph:</p>
+                    <img src="./Building AI Agents_files/langgraph-state-machine.svg" alt="LangGraph State Machine: __start__ → LLM → Tools/End" style="max-width:400px; margin:0.5em auto; display:block;">
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.4em;" data-fragment-index="0"><strong>The conditional edge</strong> checks: did the model return tool calls? If yes → execute tools → loop back. If no → done.</p>
+                </section>
+            </section>
+
+            <!-- ==================== PART 3: BUILDING YOUR FIRST TOOLS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section class="image-reveal has-dark-background" data-background-color="#1a4731" style="top: 450px; display: none;">
+                    <img src="./Building AI Agents_files/forge.png" alt="Blacksmith forging digital tools at a glowing forge" class="hero-image">
+                    <div class="fragment fade-up" data-fragment-index="0">
+                        <h2 class="part-header">Part 4</h2>
+                        <h1>Building Your First Tools</h1>
+                        <p class="part-subtitle">Calculator and web search</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Tool 1: Calculator</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">import</span> { tool } <span class="hljs-keyword">from</span> <span class="hljs-string">"@langchain/core/tools"</span>;
+<span class="hljs-keyword">import</span> { z } <span class="hljs-keyword">from</span> <span class="hljs-string">"zod"</span>;
+
+<span class="hljs-keyword">const</span> calculator = <span class="hljs-title function_">tool</span>(
+  <span class="hljs-function">(<span class="hljs-params">{ expression }</span>) =&gt;</span> {
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-comment">// Safely evaluate mathematical expressions</span>
+      <span class="hljs-keyword">const</span> result = <span class="hljs-title class_">Function</span>(
+        <span class="hljs-string">'"use strict"; return ('</span> + expression + <span class="hljs-string">")"</span>
+      )();
+
+      <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isFinite</span>(result)) {
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Error: Result is infinity or NaN"</span>;
+      }
+      <span class="hljs-keyword">return</span> <span class="hljs-title class_">String</span>(result);
+    } <span class="hljs-keyword">catch</span> (error) {
+      <span class="hljs-keyword">return</span> <span class="hljs-string">`Error: <span class="hljs-subst">${error.message}</span>`</span>;
+    }
+  },
+  {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"calculator"</span>,
+    <span class="hljs-attr">description</span>:
+      <span class="hljs-string">"Evaluate mathematical expressions. Use this for any "</span> +
+      <span class="hljs-string">"arithmetic, percentages, or calculations where precision "</span> +
+      <span class="hljs-string">"matters. Input should be a valid JS math expression "</span> +
+      <span class="hljs-string">"like '2 + 2' or 'Math.sqrt(16)' or '0.15 * 200'."</span>,
+    <span class="hljs-attr">schema</span>: z.<span class="hljs-title function_">object</span>({
+      <span class="hljs-attr">expression</span>: z.<span class="hljs-title function_">string</span>().<span class="hljs-title function_">describe</span>(
+        <span class="hljs-string">"A JavaScript math expression to evaluate"</span>
+      ),
+    }),
+  }
+);</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Calculator: Key Design Decisions</h2>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-bottom:0.4em;">Why <code>Function()</code> instead of <code>eval()</code>?</p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Runs in strict mode — but still NOT safe for untrusted input</li>
+                        <li class="fragment fade-up" data-fragment-index="1">No access to enclosing scope variables</li>
+                        <li class="fragment fade-up" data-fragment-index="2">This is a toy for learning. In production, use a proper math parser (e.g., <code>mathjs</code>) — <code>Function()</code> can still execute arbitrary JavaScript</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-top:0.6em;" data-fragment-index="3">Why return strings, not numbers?</p>
+                    <ul class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="4">
+                        <li>Tools always return strings to the LLM</li>
+                        <li>The LLM formats the result for the user</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-top:0.6em;" data-fragment-index="5">Why catch errors?</p>
+                    <ul class="fragment fade-up" style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;" data-fragment-index="6">
+                        <li>Return error <em>messages</em>, don't throw</li>
+                        <li>The LLM can interpret the error and try again or explain the issue</li>
+                    </ul>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Tool 2: Web Search (Tavily)</h2>
+                    <div class="code-box">
+                        <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">import</span> { <span class="hljs-title class_">TavilySearch</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"@langchain/tavily"</span>;
+<span class="hljs-keyword">import</span> { tool } <span class="hljs-keyword">from</span> <span class="hljs-string">"@langchain/core/tools"</span>;
+<span class="hljs-keyword">import</span> { z } <span class="hljs-keyword">from</span> <span class="hljs-string">"zod"</span>;
+
+<span class="hljs-keyword">const</span> webSearch = <span class="hljs-title function_">tool</span>(
+  <span class="hljs-keyword">async</span> ({ query }) =&gt; {
+    <span class="hljs-keyword">const</span> tavily = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TavilySearch</span>({
+      <span class="hljs-attr">maxResults</span>: <span class="hljs-number">3</span>,
+    });
+    <span class="hljs-keyword">const</span> results = <span class="hljs-keyword">await</span> tavily.<span class="hljs-title function_">invoke</span>({ query });
+
+    <span class="hljs-comment">// Format results for the LLM</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(results)) {
+      <span class="hljs-keyword">return</span> results
+        .<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> <span class="hljs-string">`**<span class="hljs-subst">${r.title}</span>**\n<span class="hljs-subst">${r.content}</span>\nURL: <span class="hljs-subst">${r.url}</span>`</span>)
+        .<span class="hljs-title function_">join</span>(<span class="hljs-string">"\n\n---\n\n"</span>);
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">String</span>(results);
+  },
+  {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"web_search"</span>,
+    <span class="hljs-attr">description</span>:
+      <span class="hljs-string">"Search the web for current information. Use when you "</span> +
+      <span class="hljs-string">"need up-to-date data not in your training data: news, "</span> +
+      <span class="hljs-string">"current events, prices, recent releases, etc."</span>,
+    <span class="hljs-attr">schema</span>: z.<span class="hljs-title function_">object</span>({
+      <span class="hljs-attr">query</span>: z.<span class="hljs-title function_">string</span>().<span class="hljs-title function_">describe</span>(<span class="hljs-string">"The search query"</span>),
+    }),
+  }
+);</code></pre>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Why Tavily?</h2>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Tavily</th>
+                                <th>Raw Google API</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><strong>Designed for</strong></td>
+                                <td>LLM agents</td>
+                                <td>Humans</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td><strong>Returns</strong></td>
+                                <td>Structured content + metadata</td>
+                                <td>Links + snippets</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td><strong>Relevance</strong></td>
+                                <td>Optimized for AI consumption</td>
+                                <td>Generic ranking</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td><strong>Setup</strong></td>
+                                <td>One API key</td>
+                                <td>Complex OAuth</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="4">
+                                <td><strong>Free tier</strong></td>
+                                <td>1,000 searches/month</td>
+                                <td>Limited</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--primary-green); font-weight:600; margin-top:0.5em;" data-fragment-index="5"><strong>Tavily is purpose-built for agent tool use</strong> — the results are pre-structured for LLMs to consume effectively.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h1>In Practice</h1>
+                    <aside class="notes">
+                        Demo building a simple agent with one tool (calculator) in VS Code. Show the tool definition, agent creation, and invocation. Run it live and show the ReAct loop in verbose mode.
+                    </aside>
+                </section>
+            </section>
+
+            <!-- ==================== PART 4: IMPORTANT CONCEPTS & GOTCHAS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section class="image-reveal has-dark-background" data-background-color="#2a3f5f" style="top: 450px; display: none;">
+                    <img src="./Building AI Agents_files/gotchas.png" alt="Cartoon character walking into a gauntlet of slapstick dangers" class="hero-image">
+                    <div class="fragment fade-up" data-fragment-index="0">
+                        <h2 class="part-header">Part 5</h2>
+                        <h1>Important Concepts &amp; Gotchas</h1>
+                        <p class="part-subtitle">Error handling and common pitfalls</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Error Handling in Tools</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Always catch errors in tools — never throw</strong></p>
+                    <div style="display:flex; gap:1em; justify-content:center; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:400px; max-width:550px;">
+                            <p style="font-size:0.75em; color:var(--primary-red); font-weight:600;">Bad — throws, crashes the agent loop:</p>
+                            <div class="code-box" style="width:100%; max-width:100%;">
+                                <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">const</span> badTool = <span class="hljs-title function_">tool</span>(
+  <span class="hljs-function">(<span class="hljs-params">{ expression }</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">eval</span>(expression);  <span class="hljs-comment">// Could throw!</span>
+  },
+  { ... }
+);</code></pre>
+                            </div>
+                        </div>
+                        <div style="flex:1; min-width:400px; max-width:550px;">
+                            <p style="font-size:0.75em; color:var(--primary-green); font-weight:600;">Good — returns error message, agent can adapt:</p>
+                            <div class="code-box" style="width:100%; max-width:100%;">
+                                <pre class="code-wrapper"><code class="language-javascript hljs" data-trim=""><span class="hljs-keyword">const</span> goodTool = <span class="hljs-title function_">tool</span>(
+  <span class="hljs-function">(<span class="hljs-params">{ expression }</span>) =&gt;</span> {
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-keyword">const</span> result = <span class="hljs-title class_">Function</span>(
+        <span class="hljs-string">'"use strict"; return ('</span> + expression + <span class="hljs-string">')'</span>
+      )();
+      <span class="hljs-keyword">return</span> <span class="hljs-title class_">String</span>(result);
+    } <span class="hljs-keyword">catch</span> (error) {
+      <span class="hljs-keyword">return</span> <span class="hljs-string">`Error: <span class="hljs-subst">${error.message}</span>.
+Try a simpler expression.`</span>;
+    }
+  },
+  { ... }
+);</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.4em;" data-fragment-index="0"><strong>Why?</strong> The LLM can read the error message and try a different approach.</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Common Pitfalls</h2>
+                    <table class="strategy-table">
+                        <thead>
+                            <tr>
+                                <th>Pitfall</th>
+                                <th>Symptom</th>
+                                <th>Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td>Vague tool descriptions</td>
+                                <td>Agent picks wrong tool</td>
+                                <td>Be specific about WHEN to use each tool</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td>No error handling</td>
+                                <td>Agent crashes on bad input</td>
+                                <td>Always try/catch in tools</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td>Too many tools</td>
+                                <td>Agent confused, slow</td>
+                                <td>Start with 3-5 tools max</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td>No iteration limit</td>
+                                <td>Infinite loops, high cost</td>
+                                <td>Set recursion/iteration limits</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="4">
+                                <td>Forgetting async</td>
+                                <td>Tool hangs or fails</td>
+                                <td>Web/RAG tools must be <code>async</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== PART 5: YOUR INDIVIDUAL AGENT PROJECT ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="stack future">
+                <section class="image-reveal has-dark-background" data-background-color="#1e3a5f" style="top: 450px; display: none;">
+                    <img src="./Building AI Agents_files/enteringTheCave.png" alt="Lone adventurer at the entrance of a glowing cave" class="hero-image">
+                    <div class="fragment fade-up" data-fragment-index="0">
+                        <h2 class="part-header">Part 6</h2>
+                        <h1>Your Individual Agent Project</h1>
+                        <p class="part-subtitle">Start building your agent</p>
+                    </div>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>What You're Building</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">A <strong>mini version of your term project</strong> — done individually. Practice the full agentic development workflow on your own.</p>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;"><strong>This is a two-part homework spanning Units 7 and 8.</strong></p>
+                    <div class="homework-list">
+                        <div class="homework-item fragment fade-up" data-fragment-index="0">
+                            <span class="homework-check">1.</span>
+                            <span><strong>Calculator tool</strong> — evaluates mathematical expressions</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="1">
+                            <span class="homework-check">2.</span>
+                            <span><strong>Web search tool</strong> — searches the web using Tavily (or similar)</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="2">
+                            <span class="homework-check">3.</span>
+                            <span><strong>RAG tool</strong> — in-memory vector search over a documentation set (Unit 8)</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="3">
+                            <span class="homework-check">4.</span>
+                            <span><strong>Web UI</strong> — a chat interface for interacting with your agent</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="4">
+                            <span class="homework-check">5.</span>
+                            <span><strong>Conversation memory</strong> — multi-turn context (Unit 8)</span>
+                        </div>
+                        <div class="homework-item fragment fade-up" data-fragment-index="5">
+                            <span class="homework-check">6.</span>
+                            <span><strong>Streaming responses</strong> — recommended, makes the UI dramatically better</span>
+                        </div>
+                    </div>
+                    <aside class="notes">
+                        Emphasize that the web UI is the expectation, not a terminal app. With their development tools, scaffolding an Express server with a chat page should be straightforward. Terminal fallback is acceptable but not the target.
+                    </aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>API Keys &amp; Costs</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>You'll need API keys (free tiers available):</strong></p>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Free Tier</th>
+                                <th>Sign Up</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><strong>Anthropic</strong></td>
+                                <td>$5 credit for new accounts</td>
+                                <td>console.anthropic.com</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td><strong>OpenAI</strong> (alternative)</td>
+                                <td>$5 credit for new accounts</td>
+                                <td>platform.openai.com</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td><strong>Tavily</strong></td>
+                                <td>1,000 searches/month</td>
+                                <td>tavily.com</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="fragment fade-up" style="font-size:0.8em; color:var(--text-muted); margin-top:0.4em;" data-fragment-index="3"><strong>Estimated homework cost:</strong> $2–5 total (use <code>claude-haiku-3-5</code> or <code>gpt-4o-mini</code> to minimize costs)</p>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>How You Build This</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">This is a <strong>software development project</strong>. Build it the way you've been taught.</p>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.5em;">Your repo should demonstrate the same infrastructure and process standards as your term project. We will be reviewing your repos — not just whether the chatbot works, but <strong>how you built it</strong>.</p>
+                    <p style="font-size:0.85em; color:var(--primary-blue); font-weight:600; margin-top:0.6em;">Key packages:</p>
+                    <p style="font-size:0.8em; color:var(--text-secondary);"><code>langchain</code>, <code>@langchain/anthropic</code> (or <code>@langchain/openai</code>), <code>@langchain/langgraph</code>, <code>@langchain/core</code>, <code>@langchain/tavily</code>, <code>zod</code></p>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.4em;" data-fragment-index="0">For Unit 8's RAG portion: <code>@langchain/classic</code> and an embeddings provider</p>
+                    <aside class="notes">
+                        No starter template on purpose. They should use their development tools to scaffold this — that's the point. The old readline chat loop is gone.
+                    </aside>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>What We'll Look For in Your Repo</h2>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;">Same expectations as your term project — smaller scope, individual accountability.</p>
+                    <table class="feature-table" style="font-size:0.75em;">
+                        <thead>
+                            <tr>
+                                <th>Rubric Area</th>
+                                <th>What This Means for Your Agent Project</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment fade-up" data-fragment-index="0">
+                                <td><strong>PRD &amp; Document-Driven Dev</strong></td>
+                                <td>Brief PRD (what it does, tools, problem it solves). Roadmap. Development driven by documents, not ad-hoc prompting.</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="1">
+                                <td><strong>AI Dev Infrastructure</strong></td>
+                                <td><code>aiDocs/</code> with <code>context.md</code>, <code>.gitignore</code> configured, no secrets committed. AI tools can orient from your context file.</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="2">
+                                <td><strong>Phase-by-Phase Implementation</strong></td>
+                                <td>Roadmap with phases checked off. Git history showing incremental progress — not one giant commit. Multi-session workflow.</td>
+                            </tr>
+                            <tr class="fragment fade-up" data-fragment-index="3">
+                                <td><strong>Structured Logging &amp; Debugging</strong></td>
+                                <td>Structured logging (not just <code>console.log</code>). <code>scripts/</code> folder with <code>test.sh</code>. Proper exit codes. Test-log-fix loops.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section class="future" aria-hidden="true" style="top: 450px; display: none;">
+                    <h2>Phase 1 Goals (This Unit)</h2>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="0">Set up your project with proper infrastructure (repo structure, <code>aiDocs/</code>, PRD, roadmap)</li>
+                        <li class="fragment fade-up" data-fragment-index="1">Build and test your first two tools (calculator + web search)</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Create the agent and verify it routes questions to the right tool</li>
+                        <li class="fragment fade-up" data-fragment-index="3">Begin your web UI</li>
+                        <li class="fragment fade-up" data-fragment-index="4">Push your progress with meaningful, incremental commits</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- ==================== SETUP TIME ==================== -->
+            <section class="image-reveal future" style="top: 450px; display: none;" hidden="" aria-hidden="true">
+                <img src="./Building AI Agents_files/madScientist.png" alt="Mad scientist throwing the switch" class="hero-image">
+                <div class="fragment fade-up" data-fragment-index="0">
+                    <h2>Setup Time</h2>
+                    <p style="font-size:0.9em; color:var(--primary-blue); font-weight:600; margin-bottom:0.6em;">Use your development tools to set up your project — this is a good first test of your workflow.</p>
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:0.4em;"><strong>Common blockers:</strong></p>
+                    <ul style="font-size:0.8em; text-align:left; max-width:800px; margin:0 auto;">
+                        <li class="fragment fade-up" data-fragment-index="1">API key issues (get them configured now)</li>
+                        <li class="fragment fade-up" data-fragment-index="2">Node.js version problems (need v18+)</li>
+                    </ul>
+                    <p class="fragment fade-up" style="font-size:0.85em; color:var(--text-secondary); margin-top:0.6em;" data-fragment-index="3">Surface these now while we're all in the same room. If you hit setup issues, ask. That's what this time is for.</p>
+                </div>
+            </section>
+
+            <!-- ==================== BEFORE NEXT TIME ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Before Next Time</h2>
+                <div class="homework-list">
+                    <div class="homework-item fragment fade-up" data-fragment-index="0">
+                        <span class="homework-check">1.</span>
+                        <span><strong>Get your project set up</strong> with proper infrastructure</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="1">
+                        <span class="homework-check">2.</span>
+                        <span><strong>Get your first two tools working</strong> (calculator + web search)</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="2">
+                        <span class="homework-check">3.</span>
+                        <span><strong>Push your progress</strong> with incremental commits</span>
+                    </div>
+                    <div class="homework-item fragment fade-up" data-fragment-index="3">
+                        <span class="homework-check">4.</span>
+                        <span><strong>Come ready for Unit 8</strong> — we'll cover RAG, conversation memory, and finalizing your deliverables</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== KEY TAKEAWAYS ==================== -->
+            <section style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>Key Takeaways</h2>
+                <div class="takeaways">
+                    <div class="takeaway fragment fade-up" data-fragment-index="0">
+                        <span class="takeaway-num">1</span>
+                        <div class="takeaway-content">
+                            <strong>Agents = LLM + Tools + Loop</strong>
+                            <span>Now you can build the loop yourself</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="1">
+                        <span class="takeaway-num">2</span>
+                        <div class="takeaway-content">
+                            <strong>Tools are just functions with metadata</strong>
+                            <span>Name, description, and schema</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="2">
+                        <span class="takeaway-num">3</span>
+                        <div class="takeaway-content">
+                            <strong>Tool descriptions drive behavior</strong>
+                            <span>The LLM reads them to decide what to call</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="3">
+                        <span class="takeaway-num">4</span>
+                        <div class="takeaway-content">
+                            <strong>LangChain is the ecosystem leader</strong>
+                            <span><code>createAgent</code> handles the ReAct loop</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="4">
+                        <span class="takeaway-num">5</span>
+                        <div class="takeaway-content">
+                            <strong>Error handling is critical</strong>
+                            <span>Tools should never throw; return error messages instead</span>
+                        </div>
+                    </div>
+                    <div class="takeaway fragment fade-up" data-fragment-index="5">
+                        <span class="takeaway-num">6</span>
+                        <div class="takeaway-content">
+                            <strong>Build it the right way</strong>
+                            <span>This project uses the same development process as your term project</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== END SLIDE ==================== -->
+            <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" style="top: 450px; display: none;" hidden="" aria-hidden="true" class="future">
+                <h2>See you next time!</h2>
+                <h3 class="next-session">Next: RAG, Multi-Tool Agents &amp; Your Assignment</h3>
+                <div class="title-meta">
+                    <span class="course-name">Agentic Development Course</span>
+                </div>
+            </section>
+
+        </div>
+    <div class="backgrounds"><div class="slide-background image-reveal present" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: block;" data-loaded="true"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#2d4a22nullnullnullnullnull" style="background-color: rgb(45, 74, 34); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background present" data-background-hash="0#4a1942nullnullnullnullnull" style="background-color: rgb(74, 25, 66); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#1a4731nullnullnullnullnull" style="background-color: rgb(26, 71, 49); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#2a3f5fnullnullnullnullnull" style="background-color: rgb(42, 63, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background stack future" style="display: none;"><div class="slide-background-content"></div><div class="slide-background image-reveal present" data-background-hash="0#1e3a5fnullnullnullnullnull" style="background-color: rgb(30, 58, 95); display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-background image-reveal future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" data-background-hash="0linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)nullnullnullnull" style="background-image: linear-gradient(135deg, rgb(26, 26, 46) 0%, rgb(22, 33, 62) 50%, rgb(15, 52, 96) 100%); display: none;"><div class="slide-background-content"></div></div></div><div class="slide-number" style="display: none;"><a href="https://d1dtpagvh0qhqn.cloudfront.net/agentic7WebSlides/#/">
+					<span class="slide-number-a">1</span>
+					<span class="slide-number-delimiter">/</span>
+					<span class="slide-number-b">45</span>
+					</a></div><aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded" style="display: block;"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled fragmented" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down" aria-label="below slide" disabled="disabled"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div class="aria-status" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">Dev Unit 7: Building AI Agents From using agents to programming them Agentic Development Course </div></div>
+
+    <!-- Reveal.js -->
+    <script src="./Building AI Agents_files/reveal.min.js"></script>
+    <script src="./Building AI Agents_files/notes.min.js"></script>
+    <script src="./Building AI Agents_files/highlight.min.js"></script>
+    <script src="./Building AI Agents_files/zoom.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'speaker',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+
+            // Slide dimensions - taller to fit more content
+            width: 1300,
+            height: 900,
+            margin: 0.02,
+
+            // Scale settings - allow shrinking to fit
+            minScale: 0.1,
+            maxScale: 2.0,
+
+            // Center vertically
+            center: true,
+
+            // Vertical slides
+            navigationMode: 'default',
+
+            // Speaker notes
+            showNotes: false,
+
+            // Auto-animate
+            autoAnimateEasing: 'ease-out',
+            autoAnimateDuration: 0.8,
+
+            // Plugins
+            plugins: [ RevealNotes, RevealHighlight, RevealZoom ]
+        });
+    </script>
+
+
+</body></html>
