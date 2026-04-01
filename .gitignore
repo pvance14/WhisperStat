@@ -1,6 +1,6 @@
 # Local AI working space (guides, roadmaps, notes — not shared).
 # Claude rules: use ai/claude.md or ai/guides/ (ignored with this entry).
-ai/
+#ai/
 
 # Local / editor-specific (not shared)
 # Optional root-level Claude config; preferred location is ai/claude.md
