@@ -82,8 +82,8 @@ What to do:
 
 Important tradeoff:
 
-- Class slides often use `ai/roadmaps/`, but this repo’s shared canon lives in `aiDocs/`.
-- Because graders need to see the evidence, use a **tracked location** for any roadmap evidence you want them to evaluate.
+- Class slides often use `ai/roadmaps/`; this repo **tracks `ai/` in git** (professor-facing), while **product canon** lives in `aiDocs/`.
+- Use **`aiDocs/evidence/`** for validation packets and rubric-ready summaries; roadmaps and phase notes remain in **`ai/roadmaps/`** (also tracked here).
 
 ### 3. Convert "validation roadmap" into executed falsification evidence
 

@@ -8,7 +8,7 @@ Project context and how to work in this repo. **`aiDocs/context.md`** is the sho
 - **Product:** `aiDocs/prd.md`, `aiDocs/mvp.md`
 - **Architecture:** `aiDocs/architecture.md`
 - **Research:** `aiDocs/externalresearch/`
-- **`ai/`** is gitignored — local notes, guides, roadmaps only; not shared canon.
+- **`ai/`** is **tracked** in this repo (the `ai/` line in `.gitignore` is commented) so professors can see roadmaps and related class artifacts. **Product canon** remains `aiDocs/` (PRD, MVP, architecture).
 
 ## Behavior
 

@@ -61,10 +61,11 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Concrete deliverables (close-out artifacts)
 
-- A single **MVP scope sheet** (can live in tracked `aiDocs/` or presentation appendix): bullets for **in / out / stretch**, explicitly citing `mvp.md` non-goals (no rotation engine, scouting, video, fan live, multi-sport, native store apps, multi-statistician sync, required exports).
+- A single **MVP scope sheet** (can live in tracked `aiDocs/` or presentation appendix): bullets for **in / out / stretch**, explicitly citing `mvp.md` non-goals (no rotation engine, scouting, video, fan live, multi-sport, native store apps, multi-statistician sync, required exports). **Include** the **in-app visual stats report** (current game, on-screen only) as **in scope**; **PDF/file export** remains stretch unless time permits.
+- **`aiDocs/evidence/mvp_implementation_decisions.md`**: locked auth (magic link), host (**Vercel**), migrations, scoring (manual), correction rules (voice = last event only), transcript policy, multi-team, prior-match rule, and evidence folder usage—kept in sync with roadmaps.
 - **Success criteria table** aligned with `mvp.md` §“Success Criteria” (accuracy, eyes-up / voice session rate, differentiation wording)—plus **class-final** criteria from `final_project_alignment.md` (PRD → plan → roadmap → implementation → verification visibility; executed falsification).
-- **Validation backlog** derived from `prd.md` §10 / `final_project_alignment.md`: each row includes hypothesis, what would falsify, how to run, owner, target date, and where results will be **written** (tracked doc or appendix). Per `context.md`, these are gating learning steps, not hypothetical.
-- **Demo narrative**: one paragraph “what we will show live” (setup → capture with confirm → live board → post-game)—kept narrow enough for gym Wi‑Fi and time risk.
+- **Validation backlog** derived from `prd.md` §10 / `final_project_alignment.md`: each row includes hypothesis, what would falsify, how to run, owner, target date, and a concrete **`aiDocs/evidence/`** file (or subfolder) for results. Per `context.md`, these are gating learning steps, not hypothetical.
+- **Demo narrative**: one paragraph “what we will show live” (setup → capture with confirm → live board → **visual stats report** → post-game)—kept narrow enough for gym Wi‑Fi and time risk.
 
 ## Acceptance criteria (phase done when)
 
@@ -75,4 +76,4 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Technical / process anchors
 
 - **`aiDocs/context.md`**: align execution with final rubric, falsification with documented results, phased scaffold with tests/logging expectations.
-- Prefer recording decisions in **tracked** docs where graders need visibility; keep `ai/roadmaps` as working plans per repo convention.
+- Prefer recording decisions and outcomes in **`aiDocs/evidence/`** and `aiDocs/` for rubric-ready packets; **`ai/roadmaps/`** is tracked in this repo and is appropriate for roadmaps and checklists (see root `.gitignore`).

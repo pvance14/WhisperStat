@@ -22,6 +22,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Out Of Scope
 
+- **Voice** targeting **non-last** events for correction (use event log UI only).
 - Heavy review systems beyond MVP needs.
 - Broad admin tooling for event management.
 - Complex moderation or approval layers.
@@ -64,7 +65,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - **Insert on confirm:** write to `stat_events` with `created_by`, `set_number`, timestamps; attach **`client_event_id`** for idempotent retries.
 - **Undo last:** prefer `deleted_at` soft delete or equivalent reversible flag per `architecture.md` §7 design notes—**no hard delete** of committed events for trust/audit.
 - **Event log screen:** list recent events for the game (filter by set); actions: **soft-delete (undo)**, **reclassify event_type**, **reassign player** if feasible without scope creep.
-- **Verbal correction:** MVP asks for a path such as “actually that was an error”—implement as (a) a follow-up utterance parsed as correction, or (b) voice that opens edit on last event; choose smallest UX that works.
+- **Verbal correction (locked):** **Voice may only correct the most recently confirmed event** (e.g. “actually that was an attack error” as a follow-up parse that **replaces or adjusts** that row per product choice—still confirm if ambiguous). **Any older event** uses **event log** (tap: reclassify / soft-delete / reassign)—**no voice target** for non-last rows in MVP.
 - **Low-confidence:** if using LLM fallback, surface “double-check” styling or explicit confirm (stretch: numeric confidence).
 
 ## Acceptance criteria

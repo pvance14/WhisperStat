@@ -6,9 +6,10 @@
 - **MVP:** [mvp.md](./mvp.md) — what the first shippable scope includes and excludes.
 - **Architecture:** [architecture.md](./architecture.md) — Supabase, data sketch, voice/NLP boundaries.
 - **Final project alignment:** [final_project_alignment.md](./final_project_alignment.md) — rubric and class-slide translation into repo/process expectations.
+- **Evidence (class / validation):** [evidence/](./evidence/) — tracked validation results, locked build decisions, demo and rubric traceability.
 - **Market research:** [externalresearch/](./externalresearch/) — competitive landscape, pricing notes, technical risks.
 - **Agents (tracked):** [AGENTS.md](../AGENTS.md) — Codex / shared agent defaults; Cursor uses `.cursor/rules/`.
-- **Claude (local, gitignored):** `ai/claude.md` — personal instructions; not committed.
+- **Planning workspace (tracked):** [`ai/`](../ai/) — roadmaps, changelog, notes. This repo keeps **`ai/` in git** so coursework is visible (see root `.gitignore`). Optional: `ai/claude.md` for personal prompts (still avoid secrets if committed).
 
 ## Current focus
 

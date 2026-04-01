@@ -23,9 +23,9 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Scaffold React PWA + Supabase client + auth as outlined in `architecture.md` §4–§6.
-- [ ] Land **schema + RLS** for `teams`, `players`, `games`, `stat_events` (and indexes noted in architecture §7).
-- [ ] Implement **roster CRUD** (create/edit team, players with jersey uniqueness) and **game create** (opponent, date, status, `current_set`).
+- [ ] Scaffold React PWA + Supabase client + **magic-link** auth; document **Vercel** deploy assumptions (`aiDocs/evidence/mvp_implementation_decisions.md`).
+- [ ] Land **schema + RLS** for `teams`, `players`, `games`, `stat_events` (and indexes noted in architecture §7); **`teams`** model supports **multiple teams per coach** (same `user_id` / owner id).
+- [ ] Implement **roster CRUD** (create/edit team, players with jersey uniqueness) and **game create** (opponent, date, status, `current_set`) across **team switcher** or list as needed.
 - [ ] Document **voice/parse pipeline** boundaries: Web Speech default; rules-first parse; LLM behind Edge when added.
 - [ ] Add **logging + smoke script** conventions aligned with `final_project_alignment.md`.
 - [ ] Write **demo fallback** spec (offline / ASR failure) for Phase 7 hardening.

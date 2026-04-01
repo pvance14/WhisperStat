@@ -25,9 +25,9 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 - [ ] Implement **aggregate → narrative** pipeline (template + optional LLM via Edge).
 - [ ] Persist and display **`game_summaries`** for completed games.
-- [ ] Implement **prior-match comparison** when earlier completed games exist (`mvp.md`).
+- [ ] Implement **prior-match comparison** vs **most recent other completed game** for the team when one exists (`mvp.md` + `aiDocs/evidence/mvp_implementation_decisions.md`).
 - [ ] Smooth **end-of-match** UX (complete game → summary screen).
-- [ ] Targeted **polish**: errors, loading, mobile layout for capture + board.
+- [ ] Targeted **polish**: errors, loading, mobile layout for capture + board + **visual stats report**.
 - [ ] Re-read scope: no exports, no season trends, no shareable links unless stretch time permits.
 
 ## Readiness Checks

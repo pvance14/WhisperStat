@@ -10,7 +10,7 @@ alwaysApply: true
 - Read **`aiDocs/context.md`** for pointers to the PRD, MVP, architecture, and current priorities.
 - Prefer **`aiDocs/prd.md`** and **`aiDocs/mvp.md`** for product scope; **`aiDocs/externalresearch/`** for market/competitive notes.
 - **`AGENTS.md`** (repo root) aligns Codex and other agents with the same defaults as this rule.
-- **`ai/`** is gitignored local workspace (guides, roadmaps, notes, **`ai/claude.md`**). Do not treat it as shared canon unless the user pastes from it.
+- **`ai/`** is **tracked** in this repo (for class visibility). Use it for roadmaps, changelog, etc.; **`aiDocs/`** remains product canon (PRD, MVP, architecture).
 
 ## Collaboration
 

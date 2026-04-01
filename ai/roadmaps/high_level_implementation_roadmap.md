@@ -4,7 +4,7 @@
 
 This roadmap maps the major implementation phases for the WhisperStat MVP at a high level so the team can sequence work without over-specifying it too early. It should be read alongside `aiDocs/prd.md`, `aiDocs/mvp.md`, `aiDocs/architecture.md`, `aiDocs/final_project_alignment.md`, `aiDocs/context.md`, and the companion plan doc in `ai/roadmaps/high_level_mvp_implementation_plan.md`.
 
-This document lives in `ai/roadmaps` as a local planning artifact. If grader-facing roadmap evidence is needed later, the relevant milestones should also be reflected in tracked documentation.
+This document lives in **`ai/roadmaps/`** (tracked in this repo for class visibility). Mirror milestone completion and validation results in **`aiDocs/evidence/`** when useful for grading.
 
 This is a clean-code MVP project. We should avoid over-engineering, cruft, and legacy-compatibility features, and focus on the smallest reliable implementation that supports a strong class-final demo and a real validation loop.
 
@@ -19,9 +19,11 @@ This is a clean-code MVP project. We should avoid over-engineering, cruft, and l
 
 ## Scope Guardrails
 
-This roadmap covers the MVP only: volleyball-only PWA setup, roster and match setup, push-to-talk voice capture, structured stat events, confirmation and correction flows, live per-set stats, persisted game data, post-game summary generation, and final verification.
+This roadmap covers the MVP only: volleyball-only PWA setup (**Vercel**), **magic-link** auth, **SQL migrations**, roster and match setup (**multiple teams per coach** as the model allows), push-to-talk voice capture, structured stat events, confirmation and correction flows (**voice correction: last event only**; older via event log), live per-set stats, **manual** set scoring, **in-app visual stats report** for the current game (not PDF export), persisted game data, post-game summary generation (**prior match** = most recent other completed game for the team), and final verification (**evidence** in `aiDocs/evidence/`).
 
-This roadmap does not include native apps, multi-sport expansion, multi-user collaboration, advanced exports, scouting workflows, video features, or other V1+ capabilities.
+This roadmap does not include native apps, multi-sport expansion, multi-user collaboration, **PDF/file exports** (stretch), scouting workflows, video features, or other V1+ capabilities.
+
+**Locked defaults** are summarized in `aiDocs/evidence/mvp_implementation_decisions.md`.
 
 ## Phase 1: Align The Build
 
@@ -40,8 +42,8 @@ This roadmap does not include native apps, multi-sport expansion, multi-user col
 **Focus:** Set up the minimum application and technical foundation needed for the MVP workflow.
 
 **Phase outcomes:**
-- Working base application structure for the PWA.
-- Core setup for roster, match context, and persistence-ready flows.
+- Working base application structure for the PWA with **Vercel** deploy path and **magic-link** Supabase Auth.
+- Core setup for roster, match context, **multi-team** usage, and persistence-ready flows via **repo SQL migrations**.
 - Initial technical path for voice handling, parsing, stored game data, structured logging, CLI-checkable workflows, and safe demo fallback behavior.
 
 **Exit condition:** The project has a clean baseline that can support end-to-end MVP slices without rework-heavy setup changes.
@@ -63,7 +65,7 @@ This roadmap does not include native apps, multi-sport expansion, multi-user col
 
 **Phase outcomes:**
 - Clear confirmation before an event becomes part of the record.
-- Simple correction and undo flows.
+- Simple correction and undo flows; **voice** targets **only the last** confirmed event; **event log** handles older rows.
 - Event-level trust safeguards that reduce coach risk and confusion.
 
 **Exit condition:** The core workflow is no longer just functional; it is reliable enough to correct mistakes without breaking the live-use experience.
@@ -73,8 +75,8 @@ This roadmap does not include native apps, multi-sport expansion, multi-user col
 **Focus:** Present captured data in a way that supports active game use and a clear demo story.
 
 **Phase outcomes:**
-- Live per-player and per-set stat views.
-- Basic match and set management tied to stored events, including current-set and score-state support needed for the MVP experience.
+- Live per-player and per-set stat views and a dedicated **in-app visual report** for the current match (tables / simple charts; stays on-screen, not a PDF).
+- Basic match and set management tied to stored events, including current-set and **manual** score-state support.
 - A coherent active-game experience instead of isolated event capture.
 
 **Exit condition:** A coach can move from setup to live capture to live stats in one connected workflow.
@@ -96,8 +98,8 @@ This roadmap does not include native apps, multi-sport expansion, multi-user col
 
 **Phase outcomes:**
 - End-to-end verification of the MVP workflow.
-- Demo hardening and fallback readiness.
-- Executed validation and falsification evidence tied to the project claims.
+- Demo hardening and fallback readiness; **Web Speech** verified on a **real phone** against deployed web build.
+- Executed validation and falsification evidence tied to the project claims, stored under **`aiDocs/evidence/`** where graders need it.
 - Final evidence showing the project moved from docs to implementation to verification in a disciplined way.
 
 **Exit condition:** The team has a stable demo path and enough implementation evidence to support the class-final narrative.
@@ -111,7 +113,7 @@ Use this to check that phased work covers every **required** item in `aiDocs/mvp
 | Voice: push-to-talk, NL patterns, roster resolution, core event vocabulary | 2–3 |
 | Never silent commit; confirmation + undo + verbal correction | 3–4 |
 | Roster: team, players, mid-season edits | 2–3 |
-| Live dashboard: per player, per set; set-by-set score; current set | 5 |
+| Live dashboard + **in-app visual report** (current game); manual set-by-set score; current set | 5 |
 | Event log: delete/reclassify; auditability | 4–5 |
 | Post-game AI narrative (standouts, weak spots; prior-match compare when data exists) | 6 |
 | PWA, Supabase persistence, RLS, falsification evidence + demo reliability | 2, 7 |

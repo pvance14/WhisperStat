@@ -26,7 +26,8 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - [ ] Lock the class-final framing for the MVP and reset narrative (reference `final_project_alignment.md` §“Make the reset legible”).
 - [ ] Confirm MVP scope boundaries and explicit non-goals against `aiDocs/mvp.md` (including stretch vs required).
 - [ ] Publish **MVP scope sheet** + **success criteria** (product + class process) as agreed artifacts.
-- [ ] Create **validation backlog** from PRD §10 with written locations for results (executed tests, not plans-only).
+- [ ] Publish **`aiDocs/evidence/mvp_implementation_decisions.md`** (or confirm it matches team lock) and ensure **`aiDocs/evidence/README.md`** explains where validation write-ups go.
+- [ ] Create **validation backlog** from PRD §10 with **target paths under `aiDocs/evidence/`** for results (executed tests, not plans-only).
 - [ ] Draft **demo narrative** paragraph and identify top **demo risks** (mic, Wi‑Fi, ASR)—feed Phase 2 fallback planning.
 - [ ] Confirm Phase 2 can start without unresolved scope ambiguity.
 

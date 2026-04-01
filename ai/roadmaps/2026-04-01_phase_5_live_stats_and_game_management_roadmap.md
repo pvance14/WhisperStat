@@ -24,8 +24,9 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Milestones
 
 - [ ] Build **per-player / per-set** stat table (MVP categories from `mvp.md`).
+- [ ] Add **in-app visual stats report** for the **current** game: dedicated route or full-screen view with the same aggregates (tables + optional simple bar/leader visuals); **not** a PDF export.
 - [ ] Implement **set navigation** + **current set** display tied to `games.current_set`.
-- [ ] Implement **set-by-set score** persistence (minimal schema decision documented).
+- [ ] Implement **manual set-by-set score** persistence (minimal schema decision documented; **manual** is source of truth—see `aiDocs/evidence/mvp_implementation_decisions.md` for optional future voice-assisted score **proposals**).
 - [ ] Wire **live refresh** (polling) after confirmed events and corrections.
 - [ ] Add **complete game** action (status) to unlock post-game flow.
 - [ ] Sanity-check aggregates vs SQL for sample games.

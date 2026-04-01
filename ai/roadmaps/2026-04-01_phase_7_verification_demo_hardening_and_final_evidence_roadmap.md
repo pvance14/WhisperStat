@@ -26,7 +26,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - [ ] Run and document **E2E verification** (scripted or manual checklist) for full MVP loop.
 - [ ] Execute **demo hardening**: fallback path, preflight, seeded backup scenario.
 - [ ] Complete **validation/falsification packet** with actual outcomes (not placeholders).
-- [ ] Produce **grader traceability**: alignment doc requirements → evidence in repo.
+- [ ] Produce **grader traceability**: alignment doc requirements → files under **`aiDocs/evidence/`** (or linked PRs).
 - [ ] **RLS / security** spot-check and quick performance notes on capture path.
 - [ ] Freeze scope: late changes only for demo blockers or evidence gaps.
 

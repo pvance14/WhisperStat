@@ -98,7 +98,7 @@ Each area is scored out of 25 points. **Total: 100 raw points, weighted to 90 of
 - `context.md` uses bookshelf pattern and is current
 - `CLAUDE.md` or `.cursorrules` provides behavioral guidance
 - Git workflow shows branching, meaningful commits, and PRs
-- `.gitignore` covers `ai/`, `.env`, `.testEnvVars`, MCP configs, and secrets
+- `.gitignore` covers `.env`, `.testEnvVars`, MCP configs, and secrets (many teams also gitignore `ai/`; **this repo tracks `ai/`** for class visibility—see root `.gitignore`)
 - No secrets committed
 
 ### 3. Phase-by-Phase Implementation & Working Demo (25 points)
@@ -253,7 +253,7 @@ Use this to self-assess before your presentation. You do not need every single i
 - [ ] `context.md` uses bookshelf pattern and is current
 - [ ] `CLAUDE.md` or `.cursorrules` with behavioral guidance
 - [ ] Git workflow with branching, meaningful commits
-- [ ] `.gitignore` covers `ai/`, `.env`, `.testEnvVars`, MCP configs, and secrets
+- [ ] `.gitignore` covers `.env`, `.testEnvVars`, MCP configs, and secrets (`ai/` tracked in this repo by design)
 - [ ] No committed secrets in the repository
 
 **Phase-by-Phase Implementation & Working Demo:**

@@ -25,7 +25,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 - [ ] **Confirm / reject** UI wired to **insert** or discard proposed events.
 - [ ] **Undo last** + **event log** edits using soft-delete / reclassify patterns per `architecture.md`.
-- [ ] **Verbal correction** path implemented (minimal viable).
+- [ ] **Verbal correction** path for **the last confirmed event only** (follow-up utterance); **older events** corrected only via **event log** UI.
 - [ ] **Idempotent writes** verified (`client_event_id` or upsert strategy).
 - [ ] Low-confidence / parse-failure messaging reviewed for live-use clarity.
 - [ ] Spot-check aggregates after corrections match expected counts (prep for Phase 5).

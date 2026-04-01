@@ -61,10 +61,10 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Concrete deliverables
 
-- **Repo scaffold:** React PWA baseline (e.g. Vite + `vite-plugin-pwa` per `architecture.md` §4); routing placeholder for auth, roster, active game, dashboard.
-- **Supabase:** project wired with `supabase/` migrations (or agreed migration home) implementing **MVP sketch** tables: `teams`, `players`, `games`, `stat_events` from `architecture.md` §7; optional `game_summaries` can land in Phase 6 but stubbing the **enum constraint** / check for `event_type` early avoids drift.
+- **Repo scaffold:** React PWA baseline (e.g. Vite + `vite-plugin-pwa` per `architecture.md` §4); routing placeholder for auth, roster, active game, dashboard, stats report; **production static host: Vercel** (env vars for Supabase URL/anon key).
+- **Supabase:** project wired with **`supabase/` SQL migrations in repo** implementing **MVP sketch** tables: `teams`, `players`, `games`, `stat_events` from `architecture.md` §7; **`teams`** allows **many rows per coach** (no accidental “one team only” constraint unless product changes). Optional `game_summaries` can land in Phase 6 but stubbing the **enum constraint** / check for `event_type` early avoids drift.
 - **RLS:** policies so coaches only read/write their teams’ rows (pattern in architecture §6); service-role key restricted to server/Edge only.
-- **Auth:** coach sign-in path (magic link or email/password per product choice)—enough to obtain a session in the PWA and satisfy RLS tests.
+- **Auth:** **Magic link** (Supabase) per `aiDocs/evidence/mvp_implementation_decisions.md`; enough to obtain a session in the PWA and satisfy RLS tests.
 - **Logging / observability:** minimal structured client logging (e.g. parse latency, ASR errors) + **npm script** smoke path (health check, env present—align with `final_project_alignment.md` expectations).
 - **Demo fallback spec:** documented behavior when Web Speech fails (pre-recorded transcript paste, mock parse, or “manual event entry” kill-switch) without expanding product scope.
 

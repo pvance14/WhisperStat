@@ -61,10 +61,10 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Concrete deliverables
 
-- **E2E verification script or checklist:** roster → new game → PTT capture → confirm → see live totals → correct event → totals update → complete → summary; include expected DB rows or screenshots as needed.
+- **E2E verification script or checklist:** roster → new game → PTT capture → confirm → see live totals → open **visual stats report** → correct event → totals update → complete → summary; include expected DB rows or screenshots as needed; store checklist/results under **`aiDocs/evidence/`**.
 - **Demo hardening:** offline/ASR failure path from Phase 2 spec; preflight env checklist; backup **seeded game** for live Wi‑Fi failure.
 - **Executed validation packet:** PRD §10 / `final_project_alignment.md` tests with **results** (noise ASR, push-to-talk usability, priority of features)—each ties to a decision (what changed in UX or scope).
-- **Traceability artifact:** short mapping “rubric / alignment doc requirement → evidence file or PR” for graders (`context.md`: docs → implementation → verification).
+- **Traceability artifact:** short mapping “rubric / alignment doc requirement → **`aiDocs/evidence/`** file or PR” for graders (`context.md`: docs → implementation → verification).
 - **Performance smoke:** note p95-ish timings for parse + confirm on target devices (qualitative OK for class final).
 
 ## Acceptance criteria

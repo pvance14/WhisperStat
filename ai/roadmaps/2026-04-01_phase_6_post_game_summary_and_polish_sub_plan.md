@@ -60,7 +60,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Concrete deliverables
 
-- **Summary input:** aggregated `stat_events` + roster names + set breakdown; pull **prior completed game** for the same `team_id` when available (`mvp.md` §5: comparison when historical data exists).
+- **Summary input:** aggregated `stat_events` + roster names + set breakdown; for comparison, load the **most recent other completed game for the same `team_id`** (by `game_date`, then `created_at`), per `aiDocs/evidence/mvp_implementation_decisions.md`. If no prior game exists, narrative states that comparison is not available (consistent copy).
 - **Summary output:** store in `game_summaries` (`narrative_text`, `generated_at`, optional `model`); show in UI after **complete game**.
 - **Generation strategy (cost posture per `architecture.md` §2):** ship **deterministic template** first (sorted leaders, error themes); add **single batched Edge + small LLM** call when/ if prose quality is required for demo—keep keys server-side.
 - **End-of-match UX:** clear path from live → review log → summary (avoid dead-ends).
@@ -69,7 +69,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Acceptance criteria
 
 - For a seeded game, narrative mentions top kill/error contributors when those stats exist.
-- With **two+** past games, summary includes at least one **comparative** sentence (or explicit “not enough history” if only one game—product choice, document it).
+- With **two+** completed games for the team, summary includes at least one **comparative** sentence vs the **defined** prior game (`aiDocs/evidence/mvp_implementation_decisions.md`); with **only one** completed game, summary uses the agreed **no-comparison** copy.
 - No new scope: PDF/export/share remain stretch per `mvp.md`.
 
 ## Technical anchors

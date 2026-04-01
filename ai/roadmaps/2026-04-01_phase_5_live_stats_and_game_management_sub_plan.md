@@ -17,14 +17,15 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## In Scope
 
 - Live per-player and per-set stat presentation.
-- Match and set context management, including current-set and score-state support.
+- **In-app visual stats report** for the **current** match: readable layout suited to sideline glance (tables + light visuals); may reuse aggregate queries from the live dashboard.
+- Match and set context management, including current-set and **manual** score-state support.
 - Persisted event and game data behavior needed for active match use.
 
 ## Out Of Scope
 
 - Advanced analytics or rotation intelligence.
 - Broader admin or season-management tooling.
-- V1 reporting and export workflows.
+- **PDF**, CSV, or shareable export as **required** MVP deliverables (stretch per `mvp.md`).
 
 ## Planned Outcomes
 
@@ -62,15 +63,16 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 - **Aggregate queries** for live dashboard (examples in `architecture.md` §7): kills, aces, blocks, digs, errors, attack errors **per player** and **filterable by `set_number`**.
 - **Current set indicator:** bind UI to `games.current_set`; flow to **advance set** (and reset live slice) when the coach moves to set 2+.
-- **Set-by-set score:** `mvp.md` requires team score tracking per set—architecture sketch is light here; implement the **smallest** representation (e.g. JSON on `games` for `{set: {us, them}}` or dedicated columns) and document in migrations. Manual +/- controls are acceptable for MVP if auto-scoring is out of scope.
+- **Set-by-set score (manual):** Coach-edited score per set; implement the **smallest** representation (e.g. JSON on `games` for per-set `{us, them}` or a tiny table) and document in migrations. **LLM/voice auto-scoring** is **out of MVP** unless later added as **confirmable** proposals only (see `aiDocs/evidence/mvp_implementation_decisions.md`).
+- **Visual report screen:** Navigate from active game; show current-set filter + full-game views as appropriate; ensure **deleted_at** events excluded from totals (same rules as dashboard).
 - **Live updates:** start with **polling** (`architecture.md` §8); upgrade to Realtime only if needed.
 - **Game lifecycle:** mark game `completed` when match ends (feeds Phase 6 summary triggers).
 
 ## Acceptance criteria
 
-- Totals on dashboard match raw `stat_events` counts for a test game (SQL cross-check).
+- Totals on dashboard **and visual report** match raw `stat_events` counts for a test game (SQL cross-check).
 - Switching sets updates numbers without stale blurbs; current set obvious during capture.
-- Score + set state survive refresh (persisted), not only React state.
+- Manual score + set state survive refresh (persisted), not only React state.
 
 ## Technical anchors
 

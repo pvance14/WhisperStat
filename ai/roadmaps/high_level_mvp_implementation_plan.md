@@ -4,7 +4,7 @@
 
 This roadmap maps the full WhisperStat MVP into a small number of implementation phases so later planning docs can go deeper without redefining the overall path. It is based on the current product and technical source-of-truth docs: `aiDocs/prd.md`, `aiDocs/mvp.md`, `aiDocs/architecture.md`, `aiDocs/final_project_alignment.md`, and `aiDocs/context.md` (current focus: class-final demo, executed validation, phased scaffold).
 
-This document is a local planning artifact in `ai/roadmaps`. If grader-facing or shared process evidence is needed later, the relevant outcomes should also be reflected in tracked docs that align with the repo's canonical documentation pattern.
+This document lives in **`ai/roadmaps/`**, which is **tracked** in this repo (see root `.gitignore`). Put rubric-ready validation write-ups in **`aiDocs/evidence/`** alongside `aiDocs/` product canon.
 
 This project should stay intentionally clean and focused. We need to avoid over-engineering, cruft, and legacy-compatibility features, and instead prefer the smallest clean implementation that delivers the MVP and supports a dependable class-final demo.
 
@@ -15,11 +15,30 @@ This project should stay intentionally clean and focused. We need to avoid over-
 - Defer optional sophistication until validation proves it is needed.
 - Do not add legacy-compatibility features in this clean-code reset project.
 - Treat this as a compressed final-project execution loop: research, planning, implementation, verification, and evidence.
-- Keep scope anchored to the MVP: volleyball-only PWA, roster setup, push-to-talk voice capture, structured stat events, confirmation and correction flows, live per-set stats, persisted game data, and a post-game summary.
+- Keep scope anchored to the MVP: volleyball-only PWA, roster setup, push-to-talk voice capture, structured stat events, confirmation and correction flows, live per-set stats, **in-app visual stats report** (current game), persisted game data, and a post-game summary.
+
+## Locked MVP decisions (implementation defaults)
+
+Canonical detail: `aiDocs/evidence/mvp_implementation_decisions.md`. Summary:
+
+| Area | Decision |
+|------|----------|
+| Auth | Magic link (Supabase) |
+| Frontend host | Vercel |
+| DB changes | SQL migrations in repo |
+| Score | **Manual** controls = source of truth; voice/LLM auto-score **not** in MVP unless added later as **confirmable** proposals only |
+| Prior game (summary) | Most recent **other** completed game for same `team_id` (`game_date`, then `created_at`) |
+| Voice correction | **Last event only**; older rows via **event log** UI |
+| Transcripts | Not persisted long-term in DB for MVP |
+| Teams | Multiple **teams per coach** when schema allows |
+| Evidence | **Primary** validation/falsification packets in **`aiDocs/evidence/`**; roadmaps and changelog in tracked **`ai/`** |
+| Visual reporting | **In-app** full stats view for current match (tables/simple charts OK); **not** required PDF export |
 
 ## Non-Goals For This Roadmap
 
-This roadmap does not plan for native mobile apps, multi-sport support, multi-user collaboration, advanced exports, video sync, scouting workflows, fan-facing views, or other V1+ expansion ideas. Those can be reconsidered only after the MVP is implemented, verified, and demonstrated reliably.
+This roadmap does not plan for native mobile apps, multi-sport support, multi-user collaboration, **PDF or file exports** (stretch per `mvp.md`), video sync, scouting workflows, fan-facing views, or other V1+ expansion ideas. Those can be reconsidered only after the MVP is implemented, verified, and demonstrated reliably.
+
+**Clarification:** An **on-screen visual stats report** for the current game **is in scope** for the MVP; it is not the same as export/share/PDF.
 
 ## Phase 1: Project Alignment And Success Criteria
 
@@ -45,7 +64,8 @@ This roadmap does not plan for native mobile apps, multi-sport support, multi-us
 **Goal:** Establish the minimum app foundation needed to support a clean implementation of the MVP workflow.
 
 **Major outcomes:**
-- Base PWA application structure and core environment setup.
+- Base PWA application structure and core environment setup; **deploy path on Vercel** aligned with locked decisions.
+- **Supabase Auth** with **magic link**; data model supports **multiple teams per coach** (`teams` owned by same user).
 - Initial product flows for roster, match context, and persisted data foundations.
 - A technical direction for voice input, parsing, persistence, structured logging, CLI-checkable workflows, and safe demo fallback behavior that fits the architecture and class process expectations.
 
@@ -81,7 +101,7 @@ This roadmap does not plan for native mobile apps, multi-sport support, multi-us
 
 **Major outcomes:**
 - Confirmation behavior before committed events become part of the record.
-- Undo, correction, and event-log editing flows that preserve trust.
+- Undo, correction, and event-log editing flows that preserve trust; **voice correction scoped to the last event**; older events corrected via **event log** UI.
 - A clear audit-friendly path for fixing mistakes without adding complexity to the core workflow.
 
 **Dependencies / gating decisions:**
@@ -97,8 +117,8 @@ This roadmap does not plan for native mobile apps, multi-sport support, multi-us
 **Goal:** Turn captured events into usable live match information for the coach.
 
 **Major outcomes:**
-- Live per-player and per-set stat views.
-- Match and set context management for the active game, including current-set and score-state support needed for the MVP dashboard.
+- Live per-player and per-set stat views plus an **in-app visual stats report** for the **current** game (dedicated screen or full-width view; tables and simple visuals—read-only or live-updating).
+- Match and set context management for the active game, including current-set and **manual** per-set score (see locked decisions).
 - Persisted event and game data that supports live viewing and post-game use.
 
 **Dependencies / gating decisions:**
@@ -119,7 +139,7 @@ This roadmap does not plan for native mobile apps, multi-sport support, multi-us
 - Focused polish on the parts of the experience that most affect comprehension, trust, and demo quality.
 
 **Dependencies / gating decisions:**
-- The summary should remain grounded in the available MVP data rather than expanding into advanced historical or comparative features unless already supported.
+- The summary should remain grounded in the available MVP data; **prior-match comparison** uses the **most recent other completed game** for the same team (per `aiDocs/evidence/mvp_implementation_decisions.md`), not arbitrary history.
 - Polish should improve reliability and clarity, not introduce new surface area.
 
 **Later detailed plans should expand:**
@@ -134,7 +154,7 @@ This roadmap does not plan for native mobile apps, multi-sport support, multi-us
 - Verification of the end-to-end MVP workflow against the project’s success criteria.
 - Demo hardening, fallback planning, and reduction of obvious reliability risks.
 - Executed validation and falsification evidence tied to the product claims in the PRD and context docs.
-- Final-project evidence showing the document-driven process from scope to implementation to verification.
+- Final-project evidence showing the document-driven process from scope to implementation to verification, with artifacts in **`aiDocs/evidence/`** for grader visibility.
 
 **Dependencies / gating decisions:**
 - The team should prioritize a dependable demo path over extra features.
@@ -151,8 +171,8 @@ The phase sub-plans expand “what”; this checklist ties phases to **concrete 
 
 1. **Data:** Postgres tables at least `teams`, `players`, `games`, `stat_events` (and `game_summaries` when post-game lands), with RLS scoped to coach-owned teams; `stat_events.event_type` limited to MVP set: kill, ace, serve_error, reception_error, block, dig, attack_error, set (assist); soft delete via `deleted_at`; `client_event_id` for offline/idempotent replay when the outbox exists.
 2. **Voice path:** Default ASR = Web Speech API; parse path = roster-aware rules/heuristics first, **LLM only when needed**; provider keys only via Edge Function (or equivalent server proxy), not baked in the client for production.
-3. **Trust:** Every persisted event passed explicit confirmation in UI; undo and log edit/reclassify; support a verbal correction path (new utterance or targeted correction—exact UX can be minimal if behavior exists).
-4. **Live game:** Dashboard aggregates per player and per set; **set-by-set score** and **current set** visible and updatable (smallest viable model: e.g. fields or compact JSON on `games`, or a tiny `set_scores` table—pick one, document in migrations).
+3. **Trust:** Every persisted event passed explicit confirmation in UI; undo and log edit/reclassify; **verbal correction applies to the last event only** (older events via event log).
+4. **Live game:** Dashboard aggregates per player and per set; **manual set-by-set score** and **current set**; **in-app visual stats report** for the current game (no PDF required); smallest score persistence model documented in migrations.
 5. **Post-game:** Narrative from aggregates; when the team has **prior completed games**, include comparison themes where data allows (template-first per architecture cost posture; optional single batched LLM).
 6. **Evidence (`context.md` / `final_project_alignment.md`):** Logging and CLI/smoke hooks suitable for class rubric; PRD §10-style tests **run and recorded** (hypothesis, falsifier, method, result, decision), not only planned.
 
