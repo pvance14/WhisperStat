@@ -16,3 +16,7 @@
 - Run PRD **validation** steps as falsification tests with documented results, not just proposed plans.
 - Build a narrow, reliable **class-final demo** before expanding toward the broader startup vision.
 - **Scaffold the app** with phased implementation, test scripts, and logging expectations from the class materials.
+
+## Behavior
+- Whenever creating plan does and roadmap docs, always save them in ai/roadmaps. Prefix the name with the date. Add a note that we need to avoid over-engineering, cruft, and legacy-compatibility features in this clean code project.
+- Whenever finishing with implementing a plan / roadmap doc pair, make sure the roadmap is up to date (tasks checked off, etc). Then move the docs to ai/roadmaps/complete. Then update ai/changelog.md accordingly.

@@ -1,0 +1,41 @@
+# 2026-04-01 Phase 7 Roadmap: Verification, Demo Hardening, And Final Evidence
+
+## Purpose
+
+This roadmap maps the implementation planning milestones for the final verification phase. It keeps the team focused on proving the MVP, reducing demo risk, and producing the evidence expected by the class-final process.
+
+This document is a local planning artifact in `ai/roadmaps`. If grader-facing roadmap evidence is needed later, the relevant milestones should also be reflected in tracked documentation.
+
+We need to avoid over-engineering, cruft, and legacy-compatibility features in this clean code project. This roadmap should focus on proof, reliability, and evidence instead of feature growth.
+
+## Current Status
+
+- Planning status: Ready for implementation planning.
+- Implementation status: Not started.
+- Scope status: Focused on validation, verification, demo hardening, and final evidence.
+
+## Document Status
+
+- [x] Phase sub-plan drafted.
+- [x] Companion roadmap drafted.
+- [x] Alignment checked against the main high-level plan docs and `aiDocs/context.md`.
+- [x] Ready to archive in `ai/roadmaps/complete` as a finished planning pair.
+
+## Milestones
+
+- [ ] Define the end-to-end verification pass for the MVP workflow.
+- [ ] Define demo hardening priorities and safe fallback behavior.
+- [ ] Define the validation and falsification evidence required to support the product claims.
+- [ ] Define the final documentation and repo evidence needed for the class narrative.
+- [ ] Confirm that any late work is tied to reliability, demo safety, or evidence quality.
+
+## Readiness Checks
+
+- [ ] The roadmap supports the final-project expectations in `aiDocs/final_project_alignment.md`.
+- [ ] Validation and falsification are captured as executed outcomes, not just planned steps.
+- [ ] Demo hardening is prioritized over late-stage feature additions.
+- [ ] The project can be traced clearly from PRD through implementation and verification.
+
+## Completion Signal
+
+This phase is ready to close when the MVP has a dependable demo path, documented verification outcomes, and enough process evidence to support the final-project story.
