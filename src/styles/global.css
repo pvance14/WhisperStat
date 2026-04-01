@@ -1,0 +1,377 @@
+:root {
+  color-scheme: light;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  --bg: #f4f7f8;
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-strong: #ffffff;
+  --surface-dark: #102033;
+  --surface-dark-muted: #18314e;
+  --text: #132033;
+  --text-soft: #5d6c7c;
+  --accent: #ff7a59;
+  --accent-soft: rgba(255, 122, 89, 0.14);
+  --line: rgba(16, 32, 51, 0.12);
+  --success: #1f8a4d;
+  --warning: #c07011;
+  --danger: #b03d36;
+  background:
+    radial-gradient(circle at top left, rgba(255, 122, 89, 0.15), transparent 32%),
+    radial-gradient(circle at top right, rgba(16, 32, 51, 0.08), transparent 30%),
+    linear-gradient(180deg, #fcfdfe 0%, #edf3f5 100%);
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 288px minmax(0, 1fr);
+}
+
+.sidebar {
+  background: linear-gradient(180deg, rgba(16, 32, 51, 0.98), rgba(24, 49, 78, 0.98));
+  color: #f4f7f8;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+}
+
+.brand-mark {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #ff7a59, #ffb072);
+  color: #102033;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+
+.brand-copy h1 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.brand-copy p {
+  margin: 0.25rem 0 0;
+  color: rgba(244, 247, 248, 0.72);
+  font-size: 0.92rem;
+}
+
+.sidebar nav {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  color: rgba(244, 247, 248, 0.85);
+  border: 1px solid transparent;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(2px);
+}
+
+.sidebar-panel,
+.page-panel,
+.card,
+.surface {
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--line);
+  border-radius: 1.4rem;
+  box-shadow: 0 18px 45px rgba(16, 32, 51, 0.08);
+}
+
+.sidebar-panel {
+  padding: 1rem;
+  color: #102033;
+}
+
+.sidebar-panel select,
+.sidebar-panel input,
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0.95rem;
+  padding: 0.8rem 0.95rem;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--text);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.main-content {
+  padding: 1.5rem;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.35rem 1.4rem;
+}
+
+.page-header h2,
+.card h3,
+.page-panel h3 {
+  margin: 0;
+}
+
+.page-header p,
+.muted,
+.supporting-text {
+  color: var(--text-soft);
+}
+
+.grid {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.card,
+.page-panel {
+  padding: 1.2rem;
+}
+
+.stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.form-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.button,
+.button-secondary,
+.button-ghost,
+.chip {
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  font-weight: 600;
+}
+
+.button {
+  background: linear-gradient(135deg, #ff7a59, #ff956b);
+  color: #fff8f6;
+}
+
+.button-secondary {
+  background: rgba(16, 32, 51, 0.08);
+  color: var(--text);
+}
+
+.button-ghost {
+  background: transparent;
+  color: var(--text-soft);
+  border: 1px solid var(--line);
+}
+
+.chip {
+  background: var(--accent-soft);
+  color: #b14d2e;
+}
+
+.status {
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--line);
+}
+
+.status.info {
+  background: rgba(16, 32, 51, 0.05);
+}
+
+.status.success {
+  background: rgba(31, 138, 77, 0.1);
+  color: var(--success);
+}
+
+.status.warn {
+  background: rgba(192, 112, 17, 0.11);
+  color: var(--warning);
+}
+
+.status.error {
+  background: rgba(176, 61, 54, 0.11);
+  color: var(--danger);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.8rem 0.55rem;
+  border-bottom: 1px solid rgba(16, 32, 51, 0.08);
+}
+
+.table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-soft);
+}
+
+.table td strong {
+  display: block;
+}
+
+.metric-card {
+  background: linear-gradient(145deg, rgba(16, 32, 51, 0.98), rgba(24, 49, 78, 0.95));
+  color: #f4f7f8;
+  padding: 1.2rem;
+  border-radius: 1.4rem;
+}
+
+.metric-card p {
+  margin: 0;
+  color: rgba(244, 247, 248, 0.68);
+}
+
+.metric-value {
+  font-size: 2rem;
+  line-height: 1.1;
+  margin-top: 0.4rem;
+  font-weight: 700;
+}
+
+.list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.list-item {
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 0.95rem 1rem;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.auth-shell,
+.setup-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.auth-card,
+.setup-card {
+  width: min(32rem, 100%);
+  padding: 1.5rem;
+}
+
+.mono {
+  font-family: "SFMono-Regular", "Menlo", monospace;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 960px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    padding: 1.2rem;
+  }
+
+  .grid.two,
+  .grid.three,
+  .form-grid.two {
+    grid-template-columns: 1fr;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+}

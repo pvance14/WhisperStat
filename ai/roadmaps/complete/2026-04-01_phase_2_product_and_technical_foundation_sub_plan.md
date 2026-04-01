@@ -53,6 +53,36 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - Confirm that logging and testability expectations align with `aiDocs/final_project_alignment.md`.
 - Confirm the chosen baseline reduces, rather than increases, implementation risk in later phases.
 
+## Implementation Notes
+
+- The repo now has a complete frontend foundation instead of docs only:
+  - Vite + React + TypeScript PWA scaffold
+  - routed app shell
+  - Supabase client wiring
+  - magic-link auth page
+  - team switcher plus overview
+  - roster CRUD page
+  - game creation page
+  - dashboard and current-game report routes
+- SQL migrations and RLS policy definitions were added under `supabase/migrations/` to match the architecture sketch and locked MVP decisions.
+- Logging and verification expectations were implemented, not just documented:
+  - structured client logs
+  - `npm run smoke`
+  - `npm run typecheck`
+  - `npm run build`
+- Phase 2 evidence docs were added so later phases inherit explicit direction for:
+  - voice/parse boundaries
+  - logging and smoke workflow
+  - demo fallback posture
+
+## Close-Out Status
+
+- Phase 2 intent achieved: the project now has a usable codebase foundation for Phase 3 core match workflow work.
+- Remaining external verification is environment-bound rather than design-bound:
+  - apply migration to a live Supabase project
+  - verify RLS behavior with real authenticated sessions
+- Those checks should be run as soon as project credentials are configured, but they do not reopen foundation architecture choices.
+
 ## Assumptions
 
 - The project benefits more from a clean, direct baseline than from broader technical flexibility.

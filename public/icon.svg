@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>WhisperStat App Icon</title>
+  <rect width="512" height="512" rx="116" fill="#102033" />
+  <path
+    d="M132 334V178h46l78 96 78-96h46v156h-47v-84l-77 93-77-93v84h-47Z"
+    fill="#f4f7f8"
+  />
+  <circle cx="390" cy="132" r="44" fill="#ff7a59" />
+</svg>

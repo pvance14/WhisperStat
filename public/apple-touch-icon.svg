@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>WhisperStat Maskable Icon</title>
+  <rect width="512" height="512" rx="148" fill="#f4f7f8" />
+  <rect x="54" y="54" width="404" height="404" rx="110" fill="#102033" />
+  <path
+    d="M141 332V180h42l73 90 73-90h42v152h-43v-78l-72 88-72-88v78h-43Z"
+    fill="#f4f7f8"
+  />
+  <circle cx="382" cy="141" r="38" fill="#ff7a59" />
+</svg>
