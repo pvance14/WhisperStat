@@ -58,3 +58,23 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - A smaller, cleaner capture loop is more valuable than broader phrase coverage early.
 - Trust depends on visible review points, not silent automation.
 - This phase is complete when the product can move from setup to reviewable event capture in a repeatable way.
+
+## Concrete deliverables
+
+- **Active game context:** select/create game; load roster into memory for NLP; track `current_set` from `games` (read/write as match proceeds).
+- **Push-to-talk UX:** explicit start/stop (or hold-to-talk) with clear recording state; handle mic permission UX (esp. Safari).
+- **ASR integration:** Web Speech API default; surface **raw transcript** to the confirmation surface (helps debugging and trust).
+- **Parse module:** roster-aware resolution (jersey `#`, first/last name, nicknames/`aliases` if present); map utterances to MVP `event_type` values only; return structured **proposed event** `{ player_id, event_type, set_number, … }` or explicit “needs clarification.”
+- **Rules-first, LLM fallback:** implement deterministic/heuristic path first per `architecture.md` §2; optional Edge LLM call only when confidence low (stretch: confidence score in UI).
+- **Persistence boundary:** Phase 3 ends with **reviewable** proposed events in UI. **Canonical inserts** to `stat_events` occur in Phase 4 on explicit confirm—unless this phase ships confirm in the same increment (see high-level sequencing note).
+
+## Acceptance criteria
+
+- From a real roster, utterances like “12 kill” / “Jane ace” resolve to the right player when unambiguous.
+- Parsed output is visible **before** any durable write; no silent commits.
+- Latency after utterance end feels acceptable for dev testing (identify slow steps for Phase 7).
+
+## Technical anchors
+
+- `stat_events` shape and `event_type` vocabulary: `mvp.md` + `architecture.md` §7.
+- Do not persist without `client_event_id` strategy if offline replay is planned (generate UUID in client at queue time).

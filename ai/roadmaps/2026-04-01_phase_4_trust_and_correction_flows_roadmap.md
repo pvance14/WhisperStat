@@ -23,11 +23,12 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Define confirmation behavior for reviewable event capture.
-- [ ] Define the fastest viable undo path for live use.
-- [ ] Define the correction and event-log editing model for MVP scope.
-- [ ] Define how low-confidence or mistake handling should surface to the user.
-- [ ] Confirm the trust model supports later live-stats and summary flows.
+- [ ] **Confirm / reject** UI wired to **insert** or discard proposed events.
+- [ ] **Undo last** + **event log** edits using soft-delete / reclassify patterns per `architecture.md`.
+- [ ] **Verbal correction** path implemented (minimal viable).
+- [ ] **Idempotent writes** verified (`client_event_id` or upsert strategy).
+- [ ] Low-confidence / parse-failure messaging reviewed for live-use clarity.
+- [ ] Spot-check aggregates after corrections match expected counts (prep for Phase 5).
 
 ## Readiness Checks
 

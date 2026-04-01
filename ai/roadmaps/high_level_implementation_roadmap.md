@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This roadmap maps the major implementation phases for the WhisperStat MVP at a high level so the team can sequence work without over-specifying it too early. It should be read alongside `aiDocs/prd.md`, `aiDocs/mvp.md`, `aiDocs/architecture.md`, `aiDocs/final_project_alignment.md`, and the companion plan doc in `ai/roadmaps/2026-04-01_high_level_mvp_implementation_plan.md`.
+This roadmap maps the major implementation phases for the WhisperStat MVP at a high level so the team can sequence work without over-specifying it too early. It should be read alongside `aiDocs/prd.md`, `aiDocs/mvp.md`, `aiDocs/architecture.md`, `aiDocs/final_project_alignment.md`, `aiDocs/context.md`, and the companion plan doc in `ai/roadmaps/high_level_mvp_implementation_plan.md`.
 
 This document lives in `ai/roadmaps` as a local planning artifact. If grader-facing roadmap evidence is needed later, the relevant milestones should also be reflected in tracked documentation.
 
@@ -101,6 +101,27 @@ This roadmap does not include native apps, multi-sport expansion, multi-user col
 - Final evidence showing the project moved from docs to implementation to verification in a disciplined way.
 
 **Exit condition:** The team has a stable demo path and enough implementation evidence to support the class-final narrative.
+
+## MVP traceability (quick map)
+
+Use this to check that phased work covers every **required** item in `aiDocs/mvp.md` without opening new scope:
+
+| MVP area (`mvp.md`) | Primary phase |
+|---------------------|---------------|
+| Voice: push-to-talk, NL patterns, roster resolution, core event vocabulary | 2–3 |
+| Never silent commit; confirmation + undo + verbal correction | 3–4 |
+| Roster: team, players, mid-season edits | 2–3 |
+| Live dashboard: per player, per set; set-by-set score; current set | 5 |
+| Event log: delete/reclassify; auditability | 4–5 |
+| Post-game AI narrative (standouts, weak spots; prior-match compare when data exists) | 6 |
+| PWA, Supabase persistence, RLS, falsification evidence + demo reliability | 2, 7 |
+| Technical direction: ASR → parse (rules first, LLM when needed) → confirm → Postgres | 2–4 |
+
+Stretch items from the PRD/MVP (“Should Have”) stay optional until the core loop is demo-stable.
+
+## Sequencing note (capture vs trust)
+
+`aiDocs/architecture.md` requires **confirmation before persistence**. Phase 3 should produce **reviewable** structured events (parse + UI); Phase 4 wires **confirm / undo / log edits** to durable rows (`stat_events`, soft deletes, idempotent client keys per architecture). Avoid inserting canonical stats in Phase 3 unless the same build also ships confirmation—otherwise demos imply silent commits.
 
 ## How To Use This Roadmap
 

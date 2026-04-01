@@ -58,3 +58,21 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - The current `aiDocs/` set remains the source of truth unless a tracked update changes it.
 - The class final will reward disciplined process evidence as much as product functionality.
 - This phase is complete when the scope is clear enough that later plans do not need to re-litigate core product direction.
+
+## Concrete deliverables (close-out artifacts)
+
+- A single **MVP scope sheet** (can live in tracked `aiDocs/` or presentation appendix): bullets for **in / out / stretch**, explicitly citing `mvp.md` non-goals (no rotation engine, scouting, video, fan live, multi-sport, native store apps, multi-statistician sync, required exports).
+- **Success criteria table** aligned with `mvp.md` §“Success Criteria” (accuracy, eyes-up / voice session rate, differentiation wording)—plus **class-final** criteria from `final_project_alignment.md` (PRD → plan → roadmap → implementation → verification visibility; executed falsification).
+- **Validation backlog** derived from `prd.md` §10 / `final_project_alignment.md`: each row includes hypothesis, what would falsify, how to run, owner, target date, and where results will be **written** (tracked doc or appendix). Per `context.md`, these are gating learning steps, not hypothetical.
+- **Demo narrative**: one paragraph “what we will show live” (setup → capture with confirm → live board → post-game)—kept narrow enough for gym Wi‑Fi and time risk.
+
+## Acceptance criteria (phase done when)
+
+- No open questions on **volleyball-only PWA** scope, **trust behaviors** (confirm / undo / edits), or **post-game narrative** being in-vs-out of the demo path.
+- Phase 2–7 can start without revisiting whether Supabase + PWA is the stack (see `architecture.md`).
+- Team agrees **evidence beats feature sprawl** for the final (per `context.md`).
+
+## Technical / process anchors
+
+- **`aiDocs/context.md`**: align execution with final rubric, falsification with documented results, phased scaffold with tests/logging expectations.
+- Prefer recording decisions in **tracked** docs where graders need visibility; keep `ai/roadmaps` as working plans per repo convention.

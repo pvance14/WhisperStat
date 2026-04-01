@@ -58,3 +58,24 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - The project benefits more from a clean, direct baseline than from broader technical flexibility.
 - Early clarity around logging and fallback behavior will reduce risk during demo hardening.
 - This phase is complete when the project can begin end-to-end implementation without revisiting foundational setup questions.
+
+## Concrete deliverables
+
+- **Repo scaffold:** React PWA baseline (e.g. Vite + `vite-plugin-pwa` per `architecture.md` §4); routing placeholder for auth, roster, active game, dashboard.
+- **Supabase:** project wired with `supabase/` migrations (or agreed migration home) implementing **MVP sketch** tables: `teams`, `players`, `games`, `stat_events` from `architecture.md` §7; optional `game_summaries` can land in Phase 6 but stubbing the **enum constraint** / check for `event_type` early avoids drift.
+- **RLS:** policies so coaches only read/write their teams’ rows (pattern in architecture §6); service-role key restricted to server/Edge only.
+- **Auth:** coach sign-in path (magic link or email/password per product choice)—enough to obtain a session in the PWA and satisfy RLS tests.
+- **Logging / observability:** minimal structured client logging (e.g. parse latency, ASR errors) + **npm script** smoke path (health check, env present—align with `final_project_alignment.md` expectations).
+- **Demo fallback spec:** documented behavior when Web Speech fails (pre-recorded transcript paste, mock parse, or “manual event entry” kill-switch) without expanding product scope.
+
+## Acceptance criteria
+
+- Fresh clone → install → `dev` runs; PWA shell installable or precache path verified per tool docs.
+- Migrations apply cleanly; one manual test insert/select proves RLS boundaries (happy path + denied path).
+- Supabase client works from the app with anon key + user session; no LLM/STT secrets in client bundle for production paths.
+
+## Technical anchors (`architecture.md`)
+
+- Offline posture: document whether **outbox + IndexedDB** starts in Phase 2 stub or Phase 7; if deferred, note risk for gym Wi‑Fi (PRD/MVP).
+- Prefer **polling** for live reads initially; Realtime is optional.
+- Edge Functions: stub **LLM proxy** route or document when Phase 3+ first needs it.

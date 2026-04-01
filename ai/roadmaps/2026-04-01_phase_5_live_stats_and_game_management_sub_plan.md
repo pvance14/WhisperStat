@@ -57,3 +57,22 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - The most important live value is clarity around players, sets, and current match state.
 - Coaches do not need advanced analysis in the MVP if the core live dashboard is trustworthy and usable.
 - This phase is complete when a coach can see match value emerge from the captured event stream during active use.
+
+## Concrete deliverables
+
+- **Aggregate queries** for live dashboard (examples in `architecture.md` §7): kills, aces, blocks, digs, errors, attack errors **per player** and **filterable by `set_number`**.
+- **Current set indicator:** bind UI to `games.current_set`; flow to **advance set** (and reset live slice) when the coach moves to set 2+.
+- **Set-by-set score:** `mvp.md` requires team score tracking per set—architecture sketch is light here; implement the **smallest** representation (e.g. JSON on `games` for `{set: {us, them}}` or dedicated columns) and document in migrations. Manual +/- controls are acceptable for MVP if auto-scoring is out of scope.
+- **Live updates:** start with **polling** (`architecture.md` §8); upgrade to Realtime only if needed.
+- **Game lifecycle:** mark game `completed` when match ends (feeds Phase 6 summary triggers).
+
+## Acceptance criteria
+
+- Totals on dashboard match raw `stat_events` counts for a test game (SQL cross-check).
+- Switching sets updates numbers without stale blurbs; current set obvious during capture.
+- Score + set state survive refresh (persisted), not only React state.
+
+## Technical anchors
+
+- All aggregates exclude `deleted_at` rows.
+- Index usage: `(game_id, set_number)` per architecture for performance sanity checks on beta-sized data.

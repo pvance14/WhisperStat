@@ -23,11 +23,12 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Define the MVP post-game summary output from stored match data.
-- [ ] Define the end-of-match flow from live use into review and summary.
-- [ ] Define the limited polish work that improves clarity, trust, and demo quality.
-- [ ] Confirm the phase closes the MVP loop without adding broader historical or sharing scope.
-- [ ] Confirm the product story is stronger and easier to demonstrate after this phase.
+- [ ] Implement **aggregate → narrative** pipeline (template + optional LLM via Edge).
+- [ ] Persist and display **`game_summaries`** for completed games.
+- [ ] Implement **prior-match comparison** when earlier completed games exist (`mvp.md`).
+- [ ] Smooth **end-of-match** UX (complete game → summary screen).
+- [ ] Targeted **polish**: errors, loading, mobile layout for capture + board.
+- [ ] Re-read scope: no exports, no season trends, no shareable links unless stretch time permits.
 
 ## Readiness Checks
 

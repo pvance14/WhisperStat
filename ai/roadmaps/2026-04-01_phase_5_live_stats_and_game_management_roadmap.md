@@ -23,11 +23,12 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Define the MVP live dashboard views for players and sets.
-- [ ] Define current-set and score-state handling for active matches.
-- [ ] Define how persisted event and game data support live match use.
-- [ ] Confirm the live experience remains coherent from setup through active use.
-- [ ] Confirm the phase output supports post-game summary generation later.
+- [ ] Build **per-player / per-set** stat table (MVP categories from `mvp.md`).
+- [ ] Implement **set navigation** + **current set** display tied to `games.current_set`.
+- [ ] Implement **set-by-set score** persistence (minimal schema decision documented).
+- [ ] Wire **live refresh** (polling) after confirmed events and corrections.
+- [ ] Add **complete game** action (status) to unlock post-game flow.
+- [ ] Sanity-check aggregates vs SQL for sample games.
 
 ## Readiness Checks
 

@@ -58,3 +58,22 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - A narrower, well-verified demo is more valuable than a broader but less reliable one.
 - Evidence quality is a product requirement for the class final, not just presentation polish.
 - This phase is complete when the MVP can be demonstrated, defended, and traced back to the repo’s planning artifacts.
+
+## Concrete deliverables
+
+- **E2E verification script or checklist:** roster → new game → PTT capture → confirm → see live totals → correct event → totals update → complete → summary; include expected DB rows or screenshots as needed.
+- **Demo hardening:** offline/ASR failure path from Phase 2 spec; preflight env checklist; backup **seeded game** for live Wi‑Fi failure.
+- **Executed validation packet:** PRD §10 / `final_project_alignment.md` tests with **results** (noise ASR, push-to-talk usability, priority of features)—each ties to a decision (what changed in UX or scope).
+- **Traceability artifact:** short mapping “rubric / alignment doc requirement → evidence file or PR” for graders (`context.md`: docs → implementation → verification).
+- **Performance smoke:** note p95-ish timings for parse + confirm on target devices (qualitative OK for class final).
+
+## Acceptance criteria
+
+- `mvp.md` **Success Criteria** section revisited with **observed** notes (even qualitative) for what was actually tested.
+- No P0 bugs on the **demo golden path**; known issues documented with workarounds.
+- Repo shows **changelog** or tracked notes updated when roadmap pairs complete (per `context.md` workflow).
+
+## Technical anchors
+
+- Supabase logs / Edge logs reviewed for obvious errors before final.
+- Confirm RLS regression: second account cannot read first account’s games.

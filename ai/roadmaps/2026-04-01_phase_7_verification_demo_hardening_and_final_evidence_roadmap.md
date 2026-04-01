@@ -23,11 +23,12 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Define the end-to-end verification pass for the MVP workflow.
-- [ ] Define demo hardening priorities and safe fallback behavior.
-- [ ] Define the validation and falsification evidence required to support the product claims.
-- [ ] Define the final documentation and repo evidence needed for the class narrative.
-- [ ] Confirm that any late work is tied to reliability, demo safety, or evidence quality.
+- [ ] Run and document **E2E verification** (scripted or manual checklist) for full MVP loop.
+- [ ] Execute **demo hardening**: fallback path, preflight, seeded backup scenario.
+- [ ] Complete **validation/falsification packet** with actual outcomes (not placeholders).
+- [ ] Produce **grader traceability**: alignment doc requirements → evidence in repo.
+- [ ] **RLS / security** spot-check and quick performance notes on capture path.
+- [ ] Freeze scope: late changes only for demo blockers or evidence gaps.
 
 ## Readiness Checks
 

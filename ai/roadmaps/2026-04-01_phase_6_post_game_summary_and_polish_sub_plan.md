@@ -57,3 +57,22 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - The MVP’s post-game value can be delivered without full historical or export capabilities.
 - Small polish improvements can have outsized impact if they target the core loop.
 - This phase is complete when the product can move from live capture to meaningful post-game output in a clean, understandable way.
+
+## Concrete deliverables
+
+- **Summary input:** aggregated `stat_events` + roster names + set breakdown; pull **prior completed game** for the same `team_id` when available (`mvp.md` §5: comparison when historical data exists).
+- **Summary output:** store in `game_summaries` (`narrative_text`, `generated_at`, optional `model`); show in UI after **complete game**.
+- **Generation strategy (cost posture per `architecture.md` §2):** ship **deterministic template** first (sorted leaders, error themes); add **single batched Edge + small LLM** call when/ if prose quality is required for demo—keep keys server-side.
+- **End-of-match UX:** clear path from live → review log → summary (avoid dead-ends).
+- **Polish (bounded):** loading/error states on summary; readable typography on dashboard; iOS Safari quirks for mic if not already done.
+
+## Acceptance criteria
+
+- For a seeded game, narrative mentions top kill/error contributors when those stats exist.
+- With **two+** past games, summary includes at least one **comparative** sentence (or explicit “not enough history” if only one game—product choice, document it).
+- No new scope: PDF/export/share remain stretch per `mvp.md`.
+
+## Technical anchors
+
+- RLS on `game_summaries` consistent with parent `game_id` / team ownership.
+- Avoid storing full raw transcripts in DB unless PRD/privacy review says otherwise (`architecture.md` §10).

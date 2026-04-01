@@ -57,3 +57,23 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - The primary trust problem is clarity and recoverability, not lack of feature depth.
 - Immediate visible correction paths matter more than sophisticated exception handling.
 - This phase is complete when the system has believable, low-friction ways to handle mistakes during and after live capture.
+
+## Concrete deliverables
+
+- **Confirmation card:** accept / reject proposed event; show human-readable label (“Kill — #12 Name ✓”).
+- **Insert on confirm:** write to `stat_events` with `created_by`, `set_number`, timestamps; attach **`client_event_id`** for idempotent retries.
+- **Undo last:** prefer `deleted_at` soft delete or equivalent reversible flag per `architecture.md` §7 design notes—**no hard delete** of committed events for trust/audit.
+- **Event log screen:** list recent events for the game (filter by set); actions: **soft-delete (undo)**, **reclassify event_type**, **reassign player** if feasible without scope creep.
+- **Verbal correction:** MVP asks for a path such as “actually that was an error”—implement as (a) a follow-up utterance parsed as correction, or (b) voice that opens edit on last event; choose smallest UX that works.
+- **Low-confidence:** if using LLM fallback, surface “double-check” styling or explicit confirm (stretch: numeric confidence).
+
+## Acceptance criteria
+
+- Every stat on the live board traces to a user-confirmed action (or a deliberate log edit with visible outcome).
+- Coach can recover from wrong stat **during** a set without leaving the game flow.
+- Reclassify / delete flows keep aggregates correct (`deleted_at` filtered in queries).
+
+## Technical anchors
+
+- RLS still enforces coach scope on updates/deletes.
+- Dashboard queries always `WHERE deleted_at IS NULL` unless showing an “audit” mode (optional).

@@ -23,11 +23,12 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Lock the class-final framing for the MVP and reset narrative.
-- [ ] Confirm the MVP scope boundaries and explicit non-goals.
-- [ ] Define phase-level success criteria for product behavior, evidence, and demo readiness.
-- [ ] Define what later phases must validate, verify, and document.
-- [ ] Confirm that Phase 2 can start without unresolved scope ambiguity.
+- [ ] Lock the class-final framing for the MVP and reset narrative (reference `final_project_alignment.md` §“Make the reset legible”).
+- [ ] Confirm MVP scope boundaries and explicit non-goals against `aiDocs/mvp.md` (including stretch vs required).
+- [ ] Publish **MVP scope sheet** + **success criteria** (product + class process) as agreed artifacts.
+- [ ] Create **validation backlog** from PRD §10 with written locations for results (executed tests, not plans-only).
+- [ ] Draft **demo narrative** paragraph and identify top **demo risks** (mic, Wi‑Fi, ASR)—feed Phase 2 fallback planning.
+- [ ] Confirm Phase 2 can start without unresolved scope ambiguity.
 
 ## Readiness Checks
 

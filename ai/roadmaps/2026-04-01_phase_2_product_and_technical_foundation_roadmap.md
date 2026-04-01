@@ -23,11 +23,12 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Define the minimum baseline app structure for the MVP.
-- [ ] Define the core setup flow for roster and match context.
-- [ ] Define the minimum technical path for voice handling, parsing, and persistence.
-- [ ] Define structured logging and CLI-checkable workflow expectations.
-- [ ] Define safe demo fallback behavior for later phases.
+- [ ] Scaffold React PWA + Supabase client + auth as outlined in `architecture.md` §4–§6.
+- [ ] Land **schema + RLS** for `teams`, `players`, `games`, `stat_events` (and indexes noted in architecture §7).
+- [ ] Implement **roster CRUD** (create/edit team, players with jersey uniqueness) and **game create** (opponent, date, status, `current_set`).
+- [ ] Document **voice/parse pipeline** boundaries: Web Speech default; rules-first parse; LLM behind Edge when added.
+- [ ] Add **logging + smoke script** conventions aligned with `final_project_alignment.md`.
+- [ ] Write **demo fallback** spec (offline / ASR failure) for Phase 7 hardening.
 
 ## Readiness Checks
 

@@ -23,11 +23,12 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Define the MVP match setup path using roster context.
-- [ ] Define the push-to-talk capture flow for the core stat vocabulary.
-- [ ] Define the structured event path from spoken input to review-ready output.
-- [ ] Confirm the core workflow is narrow enough for repeated testing and iteration.
-- [ ] Confirm the output supports later correction, live-stats, and summary phases.
+- [ ] Ship **active game + roster** context in the capture UI (ties to `games` / `players`).
+- [ ] Ship **push-to-talk** + Web Speech → transcript pipeline.
+- [ ] Ship **parse → proposed event** for MVP stat vocabulary with rules-first routing and optional LLM fallback.
+- [ ] **Clarification UX** for unresolved player or stat (minimal: disambiguation prompt or “couldn’t parse” copy).
+- [ ] Confirm **no silent persist**: proposals only, unless shipped together with Phase 4 confirm (same PR).
+- [ ] Exercise repeated capture in dev (logging timings) to prep trust + dashboard phases.
 
 ## Readiness Checks
 

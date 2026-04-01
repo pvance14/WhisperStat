@@ -2,7 +2,7 @@
 
 ## Summary
 
-This roadmap maps the full WhisperStat MVP into a small number of implementation phases so later planning docs can go deeper without redefining the overall path. It is based on the current product and technical source-of-truth docs: `aiDocs/prd.md`, `aiDocs/mvp.md`, `aiDocs/architecture.md`, and `aiDocs/final_project_alignment.md`.
+This roadmap maps the full WhisperStat MVP into a small number of implementation phases so later planning docs can go deeper without redefining the overall path. It is based on the current product and technical source-of-truth docs: `aiDocs/prd.md`, `aiDocs/mvp.md`, `aiDocs/architecture.md`, `aiDocs/final_project_alignment.md`, and `aiDocs/context.md` (current focus: class-final demo, executed validation, phased scaffold).
 
 This document is a local planning artifact in `ai/roadmaps`. If grader-facing or shared process evidence is needed later, the relevant outcomes should also be reflected in tracked docs that align with the repo's canonical documentation pattern.
 
@@ -144,6 +144,19 @@ This roadmap does not plan for native mobile apps, multi-sport support, multi-us
 - Test and verification passes for each critical workflow.
 - Validation results, research outcomes, and what changed because of them.
 - Demo checklist, fallback strategy, and final evidence packaging.
+
+## Build-depth checklist (minimum to ship MVP)
+
+The phase sub-plans expand “what”; this checklist ties phases to **concrete product facts** from `aiDocs/mvp.md` and `aiDocs/architecture.md` so implementation is not under-specified:
+
+1. **Data:** Postgres tables at least `teams`, `players`, `games`, `stat_events` (and `game_summaries` when post-game lands), with RLS scoped to coach-owned teams; `stat_events.event_type` limited to MVP set: kill, ace, serve_error, reception_error, block, dig, attack_error, set (assist); soft delete via `deleted_at`; `client_event_id` for offline/idempotent replay when the outbox exists.
+2. **Voice path:** Default ASR = Web Speech API; parse path = roster-aware rules/heuristics first, **LLM only when needed**; provider keys only via Edge Function (or equivalent server proxy), not baked in the client for production.
+3. **Trust:** Every persisted event passed explicit confirmation in UI; undo and log edit/reclassify; support a verbal correction path (new utterance or targeted correction—exact UX can be minimal if behavior exists).
+4. **Live game:** Dashboard aggregates per player and per set; **set-by-set score** and **current set** visible and updatable (smallest viable model: e.g. fields or compact JSON on `games`, or a tiny `set_scores` table—pick one, document in migrations).
+5. **Post-game:** Narrative from aggregates; when the team has **prior completed games**, include comparison themes where data allows (template-first per architecture cost posture; optional single batched LLM).
+6. **Evidence (`context.md` / `final_project_alignment.md`):** Logging and CLI/smoke hooks suitable for class rubric; PRD §10-style tests **run and recorded** (hypothesis, falsifier, method, result, decision), not only planned.
+
+Sub-plans under this folder flesh out deliverables and acceptance criteria per phase; they should stay aligned with the list above.
 
 ## How To Use This Roadmap
 
