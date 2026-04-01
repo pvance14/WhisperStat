@@ -26,6 +26,8 @@ export const SetupPage = () => {
         <div className="stack" style={{ gap: "0.4rem" }}>
           <strong>Next steps</strong>
           <div className="mono">cp .env.example .env</div>
+          <div className="mono">Set VITE_SUPABASE_REDIRECT_URL to your local or deployed origin</div>
+          <div className="mono">Allowlist that same URL in Supabase Auth settings</div>
           <div className="mono">npm install</div>
           <div className="mono">npm run dev</div>
         </div>

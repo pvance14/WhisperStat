@@ -10,8 +10,8 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Current Status
 
-- Planning status: Completed and ready to archive.
-- Implementation status: Foundation scaffold, schema, docs, and verification scripts landed.
+- Planning status: Reopened pending external verification.
+- Implementation status: Foundation scaffold, schema, docs, and local verification landed; live Supabase verification remains pending.
 - Scope status: Focused baseline is in place for auth, roster, game setup, observability, and fallback readiness.
 
 ## Document Status
@@ -20,7 +20,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - [x] Companion roadmap drafted.
 - [x] Alignment checked against the main high-level plan docs and `aiDocs/context.md`.
 - [x] Phase 2 deliverables published in code and tracked docs.
-- [x] Ready to archive in `ai/roadmaps/complete` as a finished planning pair.
+- [ ] Ready to archive in `ai/roadmaps/complete` as a finished planning pair.
 
 ## Milestones
 
@@ -36,7 +36,8 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - [x] The foundation work stays consistent with `aiDocs/architecture.md`.
 - [x] Logging, testability, and debug expectations align with `aiDocs/final_project_alignment.md`.
 - [x] The baseline avoids unnecessary abstractions and deferred-scale complexity.
-- [x] Phase 3 can begin without open foundation-level blockers.
+- [ ] Live Supabase migration, auth redirect, and RLS verification are recorded against a real project.
+- [ ] Phase 2 can archive without overstating what has been verified.
 
 ## Delivered Artifacts
 
@@ -59,9 +60,10 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - Not yet verified live in this repo:
   - applying the migration to a real Supabase project
   - running authenticated RLS happy-path/denied-path queries against live credentials
+  - confirming magic-link redirect configuration against the deployed/local auth allowlist
 
-That remaining live verification depends on environment/project setup, not on unresolved Phase 2 design decisions.
+Until those checks exist, this phase should stay open in the active roadmap folder even though the implementation scaffold is ready for Phase 3 work.
 
 ## Completion Signal
 
-This phase is ready to close when the project has a clean baseline for the MVP workflow, clear observability and fallback expectations, and no unresolved setup decisions that would block core feature implementation.
+This phase is ready to close when the project has a clean baseline for the MVP workflow, clear observability and fallback expectations, and recorded live verification for migration/auth/RLS behavior.

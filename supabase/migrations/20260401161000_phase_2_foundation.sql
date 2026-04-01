@@ -64,6 +64,41 @@ as $$
   );
 $$;
 
+create or replace function public.validate_stat_event_refs()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+declare
+  game_team_id uuid;
+  player_team_id uuid;
+begin
+  select games.team_id
+  into game_team_id
+  from public.games
+  where games.id = new.game_id;
+
+  select players.team_id
+  into player_team_id
+  from public.players
+  where players.id = new.player_id;
+
+  if game_team_id is null then
+    raise exception 'Game % does not exist.', new.game_id;
+  end if;
+
+  if player_team_id is null then
+    raise exception 'Player % does not exist.', new.player_id;
+  end if;
+
+  if game_team_id <> player_team_id then
+    raise exception 'Player % does not belong to the same team as game %.', new.player_id, new.game_id;
+  end if;
+
+  return new;
+end;
+$$;
+
 grant execute on function public.is_team_owner(uuid) to authenticated;
 grant execute on function public.owns_game(uuid) to authenticated;
 
@@ -142,6 +177,12 @@ create trigger set_games_updated_at
 before update on public.games
 for each row
 execute function public.set_updated_at();
+
+drop trigger if exists validate_stat_event_refs on public.stat_events;
+create trigger validate_stat_event_refs
+before insert or update on public.stat_events
+for each row
+execute function public.validate_stat_event_refs();
 
 alter table public.teams enable row level security;
 alter table public.players enable row level security;

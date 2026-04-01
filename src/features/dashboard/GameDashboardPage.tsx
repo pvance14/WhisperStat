@@ -18,6 +18,7 @@ export const GameDashboardPage = () => {
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [events, setEvents] = useState<StatEventRow[]>([]);
   const [status, setStatus] = useState<{ tone: "info" | "error"; message: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!gameId) {
@@ -28,6 +29,7 @@ export const GameDashboardPage = () => {
 
     const load = async () => {
       try {
+        setIsLoading(true);
         const nextBundle = await getGameBundle(requireSupabase(), gameId);
         if (!isActive) {
           return;
@@ -36,15 +38,21 @@ export const GameDashboardPage = () => {
         setGame(nextBundle.game);
         setPlayers(nextBundle.players);
         setEvents(nextBundle.events);
+        setStatus(null);
       } catch (error) {
         if (!isActive) {
           return;
         }
 
+        setGame(null);
         setStatus({
           tone: "error",
           message: getErrorMessage(error)
         });
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -63,8 +71,17 @@ export const GameDashboardPage = () => {
     return <StatusMessage tone="error" message="Game id is missing from the route." />;
   }
 
-  if (!game) {
+  if (isLoading && !game) {
     return <StatusMessage tone="info" message="Loading game dashboard..." />;
+  }
+
+  if (!game) {
+    return (
+      <StatusMessage
+        tone={status?.tone ?? "error"}
+        message={status?.message ?? "The game could not be loaded."}
+      />
+    );
   }
 
   const statRows = buildPlayerStatRows(players, events, game.current_set);

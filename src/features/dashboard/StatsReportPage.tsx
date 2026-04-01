@@ -18,24 +18,32 @@ export const StatsReportPage = () => {
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [events, setEvents] = useState<StatEventRow[]>([]);
   const [status, setStatus] = useState<{ tone: "info" | "error"; message: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!gameId) {
       return;
     }
 
+    setIsLoading(true);
+
     void getGameBundle(requireSupabase(), gameId)
       .then((bundle) => {
         setGame(bundle.game);
         setPlayers(bundle.players);
         setEvents(bundle.events);
+        setStatus(null);
       })
       .catch((error) =>
-        setStatus({
-          tone: "error",
-          message: getErrorMessage(error)
-        })
-      );
+        {
+          setGame(null);
+          setStatus({
+            tone: "error",
+            message: getErrorMessage(error)
+          });
+        }
+      )
+      .finally(() => setIsLoading(false));
   }, [gameId]);
 
   const statRows = useMemo(
@@ -48,8 +56,17 @@ export const StatsReportPage = () => {
     return <StatusMessage tone="error" message="Game id is missing from the route." />;
   }
 
-  if (!game) {
+  if (isLoading && !game) {
     return <StatusMessage tone="info" message="Loading stats report..." />;
+  }
+
+  if (!game) {
+    return (
+      <StatusMessage
+        tone={status?.tone ?? "error"}
+        message={status?.message ?? "The stats report could not be loaded."}
+      />
+    );
   }
 
   const leaders = [...statRows].sort((left, right) => right.totals.kill - left.totals.kill).slice(0, 3);

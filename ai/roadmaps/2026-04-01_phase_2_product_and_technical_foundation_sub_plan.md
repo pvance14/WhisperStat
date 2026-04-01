@@ -77,11 +77,11 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Close-Out Status
 
-- Phase 2 intent achieved: the project now has a usable codebase foundation for Phase 3 core match workflow work.
-- Remaining external verification is environment-bound rather than design-bound:
+- Phase 2 implementation intent achieved: the project now has a usable codebase foundation for Phase 3 core match workflow work.
+- Phase status is reopened until external verification is actually recorded:
   - apply migration to a live Supabase project
   - verify RLS behavior with real authenticated sessions
-- Those checks should be run as soon as project credentials are configured, but they do not reopen foundation architecture choices.
+- Those checks should be run as soon as project credentials are configured. They do not reopen foundation architecture choices, but they do affect whether the phase can be truthfully archived as complete.
 
 ## Assumptions
 

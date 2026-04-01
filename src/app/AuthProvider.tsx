@@ -9,7 +9,7 @@ import {
 import type { Session, User } from "@supabase/supabase-js";
 
 import { appLog } from "@/lib/logger";
-import { isSupabaseConfigured } from "@/lib/env";
+import { appEnv, isSupabaseConfigured } from "@/lib/env";
 import { supabase } from "@/lib/supabase";
 
 interface AuthContextValue {
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         const { error } = await supabase.auth.signInWithOtp({
           email,
           options: {
-            emailRedirectTo: window.location.origin
+            emailRedirectTo: appEnv.supabaseRedirectUrl ?? window.location.origin
           }
         });
 
