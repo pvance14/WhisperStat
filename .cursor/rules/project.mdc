@@ -1,0 +1,20 @@
+---
+description: Stat Side — read shared context and default collaboration style
+alwaysApply: true
+---
+
+# Stat Side — project rules
+
+## Source of truth
+
+- Read **`aiDocs/context.md`** for pointers to the PRD, MVP, stack, and current priorities.
+- Prefer **`aiDocs/prd.md`** and **`aiDocs/mvp.md`** for product scope; **`aiDocs/externalresearch/`** for market/competitive notes.
+- **`AGENTS.md`** (repo root) aligns Codex and other agents with the same defaults as this rule.
+- **`ai/`** is gitignored local workspace (guides, roadmaps, notes, **`ai/claude.md`**). Do not treat it as shared canon unless the user pastes from it.
+
+## Collaboration
+
+- **Ask before large or irreversible work** — multi-file refactors, dependency or infra choices, anything expensive to undo. A short plan + “OK to proceed?” is enough.
+- **Do not over-engineer** — smallest change that meets the ask; no extra abstractions, features, or docs unless requested.
+- **Flag uncertainty** — if requirements, APIs, or repo facts are unclear, say so and ask or propose options instead of guessing.
+- **Match the codebase** — follow existing patterns, naming, and file layout when adding code.

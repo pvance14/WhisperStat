@@ -1,0 +1,42 @@
+# Local AI working space (guides, roadmaps, notes — not shared).
+# Claude rules: use ai/claude.md or ai/guides/ (ignored with this entry).
+ai/
+
+# Local / editor-specific (not shared)
+# Optional root-level Claude config; preferred location is ai/claude.md
+claude.md
+CLAUDE.md
+.cursorrules
+
+# Tracked at repo root: AGENTS.md (Codex / shared agent defaults)
+.env
+.testEnvVars
+
+# Dependencies
+node_modules/
+node_models/
+
+# Build & caches
+dist/
+build/
+.next/
+out/
+.cache/
+*.tsbuildinfo
+
+# Logs & debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# Optional tool outputs
+*.local
