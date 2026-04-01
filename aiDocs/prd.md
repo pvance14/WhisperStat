@@ -1,5 +1,5 @@
 # Product Requirements Document
-## Stat Side — Voice-First Volleyball Stat Tracking App
+## WhisperStat — Voice-First Volleyball Stat Tracking App
 
 **Version:** 0.1 (Pre-validation)
 **Date:** April 2026
@@ -192,7 +192,7 @@ Post-game: LLM generates narrative summary from aggregated event data
 | **GameChanger** | ✗ | ~ (highlights) | iOS + Android | Free |
 | **Hooper AI** (basketball) | ✓ (push-to-talk) | ✗ | iOS | ~$5/mo |
 | **Impressive Play** (soccer) | ✓ (post-game) | ✗ | iOS | Subscription |
-| **Stat Side (this app)** | ✓ (real-time NL) | ✓ | PWA (all) | TBD |
+| **WhisperStat (this app)** | ✓ (real-time NL) | ✓ | PWA (all) | TBD |
 
 **Primary wedge:** The only volleyball stat tool with true natural language voice input that works on any device.
 

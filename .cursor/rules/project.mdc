@@ -1,9 +1,9 @@
 ---
-description: Stat Side — read shared context and default collaboration style
+description: WhisperStat — read shared context and default collaboration style
 alwaysApply: true
 ---
 
-# Stat Side — project rules
+# WhisperStat — project rules
 
 ## Source of truth
 

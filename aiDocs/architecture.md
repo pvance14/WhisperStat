@@ -1,4 +1,4 @@
-# Architecture — Stat Side
+# Architecture — WhisperStat
 
 **Status:** Draft (aligned with [PRD](./prd.md) §6–7 and [MVP](./mvp.md); backend choice: **Supabase**)  
 **Last updated:** April 2026
