@@ -1,4 +1,4 @@
-# Minimum Viable Product — Stat Side
+# Minimum Viable Product — WhisperStat
 
 **Version:** 0.1  
 **Date:** April 2026  
