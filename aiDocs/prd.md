@@ -150,11 +150,9 @@ Confirmation UI (coach approves or corrects)
         ↓
 Structured event: { player_id, action, result, set, timestamp }
         ↓
-AWS backend (API Gateway + Lambda)
+Supabase (Postgres — event store, roster, game sessions; Auth; optional Edge Functions)
         ↓
-DynamoDB (event store, roster, game sessions)
-        ↓
-React dashboard (live stats view, WebSocket or polling)
+React dashboard (live stats view, Supabase Realtime or polling)
         ↓
 Post-game: LLM generates narrative summary from aggregated event data
 ```
@@ -162,7 +160,7 @@ Post-game: LLM generates narrative summary from aggregated event data
 **Platform:** React PWA
 - No App Store approval required
 - Installs to home screen on iOS and Android
-- Leverages existing React + AWS stack
+- Backend: **Supabase** (Postgres + Auth); implementation detail in `aiDocs/architecture.md`
 
 **Voice-to-Text Options (prototype both before committing):**
 - Deepgram (streaming, better noise robustness, paid per minute)

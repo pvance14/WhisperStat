@@ -92,7 +92,7 @@ Native iOS/Android apps remain **after validation**, not part of MVP.
 ## Technical Direction (MVP)
 
 - **Client:** React PWA.
-- Pipeline: **ASR** (e.g. Web Speech API, Deepgram, and/or Whisper per prototyping) → **LLM structured output** (JSON stat event or clarification) with **roster in context** → **confirmation UI** → **persisted events** (e.g. API + DynamoDB as in PRD).
+- Pipeline: **ASR** (e.g. Web Speech API, Deepgram, and/or Whisper per prototyping) → **LLM structured output** (JSON stat event or clarification) with **roster in context** → **confirmation UI** → **persisted rows in Supabase (Postgres)** — see [architecture.md](./architecture.md).
 - **Prioritize** low perceived latency after utterance ends (streaming ASR where possible).
 
 ---

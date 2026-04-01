@@ -19,4 +19,4 @@ Project context and how to work in this repo. **`aiDocs/context.md`** is the sho
 
 ## Stack
 
-React PWA, AWS (API Gateway + Lambda + DynamoDB), voice ASR + LLM for stat events — see **`aiDocs/architecture.md`**.
+React PWA, **Supabase** (Postgres + Auth), voice ASR + LLM for stat events — see **`aiDocs/architecture.md`**.
