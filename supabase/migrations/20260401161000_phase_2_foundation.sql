@@ -33,6 +33,70 @@ begin
 end;
 $$;
 
+create table if not exists public.teams (
+  id uuid primary key default gen_random_uuid(),
+  name text not null check (char_length(trim(name)) > 0),
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.players (
+  id uuid primary key default gen_random_uuid(),
+  team_id uuid not null references public.teams(id) on delete cascade,
+  first_name text not null check (char_length(trim(first_name)) > 0),
+  last_name text not null check (char_length(trim(last_name)) > 0),
+  jersey_number integer not null check (jersey_number >= 0),
+  position text,
+  aliases text[],
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now()),
+  constraint players_team_id_jersey_number_key unique (team_id, jersey_number)
+);
+
+create table if not exists public.games (
+  id uuid primary key default gen_random_uuid(),
+  team_id uuid not null references public.teams(id) on delete cascade,
+  opponent_name text not null check (char_length(trim(opponent_name)) > 0),
+  game_date timestamptz not null,
+  location text,
+  status public.game_status not null default 'in_progress',
+  current_set integer not null default 1 check (current_set >= 1),
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.stat_events (
+  id uuid primary key default gen_random_uuid(),
+  game_id uuid not null references public.games(id) on delete cascade,
+  player_id uuid not null references public.players(id) on delete cascade,
+  event_type public.stat_event_type not null,
+  set_number integer not null check (set_number >= 1),
+  "timestamp" timestamptz not null default timezone('utc', now()),
+  created_by uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  notes text,
+  deleted_at timestamptz,
+  client_event_id uuid,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.game_summaries (
+  id uuid primary key default gen_random_uuid(),
+  game_id uuid not null unique references public.games(id) on delete cascade,
+  narrative_text text not null,
+  generated_at timestamptz not null,
+  model text,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+create index if not exists idx_games_team_id on public.games(team_id);
+create index if not exists idx_players_team_id on public.players(team_id);
+create index if not exists idx_stat_events_game_set on public.stat_events(game_id, set_number);
+create index if not exists idx_stat_events_game_player on public.stat_events(game_id, player_id);
+create index if not exists idx_stat_events_player_event on public.stat_events(player_id, event_type);
+create unique index if not exists idx_stat_events_client_event_id
+  on public.stat_events(client_event_id)
+  where client_event_id is not null;
+
 create or replace function public.is_team_owner(target_team_id uuid)
 returns boolean
 language sql
@@ -101,70 +165,6 @@ $$;
 
 grant execute on function public.is_team_owner(uuid) to authenticated;
 grant execute on function public.owns_game(uuid) to authenticated;
-
-create table if not exists public.teams (
-  id uuid primary key default gen_random_uuid(),
-  name text not null check (char_length(trim(name)) > 0),
-  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
-  created_at timestamptz not null default timezone('utc', now())
-);
-
-create table if not exists public.players (
-  id uuid primary key default gen_random_uuid(),
-  team_id uuid not null references public.teams(id) on delete cascade,
-  first_name text not null check (char_length(trim(first_name)) > 0),
-  last_name text not null check (char_length(trim(last_name)) > 0),
-  jersey_number integer not null check (jersey_number >= 0),
-  position text,
-  aliases text[],
-  created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now()),
-  constraint players_team_id_jersey_number_key unique (team_id, jersey_number)
-);
-
-create table if not exists public.games (
-  id uuid primary key default gen_random_uuid(),
-  team_id uuid not null references public.teams(id) on delete cascade,
-  opponent_name text not null check (char_length(trim(opponent_name)) > 0),
-  game_date timestamptz not null,
-  location text,
-  status public.game_status not null default 'in_progress',
-  current_set integer not null default 1 check (current_set >= 1),
-  created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now())
-);
-
-create table if not exists public.stat_events (
-  id uuid primary key default gen_random_uuid(),
-  game_id uuid not null references public.games(id) on delete cascade,
-  player_id uuid not null references public.players(id) on delete cascade,
-  event_type public.stat_event_type not null,
-  set_number integer not null check (set_number >= 1),
-  "timestamp" timestamptz not null default timezone('utc', now()),
-  created_by uuid not null default auth.uid() references auth.users(id) on delete cascade,
-  notes text,
-  deleted_at timestamptz,
-  client_event_id uuid,
-  created_at timestamptz not null default timezone('utc', now())
-);
-
-create table if not exists public.game_summaries (
-  id uuid primary key default gen_random_uuid(),
-  game_id uuid not null unique references public.games(id) on delete cascade,
-  narrative_text text not null,
-  generated_at timestamptz not null,
-  model text,
-  created_at timestamptz not null default timezone('utc', now())
-);
-
-create index if not exists idx_games_team_id on public.games(team_id);
-create index if not exists idx_players_team_id on public.players(team_id);
-create index if not exists idx_stat_events_game_set on public.stat_events(game_id, set_number);
-create index if not exists idx_stat_events_game_player on public.stat_events(game_id, player_id);
-create index if not exists idx_stat_events_player_event on public.stat_events(player_id, event_type);
-create unique index if not exists idx_stat_events_client_event_id
-  on public.stat_events(client_event_id)
-  where client_event_id is not null;
 
 drop trigger if exists set_players_updated_at on public.players;
 create trigger set_players_updated_at

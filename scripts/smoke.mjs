@@ -9,6 +9,8 @@ const requiredFiles = [
   "src/main.tsx",
   "src/app/router.tsx",
   "src/lib/supabase.ts",
+  "supabase/config.toml",
+  "supabase/seed.sql",
   "supabase/migrations/20260401161000_phase_2_foundation.sql",
   "aiDocs/evidence/phase_2_voice_pipeline_boundaries.md",
   "aiDocs/evidence/logging_and_smoke_conventions.md",

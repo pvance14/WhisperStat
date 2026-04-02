@@ -8,7 +8,14 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "smoke": "node ./scripts/smoke.mjs"
+    "smoke": "node ./scripts/smoke.mjs",
+    "supabase:start": "npx supabase start",
+    "supabase:stop": "npx supabase stop",
+    "supabase:status": "npx supabase status",
+    "supabase:link": "npx supabase link",
+    "supabase:db:push": "npx supabase db push",
+    "supabase:db:pull": "npx supabase db pull",
+    "supabase:types": "node ./scripts/generate-supabase-types.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.8",
@@ -21,6 +28,7 @@
     "@types/react": "^18.3.20",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.3.4",
+    "supabase": "^2.84.6",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-plugin-pwa": "^0.21.1"

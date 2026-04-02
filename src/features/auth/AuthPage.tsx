@@ -3,15 +3,16 @@ import { Navigate } from "react-router-dom";
 
 import { useAuth } from "@/app/AuthProvider";
 import { StatusMessage } from "@/components/StatusMessage";
+import { appEnv, isDevAdminShortcutAvailable } from "@/lib/env";
 import { getErrorMessage } from "@/lib/utils";
 
 export const AuthPage = () => {
-  const { session, isConfigured, signInWithMagicLink } = useAuth();
+  const { session, isConfigured, signInWithMagicLink, signInWithPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<{ tone: "success" | "error"; message: string } | null>(
     null
   );
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeAction, setActiveAction] = useState<"magic-link" | "dev-admin" | null>(null);
 
   if (!isConfigured) {
     return <Navigate to="/setup" replace />;
@@ -38,7 +39,7 @@ export const AuthPage = () => {
           onSubmit={(event) => {
             event.preventDefault();
             setStatus(null);
-            setIsSubmitting(true);
+            setActiveAction("magic-link");
 
             void signInWithMagicLink(email)
               .then(() => {
@@ -53,7 +54,7 @@ export const AuthPage = () => {
                   message: getErrorMessage(error)
                 });
               })
-              .finally(() => setIsSubmitting(false));
+              .finally(() => setActiveAction(null));
           }}
         >
           <label className="stack" style={{ gap: "0.4rem" }}>
@@ -69,11 +70,53 @@ export const AuthPage = () => {
           </label>
 
           <div className="form-actions">
-            <button className="button" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Sending..." : "Send magic link"}
+            <button className="button" type="submit" disabled={activeAction !== null}>
+              {activeAction === "magic-link" ? "Sending..." : "Send magic link"}
             </button>
           </div>
         </form>
+
+        {isDevAdminShortcutAvailable ? (
+          <div className="stack">
+            <div>
+              <strong>Development shortcut</strong>
+              <p className="supporting-text" style={{ marginBottom: 0 }}>
+                This signs into a real Supabase test account using local-only env vars, so RLS and
+                session behavior still match the real app.
+              </p>
+            </div>
+            <div className="form-actions">
+              <button
+                className="button-secondary"
+                type="button"
+                disabled={activeAction !== null}
+                onClick={() => {
+                  if (!appEnv.devAdminEmail || !appEnv.devAdminPassword) {
+                    setStatus({
+                      tone: "error",
+                      message: "Dev admin credentials are missing from local env vars."
+                    });
+                    return;
+                  }
+
+                  setStatus(null);
+                  setActiveAction("dev-admin");
+
+                  void signInWithPassword(appEnv.devAdminEmail, appEnv.devAdminPassword)
+                    .catch((error) =>
+                      setStatus({
+                        tone: "error",
+                        message: getErrorMessage(error)
+                      })
+                    )
+                    .finally(() => setActiveAction(null));
+                }}
+              >
+                {activeAction === "dev-admin" ? "Signing in..." : "Continue as dev admin"}
+              </button>
+            </div>
+          </div>
+        ) : null}
 
         {status ? <StatusMessage tone={status.tone} message={status.message} /> : null}
       </section>

@@ -1,0 +1,2 @@
+-- Intentionally blank seed file for Phase 2.
+-- Keep this file present so `supabase db reset` works with the default CLI config.

@@ -11,11 +11,19 @@ export const appEnv = {
   supabaseUrl: normalize(import.meta.env.VITE_SUPABASE_URL),
   supabaseAnonKey: normalize(import.meta.env.VITE_SUPABASE_ANON_KEY),
   supabaseRedirectUrl: normalize(import.meta.env.VITE_SUPABASE_REDIRECT_URL),
+  devAdminEmail: normalize(import.meta.env.VITE_DEV_ADMIN_EMAIL),
+  devAdminPassword: normalize(import.meta.env.VITE_DEV_ADMIN_PASSWORD),
+  enableDevAdminShortcut: normalize(import.meta.env.VITE_ENABLE_DEV_ADMIN_SHORTCUT) === "true",
   environment: normalize(import.meta.env.VITE_APP_ENV) ?? "development",
   debugLogs: normalize(import.meta.env.VITE_ENABLE_DEBUG_LOGS) === "true"
 };
 
 export const isSupabaseConfigured = Boolean(appEnv.supabaseUrl && appEnv.supabaseAnonKey);
+
+export const isDevAdminShortcutAvailable =
+  appEnv.environment !== "production" &&
+  appEnv.enableDevAdminShortcut &&
+  Boolean(appEnv.devAdminEmail && appEnv.devAdminPassword);
 
 export const getMissingEnvKeys = () => {
   const missing: string[] = [];

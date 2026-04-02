@@ -18,6 +18,7 @@ interface AuthContextValue {
   session: Session | null;
   user: User | null;
   signInWithMagicLink: (email: string) => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -101,6 +102,22 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         }
 
         appLog("info", "auth.magic_link_requested", { email });
+      },
+      signInWithPassword: async (email: string, password: string) => {
+        if (!supabase) {
+          throw new Error("Supabase is not configured yet.");
+        }
+
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        appLog("info", "auth.password_sign_in_succeeded", { email });
       },
       signOut: async () => {
         if (!supabase) {
