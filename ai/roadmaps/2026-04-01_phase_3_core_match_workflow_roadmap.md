@@ -11,7 +11,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Current Status
 
 - Planning status: Ready for implementation planning.
-- Implementation status: Not started.
+- Implementation status: In progress. The first live capture slice shipped on 2026-04-02.
 - Scope status: Focused on one-team setup, MVP stat capture, and review-ready event handling.
 
 ## Document Status
@@ -23,19 +23,26 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Ship **active game + roster** context in the capture UI (ties to `games` / `players`).
-- [ ] Ship **push-to-talk** + Web Speech → transcript pipeline.
-- [ ] Ship **parse → proposed event** for MVP stat vocabulary with rules-first routing and optional LLM fallback.
-- [ ] **Clarification UX** for unresolved player or stat (minimal: disambiguation prompt or “couldn’t parse” copy).
-- [ ] Confirm **no silent persist**: proposals only, unless shipped together with Phase 4 confirm (same PR).
+- [x] Ship **active game + roster** context in the capture UI (ties to `games` / `players`).
+- [x] Ship **push-to-talk** + Web Speech → transcript pipeline.
+- [x] Ship **parse → proposed event** for MVP stat vocabulary with rules-first routing and optional LLM fallback.
+- [x] **Clarification UX** for unresolved player or stat (minimal: disambiguation prompt or “couldn’t parse” copy).
+- [x] Confirm **no silent persist**: proposals only, unless shipped together with Phase 4 confirm (same PR).
 - [ ] Exercise repeated capture in dev (logging timings) to prep trust + dashboard phases.
 
 ## Readiness Checks
 
-- [ ] The workflow matches the MVP voice-input requirements in `aiDocs/mvp.md`.
-- [ ] The capture loop prioritizes trust and usable latency over breadth.
-- [ ] No phase work expands into multi-user, analytics, or non-MVP behavior.
+- [x] The workflow matches the MVP voice-input requirements in `aiDocs/mvp.md`.
+- [x] The capture loop prioritizes trust and usable latency over breadth.
+- [x] No phase work expands into multi-user, analytics, or non-MVP behavior.
 - [ ] The resulting workflow is stable enough to become the basis for correction and trust features.
+
+## 2026-04-02 Progress Notes
+
+- Added a live dashboard capture surface that combines active game context, roster-aware parsing, and a review queue.
+- Added `current_set` controls on the active game so proposals use real match state instead of placeholder values.
+- Kept the persistence boundary intact: proposals stay in UI review only, and `stat_events` writes remain deferred to explicit confirm work in Phase 4.
+- Left real-device repetition testing and any low-confidence fallback expansion for the remaining Phase 3 work.
 
 ## Completion Signal
 

@@ -10,6 +10,7 @@ type PlayerInsert = Database["public"]["Tables"]["players"]["Insert"];
 type PlayerUpdate = Database["public"]["Tables"]["players"]["Update"];
 type GameRow = Database["public"]["Tables"]["games"]["Row"];
 type GameInsert = Database["public"]["Tables"]["games"]["Insert"];
+type GameUpdate = Database["public"]["Tables"]["games"]["Update"];
 type StatEventRow = Database["public"]["Tables"]["stat_events"]["Row"];
 
 export const listTeams = async (client: TypedSupabaseClient) =>
@@ -137,6 +138,26 @@ export const createGame = async (client: TypedSupabaseClient, payload: GameInser
 
     return data satisfies GameRow;
   }, { teamId: payload.team_id });
+
+export const updateGame = async (
+  client: TypedSupabaseClient,
+  gameId: string,
+  payload: GameUpdate
+) =>
+  logAsync("games.update", async () => {
+    const { data, error } = await client
+      .from("games")
+      .update(payload)
+      .eq("id", gameId)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data satisfies GameRow;
+  }, { gameId });
 
 export const getGameBundle = async (client: TypedSupabaseClient, gameId: string) =>
   logAsync("games.bundle", async () => {

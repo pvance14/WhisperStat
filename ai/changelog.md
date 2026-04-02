@@ -11,3 +11,7 @@ This is meant to be a CONCISE list of changes to track as we develop this projec
 - Implemented Phase 2 foundation work: scaffolded the React/Vite PWA app, Supabase auth/data foundation, roster and game setup routes, structured logging, smoke/build verification scripts, repo SQL migrations/RLS, and Phase 2 evidence docs; then closed the Phase 2 roadmap/sub-plan pair for archive.
 - Fixed review findings from the Phase 1/2 audit: strengthened `stat_events` team integrity checks, surfaced dashboard/report load failures, clarified magic-link redirect setup, replaced README filesystem links with repo-relative links, and reopened Phase 2 planning docs until live Supabase verification is actually recorded.
 - Recorded successful live Supabase verification for Phase 2 (migration apply, remote type generation, app sign-in, auth redirect, and RLS happy/denied-path checks), so the Phase 2 roadmap/sub-plan pair is ready to archive again.
+
+## 2026-04-02
+
+- Began Phase 3 implementation from `ai/roadmaps/2026-04-01_phase_3_core_match_workflow_roadmap.md` and `ai/roadmaps/2026-04-01_phase_3_core_match_workflow_sub_plan.md`: added roster-aware transcript parsing, Web Speech push-to-talk capture plus manual fallback, review-only proposal/clarification cards on the live dashboard, and active `current_set` controls while intentionally deferring `stat_events` writes to Phase 4 confirm work.

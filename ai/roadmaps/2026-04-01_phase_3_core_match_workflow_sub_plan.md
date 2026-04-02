@@ -74,6 +74,13 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - Parsed output is visible **before** any durable write; no silent commits.
 - Latency after utterance end feels acceptable for dev testing (identify slow steps for Phase 7).
 
+## 2026-04-02 Implementation Notes
+
+- The first implementation slice ships a rules-first parser, Web Speech capture path, manual transcript fallback, and review queue inside the live game dashboard.
+- Active game state now includes `current_set` update controls so parsed proposals reflect the real match context already stored in `games`.
+- Raw transcripts are shown only on the review surface and are not being persisted, which preserves the MVP privacy/trust boundary documented in `aiDocs/evidence/mvp_implementation_decisions.md`.
+- Explicit confirm, undo persistence, and richer correction flows remain deferred so Phase 3 does not blur into Phase 4.
+
 ## Technical anchors
 
 - `stat_events` shape and `event_type` vocabulary: `mvp.md` + `architecture.md` §7.
