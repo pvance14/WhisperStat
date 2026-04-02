@@ -81,6 +81,12 @@ This roadmap does not include native apps, multi-sport expansion, multi-user col
 
 **Exit condition:** A coach can move from setup to live capture to live stats in one connected workflow.
 
+## Phase 5.5 (optional): UI overhaul
+
+**Focus:** Cohesive visual and navigation pass **after** live stats and report exist, **before** post-game UX is built on final chrome—see [`2026-04-02_phase_5_5_ui_overhaul_best_practices.md`](./2026-04-02_phase_5_5_ui_overhaul_best_practices.md).
+
+**Exit condition:** Trust flows (confirm, undo, log) remain obvious on mobile; app uses shared tokens/primitives for Phase 6 screens.
+
 ## Phase 6: Complete The Post-Game Loop
 
 **Focus:** Use stored match data to generate the MVP’s post-game takeaway and tighten the end-to-end product experience.

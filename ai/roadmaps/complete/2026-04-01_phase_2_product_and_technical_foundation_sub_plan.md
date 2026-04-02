@@ -78,10 +78,11 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Close-Out Status
 
 - Phase 2 implementation intent achieved: the project now has a usable codebase foundation for Phase 3 core match workflow work.
-- Phase status is reopened until external verification is actually recorded:
-  - apply migration to a live Supabase project
-  - verify RLS behavior with real authenticated sessions
-- Those checks should be run as soon as project credentials are configured. They do not reopen foundation architecture choices, but they do affect whether the phase can be truthfully archived as complete.
+- Live verification has now been recorded for:
+  - migration apply against the connected Supabase project
+  - app sign-in and auth redirect behavior
+  - RLS happy-path and denied-path checks with real users
+- Those results are captured in `aiDocs/evidence/phase_2_live_verification.md`, so the planning pair can be archived as complete without overstating what was verified.
 
 ## Assumptions
 

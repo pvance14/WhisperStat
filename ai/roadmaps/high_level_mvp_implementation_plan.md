@@ -129,6 +129,14 @@ This roadmap does not plan for native mobile apps, multi-sport support, multi-us
 - Dashboard priorities and update behavior.
 - Match-state handling needed for a dependable demo and verification flow.
 
+## Phase 5.5 (optional): UI overhaul
+
+**Goal:** One cohesive visual/nav pass between Phase 5 and Phase 6 so post-game screens are not built twice.
+
+**Major outcomes:** Shared design tokens and layout primitives; trust flows (confirm, undo, log) remain obvious on mobile; regression checklist passes before Phase 6.
+
+**Reference:** `ai/roadmaps/2026-04-02_phase_5_5_ui_overhaul_best_practices.md`.
+
 ## Phase 6: Post-Game Summary And Polish
 
 **Goal:** Complete the MVP loop by turning stored match data into a useful post-game output and improving the end-to-end experience.
