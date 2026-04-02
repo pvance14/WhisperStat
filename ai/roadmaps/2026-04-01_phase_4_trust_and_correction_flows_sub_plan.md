@@ -74,6 +74,13 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - Coach can recover from wrong stat **during** a set without leaving the game flow.
 - Reclassify / delete flows keep aggregates correct (`deleted_at` filtered in queries).
 
+## 2026-04-02 Implementation Notes
+
+- The live dashboard now turns review-card proposals into confirmed `stat_events` rows only after explicit confirm, and reject keeps the database untouched.
+- Last-event trust actions now include one-tap soft-delete undo plus a narrow voice/manual correction path that only targets the most recently confirmed active event.
+- The event log now supports lightweight in-place editing for `event_type` and `player_id`, which keeps older corrections visible without introducing a separate admin surface.
+- Confirmation uses a stable `client_event_id` per review item so retries remain idempotent even if the confirm action is triggered more than once.
+
 ## Technical anchors
 
 - RLS still enforces coach scope on updates/deletes.

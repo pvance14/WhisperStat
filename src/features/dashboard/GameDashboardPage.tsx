@@ -1,15 +1,25 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import { useSpeechCapture } from "@/features/games/useSpeechCapture";
 import { StatusMessage } from "@/components/StatusMessage";
-import { getGameBundle, updateGame } from "@/lib/data";
-import type { Database } from "@/lib/database.types";
+import {
+  confirmStatEvent,
+  getGameBundle,
+  softDeleteStatEvent,
+  updateGame,
+  updateStatEvent
+} from "@/lib/data";
+import type { Database, StatEventType } from "@/lib/database.types";
 import { appLog } from "@/lib/logger";
-import { parseMatchTranscript, type ParseMatchResult } from "@/lib/matchParser";
+import {
+  parseLastEventCorrection,
+  parseMatchTranscript,
+  type ParseMatchResult
+} from "@/lib/matchParser";
 import { buildPlayerStatRows, summarizeEvents, trackedStatTypes } from "@/lib/stats";
 import { requireSupabase } from "@/lib/supabase";
 import { formatDateTime, getErrorMessage, titleCase } from "@/lib/utils";
-import { useSpeechCapture } from "@/features/games/useSpeechCapture";
 
 type GameRow = Database["public"]["Tables"]["games"]["Row"];
 type PlayerRow = Database["public"]["Tables"]["players"]["Row"];
@@ -17,6 +27,7 @@ type StatEventRow = Database["public"]["Tables"]["stat_events"]["Row"];
 
 interface ReviewItem {
   id: string;
+  clientEventId: string;
   transcript: string;
   createdAt: string;
   setNumber: number;
@@ -25,8 +36,22 @@ interface ReviewItem {
   result: ParseMatchResult;
 }
 
+interface EventEditDraft {
+  playerId: string;
+  eventType: StatEventType;
+}
+
 const formatSourceLabel = (source: ReviewItem["source"]) =>
   source === "speech" ? "Voice capture" : "Manual transcript";
+
+const buildEventSummary = (event: StatEventRow, players: PlayerRow[]) => {
+  const player = players.find((candidate) => candidate.id === event.player_id);
+  const playerLabel = player
+    ? `#${player.jersey_number} ${player.first_name} ${player.last_name}`
+    : "Unknown player";
+
+  return `${titleCase(event.event_type)} - ${playerLabel}`;
+};
 
 export const GameDashboardPage = () => {
   const { gameId } = useParams();
@@ -34,13 +59,29 @@ export const GameDashboardPage = () => {
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [events, setEvents] = useState<StatEventRow[]>([]);
   const [status, setStatus] = useState<{ tone: "info" | "error"; message: string } | null>(null);
-  const [captureStatus, setCaptureStatus] = useState<
+  const [workflowStatus, setWorkflowStatus] = useState<
     { tone: "info" | "success" | "warn" | "error"; message: string } | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [manualTranscript, setManualTranscript] = useState("");
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [isUpdatingSet, setIsUpdatingSet] = useState(false);
+  const [activeReviewId, setActiveReviewId] = useState<string | null>(null);
+  const [activeEventId, setActiveEventId] = useState<string | null>(null);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [eventEditDraft, setEventEditDraft] = useState<EventEditDraft | null>(null);
+  const [eventLogFilter, setEventLogFilter] = useState<"current" | "all">("current");
+  const [correctionTranscript, setCorrectionTranscript] = useState("");
+  const [isApplyingCorrection, setIsApplyingCorrection] = useState(false);
+
+  const loadBundle = async (targetGameId: string) => {
+    const nextBundle = await getGameBundle(requireSupabase(), targetGameId);
+    setGame(nextBundle.game);
+    setPlayers(nextBundle.players);
+    setEvents(nextBundle.events);
+    setStatus(null);
+    return nextBundle;
+  };
 
   const handleCapturedTranscript = ({
     transcript,
@@ -72,29 +113,31 @@ export const GameDashboardPage = () => {
       eventType: result.kind === "proposal" ? result.proposal.eventType : null
     });
 
-    setReviewItems((current) => [
-      {
-        id: crypto.randomUUID(),
-        transcript,
-        createdAt: new Date().toISOString(),
-        setNumber: game.current_set,
-        captureDurationMs: durationMs,
-        source,
-        result
-      },
-      ...current
-    ].slice(0, 6));
+    setReviewItems((current) =>
+      [
+        {
+          id: crypto.randomUUID(),
+          clientEventId: crypto.randomUUID(),
+          transcript,
+          createdAt: new Date().toISOString(),
+          setNumber: game.current_set,
+          captureDurationMs: durationMs,
+          source,
+          result
+        },
+        ...current
+      ].slice(0, 8)
+    );
 
     setManualTranscript("");
-    setCaptureStatus(
+    setWorkflowStatus(
       result.kind === "proposal"
         ? {
             tone: "success",
-            message: `Parsed ${result.proposal.eventLabel} for #${result.proposal.jerseyNumber} ${result.proposal.playerDisplayName}. Review it below before Phase 4 persistence exists.`
+            message: `Parsed ${result.proposal.eventLabel} for #${result.proposal.jerseyNumber} ${result.proposal.playerDisplayName}. Confirm it to save, or reject it to keep the log clean.`
           }
         : {
-            tone:
-              result.clarification.reason === "missing_event_type" ? "warn" : "info",
+            tone: result.clarification.reason === "missing_event_type" ? "warn" : "info",
             message: result.clarification.message
           }
     );
@@ -110,6 +153,85 @@ export const GameDashboardPage = () => {
     stopListening
   } = useSpeechCapture(handleCapturedTranscript);
 
+  const applyLastEventCorrection = async ({
+    transcript,
+    source,
+    durationMs
+  }: {
+    transcript: string;
+    source: "speech" | "manual";
+    durationMs: number | null;
+  }) => {
+    const lastConfirmedEvent = events.find((event) => event.deleted_at === null);
+
+    if (!lastConfirmedEvent) {
+      setWorkflowStatus({
+        tone: "info",
+        message: "There is no confirmed event to correct yet."
+      });
+      return;
+    }
+
+    const correctionResult = parseLastEventCorrection({
+      transcript,
+      players,
+      fallbackPlayerId: lastConfirmedEvent.player_id
+    });
+
+    appLog("info", "capture.correction.parsed", {
+      gameId: game?.id,
+      source,
+      durationMs,
+      outcome: correctionResult.kind,
+      eventId: lastConfirmedEvent.id
+    });
+
+    if (correctionResult.kind === "clarification") {
+      setWorkflowStatus({
+        tone: correctionResult.clarification.reason === "missing_event_type" ? "warn" : "info",
+        message: correctionResult.clarification.message
+      });
+      return;
+    }
+
+    try {
+      setIsApplyingCorrection(true);
+      await updateStatEvent(requireSupabase(), lastConfirmedEvent.id, {
+        player_id: correctionResult.proposal.playerId,
+        event_type: correctionResult.proposal.eventType
+      });
+      await loadBundle(gameId!);
+      setCorrectionTranscript("");
+      setWorkflowStatus({
+        tone: "success",
+        message: `Updated the last confirmed event to ${correctionResult.proposal.eventLabel} for #${correctionResult.proposal.jerseyNumber} ${correctionResult.proposal.playerDisplayName}.`
+      });
+    } catch (error) {
+      setWorkflowStatus({
+        tone: "error",
+        message: getErrorMessage(error)
+      });
+    } finally {
+      setIsApplyingCorrection(false);
+    }
+  };
+
+  const {
+    isSupported: isCorrectionSpeechSupported,
+    isListening: isCorrectionListening,
+    liveTranscript: liveCorrectionTranscript,
+    error: correctionSpeechError,
+    clearError: clearCorrectionSpeechError,
+    startListening: startCorrectionListening,
+    stopListening: stopCorrectionListening
+  } = useSpeechCapture(({ transcript, durationMs, source }) => {
+    void applyLastEventCorrection({
+      transcript,
+      durationMs,
+      source
+    });
+  });
+
   useEffect(() => {
     if (!gameId) {
       return;
@@ -121,6 +243,7 @@ export const GameDashboardPage = () => {
       try {
         setIsLoading(true);
         const nextBundle = await getGameBundle(requireSupabase(), gameId);
+
         if (!isActive) {
           return;
         }
@@ -176,6 +299,12 @@ export const GameDashboardPage = () => {
 
   const statRows = buildPlayerStatRows(players, events, game.current_set);
   const totals = summarizeEvents(events);
+  const activeEvents = events.filter((event) => event.deleted_at === null);
+  const lastConfirmedEvent = activeEvents[0] ?? null;
+  const visibleEventLog =
+    eventLogFilter === "current"
+      ? events.filter((event) => event.set_number === game.current_set)
+      : events;
 
   const changeCurrentSet = async (nextSet: number) => {
     if (nextSet < 1 || nextSet === game.current_set) {
@@ -188,17 +317,117 @@ export const GameDashboardPage = () => {
         current_set: nextSet
       });
       setGame(updatedGame);
-      setCaptureStatus({
+      setWorkflowStatus({
         tone: "success",
-        message: `Current set updated to Set ${updatedGame.current_set}. New proposals will use that set number.`
+        message: `Current set updated to Set ${updatedGame.current_set}. New proposals and event-log filters will use that set.`
       });
     } catch (error) {
-      setCaptureStatus({
+      setWorkflowStatus({
         tone: "error",
         message: getErrorMessage(error)
       });
     } finally {
       setIsUpdatingSet(false);
+    }
+  };
+
+  const handleConfirmReviewItem = async (itemId: string) => {
+    const item = reviewItems.find((candidate) => candidate.id === itemId);
+
+    if (!item || item.result.kind !== "proposal") {
+      return;
+    }
+
+    try {
+      setActiveReviewId(itemId);
+      await confirmStatEvent(requireSupabase(), {
+        game_id: game.id,
+        player_id: item.result.proposal.playerId,
+        event_type: item.result.proposal.eventType,
+        set_number: item.setNumber,
+        timestamp: item.createdAt,
+        client_event_id: item.clientEventId
+      });
+      await loadBundle(gameId);
+      setReviewItems((current) => current.filter((candidate) => candidate.id !== itemId));
+      setWorkflowStatus({
+        tone: "success",
+        message: `Confirmed ${item.result.proposal.eventLabel} for #${item.result.proposal.jerseyNumber} ${item.result.proposal.playerDisplayName}. The live stats now reflect it.`
+      });
+    } catch (error) {
+      setWorkflowStatus({
+        tone: "error",
+        message: getErrorMessage(error)
+      });
+    } finally {
+      setActiveReviewId(null);
+    }
+  };
+
+  const handleRejectReviewItem = (itemId: string) => {
+    setReviewItems((current) => current.filter((candidate) => candidate.id !== itemId));
+    setWorkflowStatus({
+      tone: "info",
+      message: "Proposal discarded. Nothing was written to the database."
+    });
+  };
+
+  const handleUndoEvent = async (eventId: string, message: string) => {
+    try {
+      setActiveEventId(eventId);
+      await softDeleteStatEvent(requireSupabase(), eventId);
+      await loadBundle(gameId);
+      if (editingEventId === eventId) {
+        setEditingEventId(null);
+        setEventEditDraft(null);
+      }
+      setWorkflowStatus({
+        tone: "success",
+        message
+      });
+    } catch (error) {
+      setWorkflowStatus({
+        tone: "error",
+        message: getErrorMessage(error)
+      });
+    } finally {
+      setActiveEventId(null);
+    }
+  };
+
+  const handleStartEventEdit = (event: StatEventRow) => {
+    setEditingEventId(event.id);
+    setEventEditDraft({
+      playerId: event.player_id,
+      eventType: event.event_type
+    });
+  };
+
+  const handleSaveEventEdit = async () => {
+    if (!editingEventId || !eventEditDraft) {
+      return;
+    }
+
+    try {
+      setActiveEventId(editingEventId);
+      await updateStatEvent(requireSupabase(), editingEventId, {
+        player_id: eventEditDraft.playerId,
+        event_type: eventEditDraft.eventType
+      });
+      await loadBundle(gameId);
+      setEditingEventId(null);
+      setEventEditDraft(null);
+      setWorkflowStatus({
+        tone: "success",
+        message: "Event log change saved. Aggregates were recalculated from the updated event row."
+      });
+    } catch (error) {
+      setWorkflowStatus({
+        tone: "error",
+        message: getErrorMessage(error)
+      });
+    } finally {
+      setActiveEventId(null);
     }
   };
 
@@ -208,14 +437,14 @@ export const GameDashboardPage = () => {
     <div className="grid">
       <section className="page-header page-panel">
         <div>
-          <span className="chip">Phase 3 core match workflow</span>
+          <span className="chip">Phase 4 trust and correction flows</span>
           <h2>
             {game.opponent_name} · Set {game.current_set}
           </h2>
           <p>
-            This route now handles live match context, push-to-talk capture, and review-only event
-            proposals. Canonical database writes remain intentionally deferred until explicit
-            confirm ships in Phase 4.
+            This live route now supports parse, confirm, undo, last-event correction, and event-log
+            edits. The trust model stays narrow: every saved stat is confirmed or deliberately
+            edited, and older fixes happen in the event log instead of fuzzy voice targeting.
           </p>
         </div>
         <div className="cluster">
@@ -246,7 +475,7 @@ export const GameDashboardPage = () => {
       </section>
 
       {status ? <StatusMessage tone={status.tone} message={status.message} /> : null}
-      {captureStatus ? <StatusMessage tone={captureStatus.tone} message={captureStatus.message} /> : null}
+      {workflowStatus ? <StatusMessage tone={workflowStatus.tone} message={workflowStatus.message} /> : null}
 
       <div className="grid three">
         <div className="metric-card">
@@ -260,18 +489,17 @@ export const GameDashboardPage = () => {
           <div className="metric-value">{titleCase(game.status)}</div>
         </div>
         <div className="metric-card">
-          <p>Tracked events</p>
-          <div className="metric-value">{events.filter((event) => event.deleted_at === null).length}</div>
+          <p>Confirmed events</p>
+          <div className="metric-value">{activeEvents.length}</div>
         </div>
       </div>
 
       <section className="card stack">
         <div>
-          <h3>Live capture and review</h3>
+          <h3>Live capture and confirmation</h3>
           <p className="supporting-text">
-            The parser uses the active roster and current set to create reviewable proposals for
-            the MVP stat vocabulary. The raw transcript only appears here during review and is not
-            being persisted.
+            Capture still starts with the Phase 3 parser, but proposals now have an explicit
+            confirm or reject boundary before anything reaches <span className="mono">stat_events</span>.
           </p>
         </div>
 
@@ -308,7 +536,7 @@ export const GameDashboardPage = () => {
 
             <div className="supporting-text">
               {isSpeechCaptureSupported
-                ? "Web Speech is available in this browser, so you can test real voice capture here."
+                ? "Web Speech is available in this browser, so you can test voice capture and confirm flows together."
                 : "Web Speech is unavailable in this browser, so the manual transcript parser is the fallback for this session."}
             </div>
 
@@ -333,7 +561,7 @@ export const GameDashboardPage = () => {
               event.preventDefault();
 
               if (!manualTranscript.trim()) {
-                setCaptureStatus({
+                setWorkflowStatus({
                   tone: "warn",
                   message: "Enter a transcript first so the review parser has something to work with."
                 });
@@ -350,7 +578,7 @@ export const GameDashboardPage = () => {
             <div>
               <h3>Manual transcript fallback</h3>
               <p className="supporting-text">
-                This keeps Phase 3 testable even when browser speech support or mic permissions are
+                This keeps the full parse and confirm workflow testable when browser mic support is
                 unreliable.
               </p>
             </div>
@@ -369,11 +597,7 @@ export const GameDashboardPage = () => {
               <button className="button-secondary" type="submit" disabled={!canCapture}>
                 Parse transcript
               </button>
-              <button
-                className="button-ghost"
-                type="button"
-                onClick={() => setManualTranscript("")}
-              >
+              <button className="button-ghost" type="button" onClick={() => setManualTranscript("")}>
                 Clear
               </button>
             </div>
@@ -384,15 +608,15 @@ export const GameDashboardPage = () => {
           <div>
             <h3>Review queue</h3>
             <p className="supporting-text">
-              These cards prove the Phase 3 boundary: the app can parse match events into structured
-              proposals without silently writing them to <span className="mono">stat_events</span>.
+              Unambiguous parses can now be confirmed into the live stats, while bad or uncertain
+              parses can be rejected without leaving residue in the event log.
             </p>
           </div>
 
           {reviewItems.length === 0 ? (
             <StatusMessage
               tone="info"
-              message="No review items yet. Capture a voice event or parse a manual transcript to see the Phase 3 loop."
+              message="No review items yet. Capture a voice event or parse a manual transcript to see the confirm/reject loop."
             />
           ) : (
             reviewItems.map((item) => (
@@ -414,11 +638,9 @@ export const GameDashboardPage = () => {
                   <button
                     className="button-ghost"
                     type="button"
-                    onClick={() =>
-                      setReviewItems((current) => current.filter((candidate) => candidate.id !== item.id))
-                    }
+                    onClick={() => handleRejectReviewItem(item.id)}
                   >
-                    Dismiss
+                    Reject
                   </button>
                 </div>
 
@@ -428,10 +650,31 @@ export const GameDashboardPage = () => {
                 </div>
 
                 {item.result.kind === "proposal" ? (
-                  <div className="supporting-text">
-                    Matched by {item.result.proposal.matchedPlayerBy.join(", ")}. This is review-only and has not
-                    been saved to the database yet.
-                  </div>
+                  <>
+                    <div className="supporting-text">
+                      Matched by {item.result.proposal.matchedPlayerBy.join(", ")}. Confirming uses the review
+                      card&apos;s stable <span className="mono">client_event_id</span> so retries stay idempotent.
+                    </div>
+                    <div className="form-actions">
+                      <button
+                        className="button"
+                        type="button"
+                        disabled={activeReviewId === item.id}
+                        onClick={() => {
+                          void handleConfirmReviewItem(item.id);
+                        }}
+                      >
+                        {activeReviewId === item.id ? "Confirming..." : "Confirm event"}
+                      </button>
+                      <button
+                        className="button-ghost"
+                        type="button"
+                        onClick={() => handleRejectReviewItem(item.id)}
+                      >
+                        Discard
+                      </button>
+                    </div>
+                  </>
                 ) : (
                   <div className="stack" style={{ gap: "0.6rem" }}>
                     <StatusMessage tone="warn" message={item.result.clarification.message} />
@@ -459,12 +702,297 @@ export const GameDashboardPage = () => {
         </section>
       </section>
 
+      <div className="grid two">
+        <section className="card stack">
+          <div>
+            <h3>Fast trust actions</h3>
+            <p className="supporting-text">
+              The quickest recovery path stays focused on the most recent confirmed event: one-tap
+              undo, or a narrow voice/manual correction for that last event only.
+            </p>
+          </div>
+
+          {!lastConfirmedEvent ? (
+            <StatusMessage
+              tone="info"
+              message="Confirm an event first to unlock undo and last-event correction."
+            />
+          ) : (
+            <>
+              <div className="list-item">
+                <strong>Last confirmed event</strong>
+                <div className="supporting-text">{buildEventSummary(lastConfirmedEvent, players)}</div>
+                <div className="supporting-text">
+                  Logged {formatDateTime(lastConfirmedEvent.timestamp)} · Set {lastConfirmedEvent.set_number}
+                </div>
+              </div>
+
+              <div className="form-actions">
+                <button
+                  className="button-secondary"
+                  type="button"
+                  disabled={activeEventId === lastConfirmedEvent.id}
+                  onClick={() => {
+                    void handleUndoEvent(
+                      lastConfirmedEvent.id,
+                      "Last confirmed event undone with a soft delete. Live aggregates now exclude it."
+                    );
+                  }}
+                >
+                  {activeEventId === lastConfirmedEvent.id ? "Undoing..." : "Undo last confirmed"}
+                </button>
+              </div>
+
+              <div className="surface stack correction-panel">
+                <div>
+                  <h3>Correct last confirmed event</h3>
+                  <p className="supporting-text">
+                    Example: <span className="mono">actually attack error</span> or{" "}
+                    <span className="mono">actually Jane ace</span>. Older events should be fixed in
+                    the event log below.
+                  </p>
+                </div>
+
+                <div className="cluster">
+                  <button
+                    className="button"
+                    type="button"
+                    disabled={!isCorrectionSpeechSupported || isApplyingCorrection}
+                    onClick={() => {
+                      if (isCorrectionListening) {
+                        stopCorrectionListening();
+                        return;
+                      }
+
+                      clearCorrectionSpeechError();
+                      startCorrectionListening();
+                    }}
+                  >
+                    {isCorrectionListening ? "Stop correction capture" : "Voice correct last event"}
+                  </button>
+                  <span className="capture-state">
+                    {isCorrectionListening
+                      ? "Listening for a correction to the last confirmed event..."
+                      : "Idle until you start correction capture"}
+                  </span>
+                </div>
+
+                {liveCorrectionTranscript ? (
+                  <div className="transcript-box">
+                    <div className="muted">Live correction transcript</div>
+                    <div className="mono">{liveCorrectionTranscript}</div>
+                  </div>
+                ) : null}
+
+                {correctionSpeechError ? <StatusMessage tone="error" message={correctionSpeechError} /> : null}
+
+                <form
+                  className="form-grid"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+
+                    void applyLastEventCorrection({
+                      transcript: correctionTranscript.trim(),
+                      durationMs: null,
+                      source: "manual"
+                    });
+                  }}
+                >
+                  <label className="stack" style={{ gap: "0.4rem" }}>
+                    <span className="muted">Manual correction transcript</span>
+                    <input
+                      placeholder="actually attack error"
+                      value={correctionTranscript}
+                      onChange={(event) => setCorrectionTranscript(event.target.value)}
+                    />
+                  </label>
+                  <div className="form-actions">
+                    <button className="button-secondary" type="submit" disabled={isApplyingCorrection}>
+                      {isApplyingCorrection ? "Applying..." : "Apply correction"}
+                    </button>
+                    <button
+                      className="button-ghost"
+                      type="button"
+                      onClick={() => setCorrectionTranscript("")}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </>
+          )}
+        </section>
+
+        <section className="card stack">
+          <div className="cluster section-header">
+            <div>
+              <h3>Event log</h3>
+              <p className="supporting-text">
+                Older fixes happen here through soft delete or lightweight edits so correction stays
+                visible and audit-friendly.
+              </p>
+            </div>
+            <label className="stack" style={{ gap: "0.35rem", minWidth: "11rem" }}>
+              <span className="muted">Show events</span>
+              <select
+                value={eventLogFilter}
+                onChange={(event) => setEventLogFilter(event.target.value as "current" | "all")}
+              >
+                <option value="current">Current set only</option>
+                <option value="all">All sets</option>
+              </select>
+            </label>
+          </div>
+
+          {visibleEventLog.length === 0 ? (
+            <StatusMessage
+              tone="info"
+              message="No confirmed events match this filter yet."
+            />
+          ) : (
+            <div className="event-log">
+              {visibleEventLog.map((event) => {
+                const player = players.find((candidate) => candidate.id === event.player_id);
+                const isDeleted = event.deleted_at !== null;
+                const isEditing = editingEventId === event.id && eventEditDraft !== null;
+                const isWorking = activeEventId === event.id;
+
+                return (
+                  <article className={`event-log-item ${isDeleted ? "deleted" : ""}`} key={event.id}>
+                    <div className="cluster review-header">
+                      <div>
+                        <strong>{buildEventSummary(event, players)}</strong>
+                        <div className="supporting-text">
+                          Set {event.set_number} · {formatDateTime(event.timestamp)}
+                        </div>
+                        <div className="supporting-text mono">Event id: {event.id.slice(0, 8)}</div>
+                      </div>
+                      <div className="event-badge">{isDeleted ? "Undone" : "Active"}</div>
+                    </div>
+
+                    {isEditing ? (
+                      <div className="form-grid two">
+                        <label className="stack" style={{ gap: "0.35rem" }}>
+                          <span className="muted">Player</span>
+                          <select
+                            value={eventEditDraft.playerId}
+                            onChange={(changeEvent) =>
+                              setEventEditDraft((current) =>
+                                current
+                                  ? { ...current, playerId: changeEvent.target.value }
+                                  : current
+                              )
+                            }
+                          >
+                            {players.map((candidate) => (
+                              <option key={candidate.id} value={candidate.id}>
+                                #{candidate.jersey_number} {candidate.first_name} {candidate.last_name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+
+                        <label className="stack" style={{ gap: "0.35rem" }}>
+                          <span className="muted">Stat type</span>
+                          <select
+                            value={eventEditDraft.eventType}
+                            onChange={(changeEvent) =>
+                              setEventEditDraft((current) =>
+                                current
+                                  ? {
+                                      ...current,
+                                      eventType: changeEvent.target.value as StatEventType
+                                    }
+                                  : current
+                              )
+                            }
+                          >
+                            {trackedStatTypes.map((eventType) => (
+                              <option key={eventType} value={eventType}>
+                                {titleCase(eventType)}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      </div>
+                    ) : player ? (
+                      <div className="supporting-text">
+                        Player: #{player.jersey_number} {player.first_name} {player.last_name}
+                      </div>
+                    ) : null}
+
+                    <div className="form-actions">
+                      {!isDeleted ? (
+                        <>
+                          {isEditing ? (
+                            <>
+                              <button
+                                className="button-secondary"
+                                type="button"
+                                disabled={isWorking}
+                                onClick={() => {
+                                  void handleSaveEventEdit();
+                                }}
+                              >
+                                {isWorking ? "Saving..." : "Save edit"}
+                              </button>
+                              <button
+                                className="button-ghost"
+                                type="button"
+                                onClick={() => {
+                                  setEditingEventId(null);
+                                  setEventEditDraft(null);
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className="button-secondary"
+                                type="button"
+                                onClick={() => handleStartEventEdit(event)}
+                              >
+                                Edit event
+                              </button>
+                              <button
+                                className="button-ghost"
+                                type="button"
+                                disabled={isWorking}
+                                onClick={() => {
+                                  void handleUndoEvent(
+                                    event.id,
+                                    "Event soft-deleted from the log. Live counts now exclude it."
+                                  );
+                                }}
+                              >
+                                {isWorking ? "Undoing..." : "Soft delete"}
+                              </button>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <div className="supporting-text">
+                          Soft-deleted at {event.deleted_at ? formatDateTime(event.deleted_at) : "unknown time"}
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
+
       <section className="card stack">
         <div>
           <h3>Event totals</h3>
           <p className="supporting-text">
-            These counts still reflect persisted rows only. They should stay unchanged while Phase 3
-            proposals are review-only.
+            These counts now reflect confirmed and still-active events only. Soft-deleted rows stay
+            in the audit trail but no longer affect the live board.
           </p>
         </div>
         <div className="grid three">
@@ -483,8 +1011,8 @@ export const GameDashboardPage = () => {
         <div>
           <h3>Per-player set table</h3>
           <p className="supporting-text">
-            The current set control now drives both this table and the Phase 3 review proposals, so
-            live context stays consistent even before event confirmation is added.
+            This table now updates from confirmed edits and soft deletes, so it reflects the same
+            trust-aware event history as the event log.
           </p>
         </div>
         <table className="table">

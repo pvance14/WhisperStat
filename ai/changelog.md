@@ -15,3 +15,4 @@ This is meant to be a CONCISE list of changes to track as we develop this projec
 ## 2026-04-02
 
 - Began Phase 3 implementation from `ai/roadmaps/2026-04-01_phase_3_core_match_workflow_roadmap.md` and `ai/roadmaps/2026-04-01_phase_3_core_match_workflow_sub_plan.md`: added roster-aware transcript parsing, Web Speech push-to-talk capture plus manual fallback, review-only proposal/clarification cards on the live dashboard, and active `current_set` controls while intentionally deferring `stat_events` writes to Phase 4 confirm work.
+- Began Phase 4 implementation from `ai/roadmaps/2026-04-01_phase_4_trust_and_correction_flows_roadmap.md` and `ai/roadmaps/2026-04-01_phase_4_trust_and_correction_flows_sub_plan.md`: added explicit confirm/reject persistence, duplicate-safe `client_event_id` writes, soft-delete undo, last-event voice/manual correction, and event-log edit controls so live stats now reflect trust-aware confirmed events instead of review-only proposals.

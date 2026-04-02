@@ -11,7 +11,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Current Status
 
 - Planning status: Ready for implementation planning.
-- Implementation status: Not started.
+- Implementation status: In progress. The first trust/correction slice shipped on 2026-04-02.
 - Scope status: Focused on confirmation, undo, correction, and event-log editing behavior within MVP boundaries.
 
 ## Document Status
@@ -23,19 +23,26 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] **Confirm / reject** UI wired to **insert** or discard proposed events.
-- [ ] **Undo last** + **event log** edits using soft-delete / reclassify patterns per `architecture.md`.
-- [ ] **Verbal correction** path for **the last confirmed event only** (follow-up utterance); **older events** corrected only via **event log** UI.
-- [ ] **Idempotent writes** verified (`client_event_id` or upsert strategy).
+- [x] **Confirm / reject** UI wired to **insert** or discard proposed events.
+- [x] **Undo last** + **event log** edits using soft-delete / reclassify patterns per `architecture.md`.
+- [x] **Verbal correction** path for **the last confirmed event only** (follow-up utterance); **older events** corrected only via **event log** UI.
+- [x] **Idempotent writes** verified (`client_event_id` or upsert strategy).
 - [ ] Low-confidence / parse-failure messaging reviewed for live-use clarity.
-- [ ] Spot-check aggregates after corrections match expected counts (prep for Phase 5).
+- [x] Spot-check aggregates after corrections match expected counts (prep for Phase 5).
 
 ## Readiness Checks
 
-- [ ] The phase directly supports the trust requirements in `aiDocs/mvp.md`.
-- [ ] Correction behavior stays clear enough for live match use.
-- [ ] The workflow preserves auditability without growing into heavy admin tooling.
+- [x] The phase directly supports the trust requirements in `aiDocs/mvp.md`.
+- [x] Correction behavior stays clear enough for live match use.
+- [x] The workflow preserves auditability without growing into heavy admin tooling.
 - [ ] The resulting behavior improves coach confidence in the product’s numbers.
+
+## 2026-04-02 Progress Notes
+
+- Added explicit confirm/reject actions on the review queue so parsed proposals only become durable rows after a visible coach action.
+- Added idempotent `stat_events` confirmation using a stable `client_event_id` per review card and duplicate-safe insert handling.
+- Added soft-delete undo, event-log edit controls, and last-confirmed-event correction limited to the most recent active event.
+- Left low-confidence styling/usability review for remaining Phase 4 validation work rather than broadening the correction model now.
 
 ## Completion Signal
 

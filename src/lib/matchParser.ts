@@ -40,6 +40,15 @@ export type ParseMatchResult =
       clarification: ParseClarification;
     };
 
+export interface ParsedCorrectionProposal {
+  playerId: string;
+  playerDisplayName: string;
+  jerseyNumber: number;
+  eventType: StatEventType;
+  eventLabel: string;
+  matchedPlayerBy: string[];
+}
+
 const eventAliases: Array<{ eventType: StatEventType; aliases: string[] }> = [
   { eventType: "serve_error", aliases: ["serve error", "service error", "missed serve", "service miss"] },
   {
@@ -68,7 +77,7 @@ const includesPhrase = (text: string, phrase: string) => {
   return pattern.test(text);
 };
 
-const resolveEventType = (transcript: string) => {
+export const resolveEventType = (transcript: string) => {
   const normalizedTranscript = normalizeSearchText(transcript);
   const matches = eventAliases
     .flatMap(({ eventType, aliases }) =>
@@ -236,6 +245,92 @@ export const parseMatchTranscript = ({
       eventType: eventMatch.eventType,
       eventLabel: titleCase(eventMatch.eventType),
       setNumber: currentSet,
+      matchedPlayerBy: playerResolution.matchedBy
+    }
+  };
+};
+
+export const parseLastEventCorrection = ({
+  transcript,
+  players,
+  fallbackPlayerId
+}: {
+  transcript: string;
+  players: PlayerRow[];
+  fallbackPlayerId: string;
+}):
+  | {
+      kind: "proposal";
+      proposal: ParsedCorrectionProposal;
+    }
+  | {
+      kind: "clarification";
+      clarification: ParseClarification;
+    } => {
+  const normalizedTranscript = transcript.trim();
+
+  if (!normalizedTranscript) {
+    return {
+      kind: "clarification",
+      clarification: {
+        reason: "missing_event_type",
+        message: "Say or enter the replacement stat for the last confirmed event."
+      }
+    };
+  }
+
+  const eventMatch = resolveEventType(normalizedTranscript);
+
+  if (!eventMatch) {
+    return {
+      kind: "clarification",
+      clarification: {
+        reason: "missing_event_type",
+        message: "I couldn't find the replacement stat type in that correction."
+      }
+    };
+  }
+
+  const fallbackPlayer = players.find((player) => player.id === fallbackPlayerId);
+
+  if (!fallbackPlayer) {
+    return {
+      kind: "clarification",
+      clarification: {
+        reason: "missing_player",
+        message: "The original player for the last confirmed event is no longer available."
+      }
+    };
+  }
+
+  const playerResolution = resolvePlayer(players, normalizedTranscript);
+
+  if (playerResolution.kind === "clarification") {
+    if (playerResolution.clarification.reason === "ambiguous_player") {
+      return playerResolution;
+    }
+
+    return {
+      kind: "proposal",
+      proposal: {
+        playerId: fallbackPlayer.id,
+        playerDisplayName: `${fallbackPlayer.first_name} ${fallbackPlayer.last_name}`,
+        jerseyNumber: fallbackPlayer.jersey_number,
+        eventType: eventMatch.eventType,
+        eventLabel: titleCase(eventMatch.eventType),
+        matchedPlayerBy: ["last confirmed player"]
+      }
+    };
+  }
+
+  return {
+    kind: "proposal",
+    proposal: {
+      playerId: playerResolution.player.id,
+      playerDisplayName: `${playerResolution.player.first_name} ${playerResolution.player.last_name}`,
+      jerseyNumber: playerResolution.player.jersey_number,
+      eventType: eventMatch.eventType,
+      eventLabel: titleCase(eventMatch.eventType),
       matchedPlayerBy: playerResolution.matchedBy
     }
   };

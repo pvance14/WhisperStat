@@ -12,6 +12,8 @@ type GameRow = Database["public"]["Tables"]["games"]["Row"];
 type GameInsert = Database["public"]["Tables"]["games"]["Insert"];
 type GameUpdate = Database["public"]["Tables"]["games"]["Update"];
 type StatEventRow = Database["public"]["Tables"]["stat_events"]["Row"];
+type StatEventInsert = Database["public"]["Tables"]["stat_events"]["Insert"];
+type StatEventUpdate = Database["public"]["Tables"]["stat_events"]["Update"];
 
 export const listTeams = async (client: TypedSupabaseClient) =>
   logAsync("teams.list", async () => {
@@ -195,3 +197,64 @@ export const getGameBundle = async (client: TypedSupabaseClient, gameId: string)
       events: events satisfies StatEventRow[]
     };
   }, { gameId });
+
+export const confirmStatEvent = async (
+  client: TypedSupabaseClient,
+  payload: StatEventInsert & { client_event_id: string }
+) =>
+  logAsync("statEvents.confirm", async () => {
+    const { data, error } = await client.from("stat_events").insert(payload).select().single();
+
+    if (!error) {
+      return data satisfies StatEventRow;
+    }
+
+    if (error.code === "23505") {
+      const { data: existingEvent, error: existingEventError } = await client
+        .from("stat_events")
+        .select("*")
+        .eq("client_event_id", payload.client_event_id)
+        .single();
+
+      if (existingEventError) {
+        throw error;
+      }
+
+      return existingEvent satisfies StatEventRow;
+    }
+
+    throw error;
+  }, {
+    gameId: payload.game_id,
+    playerId: payload.player_id,
+    eventType: payload.event_type,
+    clientEventId: payload.client_event_id
+  });
+
+export const updateStatEvent = async (
+  client: TypedSupabaseClient,
+  eventId: string,
+  payload: StatEventUpdate
+) =>
+  logAsync("statEvents.update", async () => {
+    const { data, error } = await client
+      .from("stat_events")
+      .update(payload)
+      .eq("id", eventId)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data satisfies StatEventRow;
+  }, { eventId });
+
+export const softDeleteStatEvent = async (
+  client: TypedSupabaseClient,
+  eventId: string
+) =>
+  updateStatEvent(client, eventId, {
+    deleted_at: new Date().toISOString()
+  });
