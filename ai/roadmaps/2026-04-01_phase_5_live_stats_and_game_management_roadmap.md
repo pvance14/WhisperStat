@@ -11,7 +11,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Current Status
 
 - Planning status: Ready for implementation planning.
-- Implementation status: Not started.
+- Implementation status: In progress.
 - Scope status: Focused on live stat views, current match state, and persisted game management within MVP boundaries.
 
 ## Document Status
@@ -23,20 +23,20 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Build **per-player / per-set** stat table (MVP categories from `mvp.md`).
-- [ ] Add **in-app visual stats report** for the **current** game: dedicated route or full-screen view with the same aggregates (tables + optional simple bar/leader visuals); **not** a PDF export.
-- [ ] Implement **set navigation** + **current set** display tied to `games.current_set`.
-- [ ] Implement **manual set-by-set score** persistence (minimal schema decision documented; **manual** is source of truth—see `aiDocs/evidence/mvp_implementation_decisions.md` for optional future voice-assisted score **proposals**).
-- [ ] Wire **live refresh** (polling) after confirmed events and corrections.
-- [ ] Add **complete game** action (status) to unlock post-game flow.
+- [x] Build **per-player / per-set** stat table (MVP categories from `mvp.md`).
+- [x] Add **in-app visual stats report** for the **current** game: dedicated route or full-screen view with the same aggregates (tables + optional simple bar/leader visuals); **not** a PDF export.
+- [x] Implement **set navigation** + **current set** display tied to `games.current_set`.
+- [x] Implement **manual set-by-set score** persistence (minimal schema decision documented; **manual** is source of truth—see `aiDocs/evidence/mvp_implementation_decisions.md` for optional future voice-assisted score **proposals**).
+- [x] Wire **live refresh** (polling) after confirmed events and corrections.
+- [x] Add **complete game** action (status) to unlock post-game flow.
 - [ ] Sanity-check aggregates vs SQL for sample games.
 
 ## Readiness Checks
 
-- [ ] The phase matches the live dashboard expectations in `aiDocs/mvp.md`.
-- [ ] Match-state handling is clear enough for a dependable demo.
+- [x] The phase matches the live dashboard expectations in `aiDocs/mvp.md`.
+- [x] Match-state handling is clear enough for a dependable demo.
 - [ ] No roadmap work expands into advanced analytics, exports, or V1 reporting.
-- [ ] The live views improve the MVP loop rather than becoming a detached reporting layer.
+- [x] The live views improve the MVP loop rather than becoming a detached reporting layer.
 
 ## Completion Signal
 

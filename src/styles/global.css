@@ -445,6 +445,48 @@ button {
   font-weight: 700;
 }
 
+.scoreboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.score-input input {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.score-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.85rem;
+}
+
+.is-current-set {
+  border-color: rgba(255, 122, 89, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 122, 89, 0.12);
+}
+
+.leaderboard-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.leader-bar-track {
+  width: 100%;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: rgba(16, 32, 51, 0.08);
+  overflow: hidden;
+}
+
+.leader-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff7a59, #ffb072);
+}
+
 @media (max-width: 960px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -462,5 +504,13 @@ button {
 
   .main-content {
     padding: 1rem;
+  }
+
+  .scoreboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
   }
 }

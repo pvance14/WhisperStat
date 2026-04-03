@@ -86,6 +86,7 @@ export interface Database {
           location: string | null;
           status: GameStatus;
           current_set: number;
+          score_by_set: Json;
           created_at: string;
           updated_at: string;
         };
@@ -97,6 +98,7 @@ export interface Database {
           location?: string | null;
           status?: GameStatus;
           current_set?: number;
+          score_by_set?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -108,6 +110,7 @@ export interface Database {
           location?: string | null;
           status?: GameStatus;
           current_set?: number;
+          score_by_set?: Json;
           created_at?: string;
           updated_at?: string;
         };

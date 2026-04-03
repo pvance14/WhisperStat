@@ -57,6 +57,7 @@ export type Database = {
           id: string
           location: string | null
           opponent_name: string
+          score_by_set: Json
           status: Database["public"]["Enums"]["game_status"]
           team_id: string
           updated_at: string
@@ -68,6 +69,7 @@ export type Database = {
           id?: string
           location?: string | null
           opponent_name: string
+          score_by_set?: Json
           status?: Database["public"]["Enums"]["game_status"]
           team_id: string
           updated_at?: string
@@ -79,6 +81,7 @@ export type Database = {
           id?: string
           location?: string | null
           opponent_name?: string
+          score_by_set?: Json
           status?: Database["public"]["Enums"]["game_status"]
           team_id?: string
           updated_at?: string

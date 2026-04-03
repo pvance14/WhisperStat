@@ -11,6 +11,13 @@ import {
   updateStatEvent
 } from "@/lib/data";
 import type { Database, StatEventType } from "@/lib/database.types";
+import {
+  buildTrackedSetNumbers,
+  getSetScore,
+  normalizeScoreBySet,
+  summarizeMatchScore,
+  upsertSetScore
+} from "@/lib/gameScore";
 import { appLog } from "@/lib/logger";
 import {
   parseLastEventCorrection,
@@ -73,12 +80,17 @@ export const GameDashboardPage = () => {
   const [eventLogFilter, setEventLogFilter] = useState<"current" | "all">("current");
   const [correctionTranscript, setCorrectionTranscript] = useState("");
   const [isApplyingCorrection, setIsApplyingCorrection] = useState(false);
+  const [scoreDraft, setScoreDraft] = useState({ us: "0", them: "0" });
+  const [isSavingScore, setIsSavingScore] = useState(false);
+  const [isUpdatingGameStatus, setIsUpdatingGameStatus] = useState(false);
+  const [lastLoadedAt, setLastLoadedAt] = useState<string | null>(null);
 
   const loadBundle = async (targetGameId: string) => {
     const nextBundle = await getGameBundle(requireSupabase(), targetGameId);
     setGame(nextBundle.game);
     setPlayers(nextBundle.players);
     setEvents(nextBundle.events);
+    setLastLoadedAt(new Date().toISOString());
     setStatus(null);
     return nextBundle;
   };
@@ -280,6 +292,18 @@ export const GameDashboardPage = () => {
     };
   }, [gameId]);
 
+  useEffect(() => {
+    if (!game) {
+      return;
+    }
+
+    const currentSetScore = getSetScore(normalizeScoreBySet(game.score_by_set), game.current_set);
+    setScoreDraft({
+      us: String(currentSetScore.us),
+      them: String(currentSetScore.them)
+    });
+  }, [game]);
+
   if (!gameId) {
     return <StatusMessage tone="error" message="Game id is missing from the route." />;
   }
@@ -301,6 +325,10 @@ export const GameDashboardPage = () => {
   const totals = summarizeEvents(events);
   const activeEvents = events.filter((event) => event.deleted_at === null);
   const lastConfirmedEvent = activeEvents[0] ?? null;
+  const scoreBySet = normalizeScoreBySet(game.score_by_set);
+  const trackedSetNumbers = buildTrackedSetNumbers(events, scoreBySet, game.current_set);
+  const currentSetScore = getSetScore(scoreBySet, game.current_set);
+  const matchScore = summarizeMatchScore(scoreBySet);
   const visibleEventLog =
     eventLogFilter === "current"
       ? events.filter((event) => event.set_number === game.current_set)
@@ -328,6 +356,70 @@ export const GameDashboardPage = () => {
       });
     } finally {
       setIsUpdatingSet(false);
+    }
+  };
+
+  const handleSaveCurrentSetScore = async () => {
+    const us = Number(scoreDraft.us);
+    const them = Number(scoreDraft.them);
+
+    if (!Number.isInteger(us) || us < 0 || !Number.isInteger(them) || them < 0) {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "Scores must be whole numbers at or above zero before they can be saved."
+      });
+      return;
+    }
+
+    try {
+      setIsSavingScore(true);
+      const updatedGame = await updateGame(requireSupabase(), game.id, {
+        score_by_set: upsertSetScore(scoreBySet, {
+          setNumber: game.current_set,
+          us,
+          them
+        })
+      });
+      setGame(updatedGame);
+      setWorkflowStatus({
+        tone: "success",
+        message: `Saved the manual score for Set ${game.current_set}. This score now survives refresh and drives the report view.`
+      });
+    } catch (error) {
+      setWorkflowStatus({
+        tone: "error",
+        message: getErrorMessage(error)
+      });
+    } finally {
+      setIsSavingScore(false);
+    }
+  };
+
+  const handleGameStatusChange = async (nextStatus: GameRow["status"]) => {
+    if (nextStatus === game.status) {
+      return;
+    }
+
+    try {
+      setIsUpdatingGameStatus(true);
+      const updatedGame = await updateGame(requireSupabase(), game.id, {
+        status: nextStatus
+      });
+      setGame(updatedGame);
+      setWorkflowStatus({
+        tone: "success",
+        message:
+          nextStatus === "completed"
+            ? "Game marked completed. Phase 6 post-game flow can now treat this match as ready."
+            : "Game moved back to in progress so you can keep capturing or correcting events."
+      });
+    } catch (error) {
+      setWorkflowStatus({
+        tone: "error",
+        message: getErrorMessage(error)
+      });
+    } finally {
+      setIsUpdatingGameStatus(false);
     }
   };
 
@@ -437,14 +529,14 @@ export const GameDashboardPage = () => {
     <div className="grid">
       <section className="page-header page-panel">
         <div>
-          <span className="chip">Phase 4 trust and correction flows</span>
+          <span className="chip">Phase 5 live stats and game management</span>
           <h2>
             {game.opponent_name} · Set {game.current_set}
           </h2>
           <p>
-            This live route now supports parse, confirm, undo, last-event correction, and event-log
-            edits. The trust model stays narrow: every saved stat is confirmed or deliberately
-            edited, and older fixes happen in the event log instead of fuzzy voice targeting.
+            Capture and trust flows still stay front and center, but this page now also carries the
+            active match state: current set, manual score, and the button that closes the game when
+            the match is over.
           </p>
         </div>
         <div className="cluster">
@@ -492,6 +584,162 @@ export const GameDashboardPage = () => {
           <p>Confirmed events</p>
           <div className="metric-value">{activeEvents.length}</div>
         </div>
+        <div className="metric-card">
+          <p>Sets won</p>
+          <div className="metric-value">
+            {matchScore.us}-{matchScore.them}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid two">
+        <section className="card stack">
+          <div className="cluster section-header">
+            <div>
+              <h3>Match state</h3>
+              <p className="supporting-text">
+                The manual score is the MVP source of truth for set-by-set scorekeeping. Polling
+                still refreshes the board every 15 seconds, and every confirm/edit path also
+                reloads immediately.
+              </p>
+            </div>
+            <div className="supporting-text">
+              {lastLoadedAt ? `Last sync ${formatDateTime(lastLoadedAt)}` : "Waiting for first sync..."}
+            </div>
+          </div>
+
+          <div className="grid two">
+            <section className="surface stack">
+              <div>
+                <h3>Set {game.current_set} score</h3>
+                <p className="supporting-text">
+                  Save the scoreboard manually when the rally outcome is known. This avoids mixing
+                  scorekeeping assumptions into voice parsing.
+                </p>
+              </div>
+
+              <div className="scoreboard-grid">
+                <label className="stack score-input" style={{ gap: "0.35rem" }}>
+                  <span className="muted">Us</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={scoreDraft.us}
+                    onChange={(event) =>
+                      setScoreDraft((current) => ({ ...current, us: event.target.value }))
+                    }
+                  />
+                </label>
+
+                <label className="stack score-input" style={{ gap: "0.35rem" }}>
+                  <span className="muted">Them</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={scoreDraft.them}
+                    onChange={(event) =>
+                      setScoreDraft((current) => ({ ...current, them: event.target.value }))
+                    }
+                  />
+                </label>
+              </div>
+
+              <div className="supporting-text">
+                Saved snapshot: {currentSetScore.us}-{currentSetScore.them}
+              </div>
+
+              <div className="form-actions">
+                <button
+                  className="button-secondary"
+                  type="button"
+                  disabled={isSavingScore}
+                  onClick={() => {
+                    void handleSaveCurrentSetScore();
+                  }}
+                >
+                  {isSavingScore ? "Saving..." : "Save score"}
+                </button>
+              </div>
+            </section>
+
+            <section className="surface stack">
+              <div>
+                <h3>Set snapshots</h3>
+                <p className="supporting-text">
+                  These saved scores feed the report view and the eventual post-game summary flow.
+                </p>
+              </div>
+
+              {trackedSetNumbers.length === 0 ? (
+                <StatusMessage
+                  tone="info"
+                  message="No tracked sets yet. Save a score or confirm an event to establish set context."
+                />
+              ) : (
+                <div className="score-strip">
+                  {trackedSetNumbers.map((setNumber) => {
+                    const setScore = getSetScore(scoreBySet, setNumber);
+
+                    return (
+                      <div
+                        className={`list-item ${setNumber === game.current_set ? "is-current-set" : ""}`}
+                        key={setNumber}
+                      >
+                        <strong>Set {setNumber}</strong>
+                        <div className="supporting-text">
+                          {setScore.us}-{setScore.them}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          </div>
+        </section>
+
+        <section className="card stack">
+          <div>
+            <h3>Game lifecycle</h3>
+            <p className="supporting-text">
+              Finishing the match is now explicit so Phase 6 can safely key off completed games
+              instead of guessing from event activity.
+            </p>
+          </div>
+
+          <div className="list-item">
+            <strong>Current status</strong>
+            <div className="supporting-text">
+              {titleCase(game.status)} · Current set {game.current_set}
+            </div>
+          </div>
+
+          <div className="form-actions">
+            {game.status === "completed" ? (
+              <button
+                className="button-secondary"
+                type="button"
+                disabled={isUpdatingGameStatus}
+                onClick={() => {
+                  void handleGameStatusChange("in_progress");
+                }}
+              >
+                {isUpdatingGameStatus ? "Saving..." : "Reopen game"}
+              </button>
+            ) : (
+              <button
+                className="button"
+                type="button"
+                disabled={isUpdatingGameStatus}
+                onClick={() => {
+                  void handleGameStatusChange("completed");
+                }}
+              >
+                {isUpdatingGameStatus ? "Saving..." : "Complete game"}
+              </button>
+            )}
+          </div>
+        </section>
       </div>
 
       <section className="card stack">
