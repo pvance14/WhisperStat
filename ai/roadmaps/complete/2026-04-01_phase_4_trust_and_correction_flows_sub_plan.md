@@ -81,6 +81,12 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - The event log now supports lightweight in-place editing for `event_type` and `player_id`, which keeps older corrections visible without introducing a separate admin surface.
 - Confirmation uses a stable `client_event_id` per review item so retries remain idempotent even if the confirm action is triggered more than once.
 
+## 2026-04-02 Validation Notes
+
+- Manual trust-flow validation confirmed the intended Phase 4 recovery path is understandable in practice: confirm, undo, last-event correction, and event-log edits all completed without confusion.
+- Aggregate counts stayed aligned with user actions after confirm, soft-delete, last-event correction, and event-log edits, which closes the trust loop needed before Phase 5 live-stats work.
+- Parse-failure messaging also behaved safely during validation by refusing bad input rather than creating accidental persisted stats.
+
 ## Technical anchors
 
 - RLS still enforces coach scope on updates/deletes.

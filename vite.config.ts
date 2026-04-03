@@ -14,7 +14,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "icon.svg", "apple-touch-icon.svg"],
       devOptions: {
-        enabled: true
+        enabled: true,
+        suppressWarnings: true
       },
       manifest: {
         name: "WhisperStat",

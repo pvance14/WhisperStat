@@ -81,6 +81,12 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - Raw transcripts are shown only on the review surface and are not being persisted, which preserves the MVP privacy/trust boundary documented in `aiDocs/evidence/mvp_implementation_decisions.md`.
 - Explicit confirm, undo persistence, and richer correction flows remain deferred so Phase 3 does not blur into Phase 4.
 
+## 2026-04-02 Validation Notes
+
+- Repeated manual fallback testing with messy single-event phrases validated the core Phase 3 behavior: supported MVP stat phrases resolved correctly to rostered players when the transcript contained enough signal.
+- Vague transcripts such as pronoun-only or non-stat phrases failed safely with clarification copy instead of inventing a result, which is the intended trust posture for this phase.
+- Pasting a long multi-event block into the single-event manual fallback produced one greedy match, which surfaced a future parser improvement but did not invalidate the shipped one-event capture model for Phase 3.
+
 ## Technical anchors
 
 - `stat_events` shape and `event_type` vocabulary: `mvp.md` + `architecture.md` §7.
