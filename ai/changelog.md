@@ -19,3 +19,9 @@ This is meant to be a CONCISE list of changes to track as we develop this projec
 - Closed Phase 3 and archived its roadmap/sub-plan pair in `ai/roadmaps/complete` after repeated messy manual-fallback validation confirmed the one-event capture loop works as intended and fails safely on unsupported phrases.
 - Closed Phase 4 and archived its roadmap/sub-plan pair in `ai/roadmaps/complete` after live trust-flow validation confirmed confirm, undo, last-event correction, event-log edits, and aggregate updates all behaved clearly and correctly.
 - Began Phase 5 implementation from `ai/roadmaps/2026-04-01_phase_5_live_stats_and_game_management_roadmap.md` and `ai/roadmaps/2026-04-01_phase_5_live_stats_and_game_management_sub_plan.md`: added persisted manual `games.score_by_set` storage plus migration/type support, wired dashboard score editing and complete/reopen game controls, and upgraded the current-game report route into a polling live report with current-set/full-match views, saved set scores, and lightweight leader visuals.
+
+## 2026-04-04
+
+- Applied the Phase 5.5 design-system and hierarchy refresh from `ai/roadmaps/2026-04-02_phase_5_5_ui_overhaul_best_practices.md`: upgraded shared dashboard/report layout primitives, stronger summary strips, segmented controls, and clearer hero/action panel structure.
+- Reworked the live dashboard to prioritize the trust path visually: match context and score summary first, then live capture/review, then fast recovery, then event-log and stats reference sections.
+- Reworked the live report route to mirror the same structure so dashboard and report now feel like one cohesive product without changing routes, parser logic, or data behavior.

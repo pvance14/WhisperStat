@@ -35,3 +35,10 @@ We should avoid over-engineering, cruft, and legacy-compatibility features: favo
 ## Handoff to Phase 6
 
 - Post-game and end-of-match screens should use the **same** layout primitives and nav patterns established in 5.5 so the product feels like **one** app in the final demo.
+
+## Progress update (2026-04-04)
+
+- Applied the Phase 5.5 token pass plus a larger **dashboard/report hierarchy refresh** so the app now reads more clearly as one visual system.
+- Reworked the live dashboard so the **trust path** is visually prioritized: hero match context, score/status summary, live capture and review, then recovery and audit sections.
+- Reworked the report route to mirror the same hierarchy with clearer summary stats, stronger view controls, and more readable data sections.
+- Kept the pass within the intended guardrails: **no behavior changes, no dependency additions, no schema/API changes**.
