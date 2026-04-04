@@ -52,7 +52,8 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - Confirm the live views satisfy the MVP dashboard expectations.
 - Confirm match-state handling is sufficient for both in-game use and later summary work.
 - Confirm the phase strengthens the end-to-end product loop rather than creating isolated views.
-- 2026-04-02 implementation progress: manual `games.score_by_set` persistence, dashboard score/game-status controls, and an upgraded live report view are now in place; SQL aggregate cross-checking against sample games remains the main unfinished verification step.
+- 2026-04-02 implementation progress: manual `games.score_by_set` persistence, dashboard score/game-status controls, and an upgraded live report view are now in place.
+- 2026-04-04 closeout validation: applied the migration to the linked Supabase project, verified the new schema, seeded a deterministic two-set validation game with one soft-deleted event, confirmed SQL aggregates match the intended dashboard/report totals and per-player breakdowns, and re-ran local `typecheck`, `build`, and `smoke` checks.
 
 ## Assumptions
 

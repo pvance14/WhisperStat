@@ -11,7 +11,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Current Status
 
 - Planning status: Ready for implementation planning.
-- Implementation status: In progress.
+- Implementation status: Complete.
 - Scope status: Focused on live stat views, current match state, and persisted game management within MVP boundaries.
 
 ## Document Status
@@ -29,14 +29,21 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - [x] Implement **manual set-by-set score** persistence (minimal schema decision documented; **manual** is source of truth—see `aiDocs/evidence/mvp_implementation_decisions.md` for optional future voice-assisted score **proposals**).
 - [x] Wire **live refresh** (polling) after confirmed events and corrections.
 - [x] Add **complete game** action (status) to unlock post-game flow.
-- [ ] Sanity-check aggregates vs SQL for sample games.
+- [x] Sanity-check aggregates vs SQL for sample games.
 
 ## Readiness Checks
 
 - [x] The phase matches the live dashboard expectations in `aiDocs/mvp.md`.
 - [x] Match-state handling is clear enough for a dependable demo.
-- [ ] No roadmap work expands into advanced analytics, exports, or V1 reporting.
+- [x] No roadmap work expands into advanced analytics, exports, or V1 reporting.
 - [x] The live views improve the MVP loop rather than becoming a detached reporting layer.
+
+## Validation Notes
+
+- 2026-04-04: Applied `supabase/migrations/20260402113000_phase_5_game_score_by_set.sql` to the linked Supabase project and verified `public.games.score_by_set` exists as non-null `jsonb` with default `[]`.
+- 2026-04-04: Seeded a deterministic linked-database validation game (`11111111-1111-4111-8111-111111111111`, opponent `Phase 5 Validation`) with two saved set scores, `current_set = 2`, `status = completed`, nine active stat events across two sets, and one soft-deleted event to verify `deleted_at` exclusion.
+- 2026-04-04: SQL cross-check confirmed full-match active totals of kills 2, aces 2, serve errors 1, blocks 1, digs 1, attack errors 1, and sets 1; set-2 active totals of kill 1, ace 1, attack error 1, and set 1; and per-player/per-set counts consistent with the dashboard/report aggregation rules.
+- 2026-04-04: Local verification passed with `npm run typecheck`, `npm run build`, and `npm run smoke`. `npm run preview` started successfully, but this environment would not allow a separate `curl` session to reach the preview server, so true interactive browser validation remains a local/manual follow-up for Phase 7 demo hardening rather than a Phase 5 blocker.
 
 ## Completion Signal
 
