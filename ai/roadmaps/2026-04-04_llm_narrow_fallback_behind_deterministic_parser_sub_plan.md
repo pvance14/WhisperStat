@@ -14,6 +14,7 @@ We need to **avoid over-engineering, cruft, and legacy-compatibility features** 
 - Client invoke behind **`VITE_LLM_PARSE_ENABLED`** (or equivalent), **allowlisted** clarification reasons and transcript guards.
 - Review queue UX: **“Checking with AI…”** on clarification rows; proposals from LLM tagged via **`matchedPlayerBy`** (e.g. `["llm"]`).
 - Structured logging (`capture.parse.llm.*`) — no secrets in logs.
+- Preserve the review item's original **`setNumber`** and **`createdAt`** from capture time; the LLM only assists with player + event mapping.
 
 ## Out Of Scope
 
@@ -30,6 +31,7 @@ We need to **avoid over-engineering, cruft, and legacy-compatibility features** 
 
 - While an LLM attempt is in flight for a clarification card, show **“Checking with AI…”**.
 - When the item becomes a proposal via LLM, reuse **“Matched by …”** with `matchedPlayerBy` including **`llm`** (or **`ai_assist`**) so the coach knows the suggestion is machine-assisted before **Confirm event**.
+- If a clarification card is rejected while the LLM request is still in flight, permanently ignore the late result and do not recreate or resurrect the card.
 
 ---
 
@@ -51,13 +53,13 @@ sequenceDiagram
   else clarification
     Rules-->>Dashboard: kind clarification
     Dashboard->>User: review card clarification + loading
-    Dashboard->>Edge: invoke with JWT + gameId + transcript + set
+    Dashboard->>Edge: invoke with JWT + gameId + transcript + currentSet_for_context
     Edge->>Edge: load game/players via RLS
     Edge->>Claude: messages + schema instructions
     Claude-->>Edge: JSON
     Edge->>Edge: validate ids and enums
     alt valid proposal
-      Edge-->>Dashboard: playerId + eventType + setNumber
+      Edge-->>Dashboard: proposal fields for playerId + eventType only
       Dashboard->>Dashboard: map to ParsedStatProposal
       Dashboard->>User: same card now proposal + Confirm
     else invalid or error
@@ -75,6 +77,7 @@ sequenceDiagram
 - **Secrets:** `ANTHROPIC_API_KEY`; `SUPABASE_URL` + `SUPABASE_ANON_KEY` (Supabase Edge defaults). **Never** ship Anthropic key to the browser.
 - **Auth:** Require `Authorization: Bearer <user_jwt>`. Instantiate Supabase client with **anon key** + user JWT in global headers so **RLS applies**.
 - **Authorization:** `select` game by `game_id` from body; empty → **403**. Load **players** for that game’s `team_id` via RLS. **Do not** trust client-supplied roster for validation — only IDs from this query are valid `player_id` values.
+- **Negative-path check:** explicitly verify missing/invalid JWT and cross-team or missing `game_id` access fail closed with a short 401/403-style response.
 - **Model I/O:** Prompt includes transcript, current set, compact roster (`id`, jersey, first/last`). Model returns **only JSON**, e.g. `{ "event_type": "<StatEventType>", "player_id": "<uuid>" }` or `{ "clarification": true, "message": "..." }` when unsafe to map.
 - **Post-processing:** Parse JSON; assert `event_type` ∈ [`StatEventType`](../../src/lib/database.types.ts); assert `player_id` ∈ loaded roster. Else **422** with a short message.
 - **Implementation:** Prefer **`fetch` to Anthropic Messages API** in Deno; **abort** ~8–12s.
@@ -83,13 +86,13 @@ sequenceDiagram
 
 ## Frontend integration
 
-- Add **`src/lib/parseStatLlm.ts`**: `functions.invoke('parse-stat-llm', { body: { gameId, transcript, setNumber }, headers: { Authorization: \`Bearer ${access_token}\` } })` via session from `supabase.auth.getSession()`.
+- Add **`src/lib/parseStatLlm.ts`**: `functions.invoke('parse-stat-llm', { body: { gameId, transcript, currentSet }, headers: { Authorization: \`Bearer ${access_token}\` } })` via session from `supabase.auth.getSession()`.
 - Extend **`ReviewItem`** in `GameDashboardPage.tsx` with e.g. `llmAssist: { status: 'idle' | 'loading' | 'error' | 'skipped'; message?: string }`.
 - In **`handleCapturedTranscript`**: if `result.kind === 'clarification'` **and** LLM enabled:
   - Push item with `llmAssist: { status: 'loading' }`.
-  - Await invoke; on success, replace `result` with `{ kind: 'proposal', proposal: { ... } }` (display fields from DB player row, `matchedPlayerBy: ['llm']`, `setNumber` from game).
+  - Await invoke; on success, replace `result` with `{ kind: 'proposal', proposal: { ... } }` only if the same review item still exists and is still awaiting LLM. Preserve the item's original `setNumber` and `createdAt`; do not let the LLM response override either field.
   - On failure/timeout, set `llmAssist` to error/skipped; **keep** original clarification.
-- **Guards:** Call only for allowlisted reasons (start with **`missing_event_type`**, **`missing_player`**; optionally **`ambiguous_player`** later) and bounded transcript length.
+- **Guards:** Call only for allowlisted reasons in v1: **`missing_event_type`** and **`missing_player`**. Exclude **`ambiguous_player`** from the first version. Also require bounded transcript length.
 - **Logging:** `capture.parse.llm.started` / `completed` / `failed` (gameId, latency, outcome — no API key).
 
 ---
@@ -103,7 +106,7 @@ sequenceDiagram
 ## Testing
 
 - **Unit (optional):** mapping Edge JSON → `ParsedStatProposal` and validation edge cases.
-- **Manual:** `supabase functions serve` + app on local stack; deterministic phrase **never** hits LLM; failed rules + good slang → LLM proposal → Confirm writes row; invalid model output leaves clarification.
+- **Manual:** `supabase functions serve` + app on local stack; deterministic phrase **never** hits LLM; failed rules + good slang → LLM proposal → Confirm writes row; invalid model output leaves clarification; missing/invalid JWT or inaccessible `game_id` fails closed; rejected clarification card ignores late LLM completion.
 
 ---
 

@@ -27,11 +27,11 @@ We need to **avoid over-engineering, cruft, and legacy-compatibility features** 
 ## Milestones
 
 - [ ] **Edge Function** `parse-stat-llm`: JWT + RLS-backed load of game and players; Anthropic Messages API via `fetch`; strict JSON validation against roster UUIDs and `StatEventType`.
-- [ ] **Client module** [`src/lib/parseStatLlm.ts`](../../src/lib/parseStatLlm.ts) + feature flag (`VITE_LLM_PARSE_ENABLED`); invoke only for allowlisted clarification reasons and bounded transcripts.
-- [ ] **Dashboard**: extend `ReviewItem` + [`handleCapturedTranscript`](../../src/features/dashboard/GameDashboardPage.tsx) — loading/error on clarification row, upgrade to proposal on success; `matchedPlayerBy` includes `llm` (or equivalent) for transparency.
+- [ ] **Client module** [`src/lib/parseStatLlm.ts`](../../src/lib/parseStatLlm.ts) + feature flag (`VITE_LLM_PARSE_ENABLED`); invoke only for allowlisted clarification reasons in v1 (`missing_event_type`, `missing_player`) and bounded transcripts.
+- [ ] **Dashboard**: extend `ReviewItem` + [`handleCapturedTranscript`](../../src/features/dashboard/GameDashboardPage.tsx) — loading/error on clarification row, upgrade to proposal on success, preserve captured `setNumber` + `createdAt`, and ignore late LLM results after rejection; `matchedPlayerBy` includes `llm` (or equivalent) for transparency.
 - [ ] **Secrets & docs**: `ANTHROPIC_API_KEY` in Edge env (remote + local CLI); document env vars without committing secrets.
-- [ ] **Observability & manual test**: `appLog` for LLM parse lifecycle; verify deterministic path never calls LLM; slang/clarification path → proposal → Confirm persists row.
+- [ ] **Observability & manual test**: `appLog` for LLM parse lifecycle; verify deterministic path never calls LLM; slang/clarification path → proposal → Confirm persists row; unauthorized or cross-team access fails closed.
 
 ## Completion Signal
 
-This roadmap is done when coaches can optionally enable LLM assist after a failed rule parse, see the same confirm card for proposals, and nothing writes to Postgres without an explicit Confirm — with keys and roster validation enforced server-side.
+This roadmap is done when coaches can optionally enable LLM assist after a failed rule parse, see the same confirm card for proposals, and nothing writes to Postgres without an explicit Confirm — with captured timing/set data preserved on the review item, late rejected results ignored, and keys plus roster validation enforced server-side.
