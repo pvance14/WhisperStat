@@ -16,7 +16,7 @@ We need to **avoid over-engineering, cruft, and legacy-compatibility features** 
 ## Current Status
 
 - Planning status: Ready for implementation.
-- Implementation status: Not started.
+- Implementation status: In progress. Edge/client/dashboard/docs are implemented; live Supabase/Anthropic verification is still pending.
 
 ## Document Status
 
@@ -26,10 +26,10 @@ We need to **avoid over-engineering, cruft, and legacy-compatibility features** 
 
 ## Milestones
 
-- [ ] **Edge Function** `parse-stat-llm`: JWT + RLS-backed load of game and players; Anthropic Messages API via `fetch`; strict JSON validation against roster UUIDs and `StatEventType`.
-- [ ] **Client module** [`src/lib/parseStatLlm.ts`](../../src/lib/parseStatLlm.ts) + feature flag (`VITE_LLM_PARSE_ENABLED`); invoke only for allowlisted clarification reasons in v1 (`missing_event_type`, `missing_player`) and bounded transcripts.
-- [ ] **Dashboard**: extend `ReviewItem` + [`handleCapturedTranscript`](../../src/features/dashboard/GameDashboardPage.tsx) — loading/error on clarification row, upgrade to proposal on success, preserve captured `setNumber` + `createdAt`, and ignore late LLM results after rejection; `matchedPlayerBy` includes `llm` (or equivalent) for transparency.
-- [ ] **Secrets & docs**: `ANTHROPIC_API_KEY` in Edge env (remote + local CLI); document env vars without committing secrets.
+- [x] **Edge Function** `parse-stat-llm`: JWT + RLS-backed load of game and players; Anthropic Messages API via `fetch`; strict JSON validation against roster UUIDs and `StatEventType`.
+- [x] **Client module** [`src/lib/parseStatLlm.ts`](../../src/lib/parseStatLlm.ts) + feature flag (`VITE_LLM_PARSE_ENABLED`); invoke only for allowlisted clarification reasons in v1 (`missing_event_type`, `missing_player`) and bounded transcripts.
+- [x] **Dashboard**: extend `ReviewItem` + [`handleCapturedTranscript`](../../src/features/dashboard/GameDashboardPage.tsx) — loading/error on clarification row, upgrade to proposal on success, preserve captured `setNumber` + `createdAt`, and ignore late LLM results after rejection; `matchedPlayerBy` includes `llm` (or equivalent) for transparency.
+- [x] **Secrets & docs**: `ANTHROPIC_API_KEY` in Edge env (remote + local CLI); document env vars without committing secrets.
 - [ ] **Observability & manual test**: `appLog` for LLM parse lifecycle; verify deterministic path never calls LLM; slang/clarification path → proposal → Confirm persists row; unauthorized or cross-team access fails closed.
 
 ## Completion Signal

@@ -22,8 +22,10 @@ import { appLog } from "@/lib/logger";
 import {
   parseLastEventCorrection,
   parseMatchTranscript,
-  type ParseMatchResult
+  type ParseMatchResult,
+  type ParsedStatProposal
 } from "@/lib/matchParser";
+import { getLlmParseEligibility, parseStatLlm } from "@/lib/parseStatLlm";
 import { buildPlayerStatRows, summarizeEvents, trackedStatTypes } from "@/lib/stats";
 import { requireSupabase } from "@/lib/supabase";
 import { formatDateTime, getErrorMessage, titleCase } from "@/lib/utils";
@@ -41,7 +43,13 @@ interface ReviewItem {
   captureDurationMs: number | null;
   source: "speech" | "manual";
   result: ParseMatchResult;
+  llmAssist: {
+    status: "idle" | "loading" | "error" | "skipped";
+    message?: string;
+  };
 }
+
+type ReviewItemLlmAssist = ReviewItem["llmAssist"];
 
 interface EventEditDraft {
   playerId: string;
@@ -59,6 +67,24 @@ const buildEventSummary = (event: StatEventRow, players: PlayerRow[]) => {
 
   return `${titleCase(event.event_type)} - ${playerLabel}`;
 };
+
+const buildProposalFromLlm = ({
+  player,
+  eventType,
+  setNumber
+}: {
+  player: PlayerRow;
+  eventType: StatEventType;
+  setNumber: number;
+}): ParsedStatProposal => ({
+  playerId: player.id,
+  playerDisplayName: `${player.first_name} ${player.last_name}`,
+  jerseyNumber: player.jersey_number,
+  eventType,
+  eventLabel: titleCase(eventType),
+  setNumber,
+  matchedPlayerBy: ["llm"]
+});
 
 export const GameDashboardPage = () => {
   const { gameId } = useParams();
@@ -94,6 +120,123 @@ export const GameDashboardPage = () => {
     setLastLoadedAt(new Date().toISOString());
     setStatus(null);
     return nextBundle;
+  };
+
+  const runLlmAssist = async ({
+    reviewItemId,
+    transcript,
+    currentSet,
+    clarificationReason
+  }: {
+    reviewItemId: string;
+    transcript: string;
+    currentSet: number;
+    clarificationReason: "missing_event_type" | "missing_player" | "ambiguous_player";
+  }) => {
+    if (!game) {
+      return;
+    }
+
+    const startedAt = performance.now();
+
+    appLog("info", "capture.parse.llm.started", {
+      gameId: game.id,
+      reviewItemId,
+      clarificationReason,
+      transcriptLength: transcript.length
+    });
+
+    try {
+      const llmResult = await parseStatLlm({
+        gameId: game.id,
+        transcript,
+        currentSet
+      });
+      const matchedPlayer = players.find((player) => player.id === llmResult.playerId);
+
+      if (!matchedPlayer) {
+        throw new Error("AI assist returned a player who is not in the loaded roster.");
+      }
+
+      const nextProposal = buildProposalFromLlm({
+        player: matchedPlayer,
+        eventType: llmResult.eventType,
+        setNumber: currentSet
+      });
+
+      let applied = false;
+
+      setReviewItems((current) =>
+        current.map((candidate) => {
+          if (
+            candidate.id !== reviewItemId ||
+            candidate.result.kind !== "clarification" ||
+            candidate.llmAssist.status !== "loading"
+          ) {
+            return candidate;
+          }
+
+          applied = true;
+
+          return {
+            ...candidate,
+            result: {
+              kind: "proposal",
+              proposal: nextProposal
+            },
+            llmAssist: {
+              status: "idle",
+              message: "AI assist found a proposal. Review it before confirming."
+            }
+          };
+        })
+      );
+
+      appLog("info", "capture.parse.llm.completed", {
+        gameId: game.id,
+        reviewItemId,
+        latencyMs: Math.round(performance.now() - startedAt),
+        applied,
+        eventType: nextProposal.eventType,
+        playerId: nextProposal.playerId
+      });
+
+      if (applied) {
+        setWorkflowStatus({
+          tone: "success",
+          message: `AI assist suggested ${nextProposal.eventLabel} for #${nextProposal.jerseyNumber} ${nextProposal.playerDisplayName}. Confirm it to save, or reject it to discard it.`
+        });
+      }
+    } catch (error) {
+      const message = getErrorMessage(error);
+
+      setReviewItems((current) =>
+        current.map((candidate) => {
+          if (
+            candidate.id !== reviewItemId ||
+            candidate.result.kind !== "clarification" ||
+            candidate.llmAssist.status !== "loading"
+          ) {
+            return candidate;
+          }
+
+          return {
+            ...candidate,
+            llmAssist: {
+              status: "error",
+              message
+            }
+          };
+        })
+      );
+
+      appLog("warn", "capture.parse.llm.failed", {
+        gameId: game.id,
+        reviewItemId,
+        latencyMs: Math.round(performance.now() - startedAt),
+        error: message
+      });
+    }
   };
 
   const handleCapturedTranscript = ({
@@ -134,17 +277,46 @@ export const GameDashboardPage = () => {
       eventType: result.kind === "proposal" ? result.proposal.eventType : null
     });
 
+    const reviewItemId = crypto.randomUUID();
+    const eligibility =
+      result.kind === "clarification"
+        ? getLlmParseEligibility({
+            reason: result.clarification.reason,
+            transcript
+          })
+        : null;
+
+    if (result.kind === "clarification" && eligibility && !eligibility.allowed) {
+      appLog("info", "capture.parse.llm.skipped", {
+        gameId: game.id,
+        reviewItemId,
+        reason: result.clarification.reason,
+        skipMessage: eligibility.message
+      });
+    }
+
+    const llmAssist: ReviewItemLlmAssist =
+      result.kind === "clarification"
+        ? eligibility?.allowed
+          ? { status: "loading" }
+          : {
+              status: eligibility?.status ?? "skipped",
+              message: eligibility?.message
+            }
+        : { status: "idle" };
+
     setReviewItems((current) =>
       [
         {
-          id: crypto.randomUUID(),
+          id: reviewItemId,
           clientEventId: crypto.randomUUID(),
           transcript,
           createdAt: new Date().toISOString(),
           setNumber: game.current_set,
           captureDurationMs: durationMs,
           source,
-          result
+          result,
+          llmAssist
         },
         ...current
       ].slice(0, 8)
@@ -158,10 +330,25 @@ export const GameDashboardPage = () => {
             message: `Parsed ${result.proposal.eventLabel} for #${result.proposal.jerseyNumber} ${result.proposal.playerDisplayName}. Confirm it to save, or reject it to keep the log clean.`
           }
         : {
-            tone: result.clarification.reason === "missing_event_type" ? "warn" : "info",
-            message: result.clarification.message
+            tone: eligibility?.allowed
+              ? "info"
+              : result.clarification.reason === "missing_event_type"
+                ? "warn"
+                : "info",
+            message: eligibility?.allowed
+              ? `${result.clarification.message} Checking with AI now.`
+              : result.clarification.message
           }
     );
+
+    if (result.kind === "clarification" && eligibility?.allowed) {
+      void runLlmAssist({
+        reviewItemId,
+        transcript: eligibility.normalizedTranscript,
+        currentSet: game.current_set,
+        clarificationReason: result.clarification.reason
+      });
+    }
   };
 
   const {
@@ -912,6 +1099,21 @@ export const GameDashboardPage = () => {
                   ) : (
                     <div className="stack" style={{ gap: "0.6rem" }}>
                       <StatusMessage tone="warn" message={item.result.clarification.message} />
+                      {item.llmAssist.status === "loading" ? (
+                        <StatusMessage
+                          tone="info"
+                          message="Checking with AI for a narrow fallback suggestion. Nothing will be saved unless you confirm the final proposal."
+                        />
+                      ) : null}
+                      {item.llmAssist.status === "error" && item.llmAssist.message ? (
+                        <StatusMessage
+                          tone="info"
+                          message={`AI assist could not recover this clarification: ${item.llmAssist.message}`}
+                        />
+                      ) : null}
+                      {item.llmAssist.status === "skipped" && item.llmAssist.message ? (
+                        <div className="supporting-text">{item.llmAssist.message}</div>
+                      ) : null}
                       {item.result.clarification.candidates?.length ? (
                         <div className="candidate-list">
                           {item.result.clarification.candidates.map((candidate) => (

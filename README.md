@@ -17,10 +17,18 @@ The repo now includes the full foundation slice for the MVP:
 
 1. Copy `.env.example` to `.env`.
 2. Add `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and `VITE_SUPABASE_REDIRECT_URL`.
-3. In Supabase Auth settings, allowlist the same redirect origin or URL you plan to use locally and in Vercel.
-4. Run `npm install`.
-5. Run `npm run smoke`.
-6. Run `npm run dev`.
+3. Optional for the clarification-only AI fallback: set `VITE_LLM_PARSE_ENABLED=true`.
+4. If you want the Edge fallback to work locally or remotely, set the Supabase function secret `ANTHROPIC_API_KEY` and optionally `ANTHROPIC_MODEL`.
+5. In Supabase Auth settings, allowlist the same redirect origin or URL you plan to use locally and in Vercel.
+6. Run `npm install`.
+7. Run `npm run smoke`.
+8. Run `npm run dev`.
+
+For local Supabase Edge work, set secrets with the CLI before serving functions:
+
+- `npx supabase secrets set ANTHROPIC_API_KEY=<your-key>`
+- `npx supabase secrets set ANTHROPIC_MODEL=claude-3-5-haiku-20241022`
+- `npx supabase functions serve parse-stat-llm`
 
 ## Optional Dev Admin Shortcut
 
@@ -36,6 +44,15 @@ creates a real Supabase session:
 
 This exposes those values to the client bundle because they are Vite env vars, so this shortcut is
 for local development only and should stay disabled in production.
+
+## Clarification-Only AI Fallback
+
+The narrow LLM assist is intentionally behind the existing deterministic parser:
+
+- The client only calls the Edge function when a review item lands in a clarification state for `missing_event_type` or `missing_player`.
+- The browser only sends the signed-in user JWT; `ANTHROPIC_API_KEY` stays in Supabase Edge secrets.
+- Successful AI output is still just a normal review proposal, so nothing reaches `stat_events` until the coach presses Confirm.
+- `ambiguous_player` stays deterministic-only in v1 to avoid a fuzzy AI pick when the roster match is already contested.
 
 ## Supabase Wiring
 
@@ -69,6 +86,7 @@ If you want to run the local Supabase stack as well, use:
 - `npm run supabase:link -- --project-ref <ref>`: link the repo to a hosted Supabase project
 - `npm run supabase:db:push`: apply local migrations to the linked remote project
 - `npm run supabase:types`: generate `src/lib/database.generated.ts` from the linked project schema
+- `npx supabase functions serve parse-stat-llm`: run the clarification-only LLM fallback locally
 
 ## Supabase Notes
 
@@ -87,6 +105,7 @@ If you want to run the local Supabase stack as well, use:
 - Static frontend host: **Vercel**
 - SPA routing fallback: [`vercel.json`](./vercel.json)
 - Supabase handles auth and data; no server bundle is required for Phase 2
+- The optional AI clarification fallback runs as a Supabase Edge Function and expects `ANTHROPIC_API_KEY` to be configured in that environment
 - Magic-link auth expects the deployed site URL or redirect URL to be allowlisted in Supabase Auth settings.
 
 ## Supporting Docs
