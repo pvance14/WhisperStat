@@ -55,24 +55,28 @@ export const PostGameSummaryPage = () => {
     const bundle = await getPostGameSummaryBundle(requireSupabase(), gameId!);
     const activeEvents = bundle.events.filter((event) => event.deleted_at === null);
     const activePriorEvents = bundle.priorEvents.filter((event) => event.deleted_at === null);
-
+    const generated = buildPostGameSummary({
+      game: bundle.game,
+      players: bundle.players,
+      events: activeEvents,
+      priorGame: bundle.priorGame,
+      priorEvents: activePriorEvents
+    });
     let nextSummary = bundle.summary;
+    let persistenceWarning: string | null = null;
 
     if (bundle.game.status === "completed" && (forceRegenerate || isSummaryStale(bundle.game, bundle.summary))) {
-      const generated = buildPostGameSummary({
-        game: bundle.game,
-        players: bundle.players,
-        events: activeEvents,
-        priorGame: bundle.priorGame,
-        priorEvents: activePriorEvents
-      });
-
-      nextSummary = await upsertGameSummary(requireSupabase(), {
-        game_id: bundle.game.id,
-        narrative_text: generated.narrativeText,
-        generated_at: new Date().toISOString(),
-        model: generated.model
-      });
+      try {
+        nextSummary = await upsertGameSummary(requireSupabase(), {
+          game_id: bundle.game.id,
+          narrative_text: generated.narrativeText,
+          generated_at: new Date().toISOString(),
+          model: generated.model
+        });
+      } catch (error) {
+        nextSummary = null;
+        persistenceWarning = `The summary could not be saved right now, so this page is showing a live preview instead. ${getErrorMessage(error)}`;
+      }
     }
 
     setGame(bundle.game);
@@ -82,7 +86,13 @@ export const PostGameSummaryPage = () => {
     setPriorEvents(activePriorEvents);
     setSummary(nextSummary);
     setStatus(null);
-    return { ...bundle, summary: nextSummary, events: activeEvents, priorEvents: activePriorEvents };
+    return {
+      ...bundle,
+      summary: nextSummary,
+      events: activeEvents,
+      priorEvents: activePriorEvents,
+      persistenceWarning
+    };
   };
 
   useEffect(() => {
@@ -102,12 +112,17 @@ export const PostGameSummaryPage = () => {
         }
 
         setWorkflowStatus(
-          nextBundle.game.status === "completed"
-            ? null
-            : {
-                tone: "info",
-                message: "Complete the game on the dashboard to lock in and save the post-game summary."
+          nextBundle.persistenceWarning
+            ? {
+                tone: "warn",
+                message: nextBundle.persistenceWarning
               }
+            : nextBundle.game.status === "completed"
+              ? null
+              : {
+                  tone: "info",
+                  message: "Complete the game on the dashboard to lock in and save the post-game summary."
+                }
         );
       } catch (error) {
         if (!isActive) {
@@ -243,7 +258,7 @@ export const PostGameSummaryPage = () => {
           <div className="summary-support">
             {priorGame
               ? `Prior match: vs ${priorGame.opponent_name}`
-              : "No earlier completed game exists for this team yet."}
+              : "No other completed game exists for this team yet."}
           </div>
         </div>
       </div>
@@ -268,11 +283,18 @@ export const PostGameSummaryPage = () => {
                   setIsRegenerating(true);
 
                   void loadSummaryPage({ forceRegenerate: true })
-                    .then(() =>
-                      setWorkflowStatus({
-                        tone: "success",
-                        message: "Post-game summary regenerated from the latest saved events and scoreboard."
-                      })
+                    .then((result) =>
+                      setWorkflowStatus(
+                        result.persistenceWarning
+                          ? {
+                              tone: "warn",
+                              message: result.persistenceWarning
+                            }
+                          : {
+                              tone: "success",
+                              message: "Post-game summary regenerated from the latest saved events and scoreboard."
+                            }
+                      )
                     )
                     .catch((error) =>
                       setWorkflowStatus({

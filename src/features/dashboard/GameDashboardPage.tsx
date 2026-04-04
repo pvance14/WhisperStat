@@ -109,6 +109,14 @@ export const GameDashboardPage = () => {
       return;
     }
 
+    if (game.status === "completed") {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This game is completed. Reopen it before capturing or parsing additional events."
+      });
+      return;
+    }
+
     const parseStartedAt = performance.now();
     const result = parseMatchTranscript({
       transcript,
@@ -175,6 +183,14 @@ export const GameDashboardPage = () => {
     source: "speech" | "manual";
     durationMs: number | null;
   }) => {
+    if (game?.status === "completed") {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This game is completed. Reopen it before correcting saved events."
+      });
+      return;
+    }
+
     const lastConfirmedEvent = events.find((event) => event.deleted_at === null);
 
     if (!lastConfirmedEvent) {
@@ -336,6 +352,14 @@ export const GameDashboardPage = () => {
       : events;
 
   const changeCurrentSet = async (nextSet: number) => {
+    if (game.status === "completed") {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This game is completed. Reopen it before changing the current set."
+      });
+      return;
+    }
+
     if (nextSet < 1 || nextSet === game.current_set) {
       return;
     }
@@ -361,6 +385,14 @@ export const GameDashboardPage = () => {
   };
 
   const handleSaveCurrentSetScore = async () => {
+    if (game.status === "completed") {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This game is completed. Reopen it before changing the saved scoreboard."
+      });
+      return;
+    }
+
     const us = Number(scoreDraft.us);
     const them = Number(scoreDraft.them);
 
@@ -429,6 +461,14 @@ export const GameDashboardPage = () => {
   };
 
   const handleConfirmReviewItem = async (itemId: string) => {
+    if (game.status === "completed") {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This game is completed. Reopen it before confirming queued review items."
+      });
+      return;
+    }
+
     const item = reviewItems.find((candidate) => candidate.id === itemId);
 
     if (!item || item.result.kind !== "proposal") {
@@ -462,6 +502,14 @@ export const GameDashboardPage = () => {
   };
 
   const handleRejectReviewItem = (itemId: string) => {
+    if (game.status === "completed") {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This game is completed. Reopen it before changing the review queue."
+      });
+      return;
+    }
+
     setReviewItems((current) => current.filter((candidate) => candidate.id !== itemId));
     setWorkflowStatus({
       tone: "info",
@@ -470,6 +518,14 @@ export const GameDashboardPage = () => {
   };
 
   const handleUndoEvent = async (eventId: string, message: string) => {
+    if (game.status === "completed") {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This game is completed. Reopen it before undoing confirmed events."
+      });
+      return;
+    }
+
     try {
       setActiveEventId(eventId);
       await softDeleteStatEvent(requireSupabase(), eventId);
@@ -493,6 +549,14 @@ export const GameDashboardPage = () => {
   };
 
   const handleStartEventEdit = (event: StatEventRow) => {
+    if (game.status === "completed") {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This game is completed. Reopen it before editing logged events."
+      });
+      return;
+    }
+
     setEditingEventId(event.id);
     setEventEditDraft({
       playerId: event.player_id,
@@ -502,6 +566,14 @@ export const GameDashboardPage = () => {
 
   const handleSaveEventEdit = async () => {
     if (!editingEventId || !eventEditDraft) {
+      return;
+    }
+
+    if (game.status === "completed") {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This game is completed. Reopen it before saving event edits."
+      });
       return;
     }
 
@@ -529,6 +601,7 @@ export const GameDashboardPage = () => {
   };
 
   const canCapture = players.length > 0;
+  const isGameCompleted = game.status === "completed";
 
   return (
     <div className="grid">
@@ -567,7 +640,7 @@ export const GameDashboardPage = () => {
             <button
               className="button-secondary"
               type="button"
-              disabled={isUpdatingSet || game.current_set <= 1}
+              disabled={isUpdatingSet || game.current_set <= 1 || isGameCompleted}
               onClick={() => {
                 void changeCurrentSet(game.current_set - 1);
               }}
@@ -577,7 +650,7 @@ export const GameDashboardPage = () => {
             <button
               className="button-secondary"
               type="button"
-              disabled={isUpdatingSet}
+              disabled={isUpdatingSet || isGameCompleted}
               onClick={() => {
                 void changeCurrentSet(game.current_set + 1);
               }}
@@ -647,6 +720,12 @@ export const GameDashboardPage = () => {
               message="Add players to the roster before capturing match events so player resolution has real context."
             />
           ) : null}
+          {isGameCompleted ? (
+            <StatusMessage
+              tone="info"
+              message="This match is locked because it is marked completed. Reopen the game to capture, confirm, undo, or edit anything."
+            />
+          ) : null}
 
           <div className="split-layout capture-layout">
             <section className="surface stack capture-panel action-panel primary">
@@ -661,7 +740,7 @@ export const GameDashboardPage = () => {
                 <button
                   className="button capture-cta"
                   type="button"
-                  disabled={!canCapture || !isSpeechCaptureSupported}
+                  disabled={!canCapture || !isSpeechCaptureSupported || isGameCompleted}
                   onClick={() => {
                     if (isListening) {
                       stopListening();
@@ -734,15 +813,21 @@ export const GameDashboardPage = () => {
                   rows={5}
                   placeholder="Example: 12 kill"
                   value={manualTranscript}
+                  disabled={isGameCompleted}
                   onChange={(event) => setManualTranscript(event.target.value)}
                 />
               </label>
 
               <div className="form-actions">
-                <button className="button-secondary" type="submit" disabled={!canCapture}>
+                <button className="button-secondary" type="submit" disabled={!canCapture || isGameCompleted}>
                   Parse transcript
                 </button>
-                <button className="button-ghost" type="button" onClick={() => setManualTranscript("")}>
+                <button
+                  className="button-ghost"
+                  type="button"
+                  disabled={isGameCompleted}
+                  onClick={() => setManualTranscript("")}
+                >
                   Clear
                 </button>
               </div>
@@ -785,6 +870,7 @@ export const GameDashboardPage = () => {
                     <button
                       className="button-ghost"
                       type="button"
+                      disabled={isGameCompleted}
                       onClick={() => handleRejectReviewItem(item.id)}
                     >
                       Reject
@@ -806,7 +892,7 @@ export const GameDashboardPage = () => {
                         <button
                           className="button"
                           type="button"
-                          disabled={activeReviewId === item.id}
+                          disabled={activeReviewId === item.id || isGameCompleted}
                           onClick={() => {
                             void handleConfirmReviewItem(item.id);
                           }}
@@ -816,6 +902,7 @@ export const GameDashboardPage = () => {
                         <button
                           className="button-ghost"
                           type="button"
+                          disabled={isGameCompleted}
                           onClick={() => handleRejectReviewItem(item.id)}
                         >
                           Discard
@@ -879,6 +966,7 @@ export const GameDashboardPage = () => {
                     type="number"
                     min={0}
                     value={scoreDraft.us}
+                    disabled={isGameCompleted}
                     onChange={(event) =>
                       setScoreDraft((current) => ({ ...current, us: event.target.value }))
                     }
@@ -891,6 +979,7 @@ export const GameDashboardPage = () => {
                     type="number"
                     min={0}
                     value={scoreDraft.them}
+                    disabled={isGameCompleted}
                     onChange={(event) =>
                       setScoreDraft((current) => ({ ...current, them: event.target.value }))
                     }
@@ -906,7 +995,7 @@ export const GameDashboardPage = () => {
                 <button
                   className="button-secondary"
                   type="button"
-                  disabled={isSavingScore}
+                  disabled={isSavingScore || isGameCompleted}
                   onClick={() => {
                     void handleSaveCurrentSetScore();
                   }}
@@ -976,9 +1065,9 @@ export const GameDashboardPage = () => {
 
                 <div className="form-actions">
                   <button
-                    className="button-secondary"
-                    type="button"
-                    disabled={activeEventId === lastConfirmedEvent.id}
+                  className="button-secondary"
+                  type="button"
+                  disabled={activeEventId === lastConfirmedEvent.id || isGameCompleted}
                     onClick={() => {
                       void handleUndoEvent(
                         lastConfirmedEvent.id,
@@ -1003,7 +1092,7 @@ export const GameDashboardPage = () => {
                     <button
                       className="button"
                       type="button"
-                      disabled={!isCorrectionSpeechSupported || isApplyingCorrection}
+                      disabled={!isCorrectionSpeechSupported || isApplyingCorrection || isGameCompleted}
                       onClick={() => {
                         if (isCorrectionListening) {
                           stopCorrectionListening();
@@ -1049,16 +1138,22 @@ export const GameDashboardPage = () => {
                       <input
                         placeholder="actually attack error"
                         value={correctionTranscript}
+                        disabled={isGameCompleted}
                         onChange={(event) => setCorrectionTranscript(event.target.value)}
                       />
                     </label>
                     <div className="form-actions">
-                      <button className="button-secondary" type="submit" disabled={isApplyingCorrection}>
+                      <button
+                        className="button-secondary"
+                        type="submit"
+                        disabled={isApplyingCorrection || isGameCompleted}
+                      >
                         {isApplyingCorrection ? "Applying..." : "Apply correction"}
                       </button>
                       <button
                         className="button-ghost"
                         type="button"
+                        disabled={isGameCompleted}
                         onClick={() => setCorrectionTranscript("")}
                       >
                         Clear
@@ -1182,6 +1277,7 @@ export const GameDashboardPage = () => {
                         <span className="muted">Player</span>
                         <select
                           value={eventEditDraft.playerId}
+                          disabled={isGameCompleted}
                           onChange={(changeEvent) =>
                             setEventEditDraft((current) =>
                               current
@@ -1202,6 +1298,7 @@ export const GameDashboardPage = () => {
                         <span className="muted">Stat type</span>
                         <select
                           value={eventEditDraft.eventType}
+                          disabled={isGameCompleted}
                           onChange={(changeEvent) =>
                             setEventEditDraft((current) =>
                               current
@@ -1235,7 +1332,7 @@ export const GameDashboardPage = () => {
                             <button
                               className="button-secondary"
                               type="button"
-                              disabled={isWorking}
+                              disabled={isWorking || isGameCompleted}
                               onClick={() => {
                                 void handleSaveEventEdit();
                               }}
@@ -1245,6 +1342,7 @@ export const GameDashboardPage = () => {
                             <button
                               className="button-ghost"
                               type="button"
+                              disabled={isGameCompleted}
                               onClick={() => {
                                 setEditingEventId(null);
                                 setEventEditDraft(null);
@@ -1258,6 +1356,7 @@ export const GameDashboardPage = () => {
                             <button
                               className="button-secondary"
                               type="button"
+                              disabled={isGameCompleted}
                               onClick={() => handleStartEventEdit(event)}
                             >
                               Edit event
@@ -1265,7 +1364,7 @@ export const GameDashboardPage = () => {
                             <button
                               className="button-ghost"
                               type="button"
-                              disabled={isWorking}
+                              disabled={isWorking || isGameCompleted}
                               onClick={() => {
                                 void handleUndoEvent(
                                   event.id,

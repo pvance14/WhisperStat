@@ -17,19 +17,16 @@ type StatEventUpdate = Database["public"]["Tables"]["stat_events"]["Update"];
 type GameSummaryRow = Database["public"]["Tables"]["game_summaries"]["Row"];
 type GameSummaryInsert = Database["public"]["Tables"]["game_summaries"]["Insert"];
 
-const compareGamesDescending = (left: GameRow, right: GameRow) => {
-  const gameDateDifference =
-    new Date(right.game_date).getTime() - new Date(left.game_date).getTime();
+const touchGame = async (client: TypedSupabaseClient, gameId: string) => {
+  const { error } = await client
+    .from("games")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", gameId);
 
-  if (gameDateDifference !== 0) {
-    return gameDateDifference;
+  if (error) {
+    throw error;
   }
-
-  return new Date(right.created_at).getTime() - new Date(left.created_at).getTime();
 };
-
-const isEarlierCompletedGame = (candidate: GameRow, current: GameRow) =>
-  compareGamesDescending(candidate, current) > 0;
 
 export const listTeams = async (client: TypedSupabaseClient) =>
   logAsync("teams.list", async () => {
@@ -265,8 +262,7 @@ export const getMostRecentPriorCompletedGame = async (
       throw error;
     }
 
-    const priorGame = (data satisfies GameRow[]).find((candidate) => isEarlierCompletedGame(candidate, game));
-    return priorGame ?? null;
+    return ((data satisfies GameRow[])[0] ?? null) satisfies GameRow | null;
   }, { gameId: game.id, teamId: game.team_id });
 
 export const getPostGameSummaryBundle = async (client: TypedSupabaseClient, gameId: string) =>
@@ -312,6 +308,7 @@ export const confirmStatEvent = async (
     const { data, error } = await client.from("stat_events").insert(payload).select().single();
 
     if (!error) {
+      await touchGame(client, payload.game_id);
       return data satisfies StatEventRow;
     }
 
@@ -354,6 +351,7 @@ export const updateStatEvent = async (
       throw error;
     }
 
+    await touchGame(client, data.game_id);
     return data satisfies StatEventRow;
   }, { eventId });
 
