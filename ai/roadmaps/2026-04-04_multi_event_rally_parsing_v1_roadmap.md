@@ -17,7 +17,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Current Status
 
 - Planning status: Ready for implementation planning.
-- Implementation status: Core v1 parser, grouped review UX, and confirm flow implemented; manual live verification still pending.
+- Implementation status: Complete. Deterministic parser hardening, grouped review UX, clause-level LLM integration, and atomic grouped confirm are implemented.
 - Scope status: Narrow v1 focused on short, linear rally summaries and existing supported stat types.
 
 ## Document Status
@@ -31,8 +31,9 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - [x] **Parser shape**: introduce a batch-capable parse result that can represent multiple ordered proposals from one transcript while preserving the current single-event path.
 - [x] **Deterministic segmentation**: split short rally narration into candidate clauses and parse each clause against the roster and supported stat vocabulary.
 - [x] **Batch review UX**: update the review queue so one captured transcript can render a grouped, ordered set of proposals with fast confirm/discard actions.
+- [x] **Grouped persistence hardening**: confirm grouped proposals through an atomic server-side batch path so multi-event confirmation is all-or-nothing and idempotent on retry.
 - [x] **Schema discipline**: keep v1 limited to stat types already supported by [`StatEventType`](../../src/lib/database.types.ts); unsupported rally actions remain context only.
-- [ ] **Observability and verification**: log batch parse outcomes and manually verify short-rally examples, partial failures, and confirm behavior.
+- [x] **Observability and verification**: log batch parse outcomes and record parser plus hosted batch-confirm verification in [`aiDocs/evidence/phase_6_multi_event_llm_hardening_verification.md`](../../aiDocs/evidence/phase_6_multi_event_llm_hardening_verification.md).
 
 ## Readiness Checks
 

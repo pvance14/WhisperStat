@@ -16,6 +16,7 @@ In this repo, **`ai/` is tracked** (not gitignored) so roadmaps under `ai/roadma
   - `logging_and_smoke_conventions.md`
   - `demo_fallback_spec.md`
   - `phase_2_live_verification.md`
+  - `phase_6_multi_event_llm_hardening_verification.md`
 - **Validation / falsification** write-ups: hypothesis, what would falsify, how you ran the test, outcome, what changed (per PRD §10 and `final_project_alignment.md`).
 - **Demo evidence**: preflight checklists, golden-path screenshots or notes, fallback scenarios (offline / ASR failure).
 - **Traceability**: short maps from rubric or alignment-doc requirements to a file in this folder or a PR.

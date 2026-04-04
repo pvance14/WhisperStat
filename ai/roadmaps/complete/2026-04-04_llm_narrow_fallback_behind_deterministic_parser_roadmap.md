@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Ship **Anthropic-backed parsing only when** [`parseMatchTranscript`](../../src/lib/matchParser.ts) returns a **clarification**, via a **Supabase Edge Function** (key never in the client). Successful LLM output becomes a normal **`kind: "proposal"`** in the existing review queue so **Confirm / Reject** and [`confirmStatEvent`](../../src/lib/data.ts) stay unchanged.
+Ship **Anthropic-backed parsing only when** [`parseMatchTranscript`](../../src/lib/matchParser.ts) leaves an **eligible clarification or unresolved rally clause**, via a **Supabase Edge Function** (key never in the client). Successful LLM output becomes a normal review proposal so the existing confirm/reject trust model stays unchanged.
 
 This document is a local planning artifact in `ai/roadmaps`. Product canon remains [`aiDocs/context.md`](../../aiDocs/context.md) → PRD, MVP, and [`aiDocs/architecture.md`](../../aiDocs/architecture.md).
 
@@ -16,7 +16,7 @@ We need to **avoid over-engineering, cruft, and legacy-compatibility features** 
 ## Current Status
 
 - Planning status: Ready for implementation.
-- Implementation status: Complete. Hosted Edge deployment, fail-closed auth/access checks, and proposal-to-persist validation are all verified.
+- Implementation status: Complete. Hosted Edge deployment, fail-closed auth checks, authenticated proposal recovery, and the multi-event clause-level integration are verified in [`aiDocs/evidence/phase_6_multi_event_llm_hardening_verification.md`](../../aiDocs/evidence/phase_6_multi_event_llm_hardening_verification.md).
 
 ## Document Status
 
@@ -28,10 +28,10 @@ We need to **avoid over-engineering, cruft, and legacy-compatibility features** 
 
 - [x] **Edge Function** `parse-stat-llm`: JWT + RLS-backed load of game and players; Anthropic Messages API via `fetch`; strict JSON validation against roster UUIDs and `StatEventType`.
 - [x] **Client module** [`src/lib/parseStatLlm.ts`](../../src/lib/parseStatLlm.ts) + feature flag (`VITE_LLM_PARSE_ENABLED`); invoke only for allowlisted clarification reasons in v1 (`missing_event_type`, `missing_player`) and bounded transcripts.
-- [x] **Dashboard**: extend `ReviewItem` + [`handleCapturedTranscript`](../../src/features/dashboard/GameDashboardPage.tsx) — loading/error on clarification row, upgrade to proposal on success, preserve captured `setNumber` + `createdAt`, and ignore late LLM results after rejection; `matchedPlayerBy` includes `llm` (or equivalent) for transparency.
+- [x] **Dashboard**: extend `ReviewItem` + [`handleCapturedTranscript`](../../src/features/dashboard/GameDashboardPage.tsx) — loading/error on clarification rows plus eligible skipped rally clauses, upgrade successful results into normal review proposals, preserve captured `setNumber` + `createdAt`, and ignore late LLM results after rejection; `matchedPlayerBy` includes `llm` for transparency.
 - [x] **Secrets & docs**: `ANTHROPIC_API_KEY` in Edge env (remote + local CLI); document env vars without committing secrets.
-- [x] **Observability & manual test**: `appLog` for LLM parse lifecycle; verify deterministic path never calls LLM; slang/clarification path → proposal → Confirm persists row; unauthorized or cross-team access fails closed.
+- [x] **Observability & manual test**: `appLog` for LLM parse lifecycle; verify deterministic path stays first, eligible skipped rally clauses can recover through the normal review flow, hosted unauthorized access fails closed, and authenticated hosted parsing returns a real proposal. Evidence is recorded in [`aiDocs/evidence/phase_6_multi_event_llm_hardening_verification.md`](../../aiDocs/evidence/phase_6_multi_event_llm_hardening_verification.md).
 
 ## Completion Signal
 
-This roadmap is done when coaches can optionally enable LLM assist after a failed rule parse, see the same confirm card for proposals, and nothing writes to Postgres without an explicit Confirm — with captured timing/set data preserved on the review item, late rejected results ignored, and keys plus roster validation enforced server-side.
+This roadmap is done when coaches can optionally enable LLM assist after a failed rule parse or an eligible unresolved rally clause, see the same review surface for proposals, and nothing writes to Postgres without an explicit Confirm — with captured timing/set data preserved on the review item, late rejected results ignored, and keys plus roster validation enforced server-side.

@@ -16,6 +16,13 @@ type StatEventInsert = Database["public"]["Tables"]["stat_events"]["Insert"];
 type StatEventUpdate = Database["public"]["Tables"]["stat_events"]["Update"];
 type GameSummaryRow = Database["public"]["Tables"]["game_summaries"]["Row"];
 type GameSummaryInsert = Database["public"]["Tables"]["game_summaries"]["Insert"];
+type ConfirmStatEventBatchArgs = Database["public"]["Functions"]["confirm_stat_event_batch"]["Args"];
+
+export interface ConfirmStatEventBatchProposal {
+  ui_id: string;
+  player_id: string;
+  event_type: StatEventInsert["event_type"];
+}
 
 const touchGame = async (client: TypedSupabaseClient, gameId: string) => {
   const { error } = await client
@@ -332,6 +339,25 @@ export const confirmStatEvent = async (
     playerId: payload.player_id,
     eventType: payload.event_type,
     clientEventId: payload.client_event_id
+  });
+
+export const confirmStatEventBatch = async (
+  client: TypedSupabaseClient,
+  payload: ConfirmStatEventBatchArgs
+) =>
+  logAsync("statEvents.confirmBatch", async () => {
+    const { data, error } = await client.rpc("confirm_stat_event_batch", payload);
+
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? []) satisfies StatEventRow[];
+  }, {
+    gameId: payload.target_game_id,
+    setNumber: payload.target_set_number,
+    proposalCount: Array.isArray(payload.proposals) ? payload.proposals.length : 0,
+    clientCaptureId: payload.target_client_capture_id
   });
 
 export const updateStatEvent = async (

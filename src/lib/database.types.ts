@@ -187,7 +187,30 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      confirm_stat_event_batch: {
+        Args: {
+          target_game_id: string;
+          target_set_number: number;
+          capture_created_at: string;
+          target_client_capture_id: string;
+          proposals: Json;
+        };
+        Returns: {
+          id: string;
+          game_id: string;
+          player_id: string;
+          event_type: StatEventType;
+          set_number: number;
+          timestamp: string;
+          created_by: string;
+          notes: string | null;
+          deleted_at: string | null;
+          client_event_id: string | null;
+          created_at: string;
+        }[];
+      };
+    };
     Enums: {
       game_status: GameStatus;
       stat_event_type: StatEventType;

@@ -23,7 +23,7 @@ export interface ParsedStatProposal {
 export interface ParsedSkippedClause {
   clauseId: string;
   text: string;
-  reason: "unsupported_event" | "missing_player" | "ambiguous_player";
+  reason: "unsupported_event" | "missing_event_type" | "missing_player" | "ambiguous_player";
   message: string;
   candidates?: Array<{
     playerId: string;
@@ -31,6 +31,13 @@ export interface ParsedSkippedClause {
     jerseyNumber: number;
     matchedBy: string[];
   }>;
+}
+
+export interface ParsedBatchClause {
+  clauseId: string;
+  text: string;
+  proposal: ParsedStatProposal | null;
+  skipped: ParsedSkippedClause | null;
 }
 
 export interface ParseClarification {
@@ -51,6 +58,7 @@ export type ParseMatchResult =
     }
   | {
       kind: "proposal_batch";
+      clauses: ParsedBatchClause[];
       proposals: ParsedStatProposal[];
       skippedClauses: ParsedSkippedClause[];
     }
@@ -75,12 +83,26 @@ const eventAliases: Array<{ eventType: StatEventType; aliases: string[] }> = [
     aliases: ["reception error", "serve receive error", "passing error", "pass error", "shank", "shanked"]
   },
   { eventType: "attack_error", aliases: ["attack error", "hitting error", "hit out", "hit long"] },
-  { eventType: "set", aliases: ["set assist", "assist", "set"] },
-  { eventType: "kill", aliases: ["kill", "killed"] },
-  { eventType: "ace", aliases: ["ace", "aced"] },
-  { eventType: "block", aliases: ["block", "blocked", "stuff block"] },
-  { eventType: "dig", aliases: ["dig", "dug"] }
+  { eventType: "set", aliases: ["set assist", "assist", "set", "sets"] },
+  { eventType: "kill", aliases: ["kill", "kills", "killed"] },
+  { eventType: "ace", aliases: ["ace", "aces", "aced"] },
+  { eventType: "block", aliases: ["block", "blocks", "blocked", "stuff block"] },
+  { eventType: "dig", aliases: ["dig", "digs", "dug"] }
 ];
+
+const unsupportedContextAliases = [
+  "pass",
+  "passes",
+  "passed",
+  "passing",
+  "receive",
+  "receives",
+  "received",
+  "reception",
+  "free ball",
+  "cover",
+  "coverage"
+] as const;
 
 const normalizeSearchText = (value: string) =>
   value
@@ -232,6 +254,11 @@ const resolvePlayer = (players: PlayerRow[], transcript: string) => {
   };
 };
 
+const isUnsupportedContextClause = (clause: string) => {
+  const normalizedClause = normalizeSearchText(clause);
+  return unsupportedContextAliases.some((alias) => includesPhrase(normalizedClause, alias));
+};
+
 const buildPlayerFragments = ({
   clause,
   eventAlias,
@@ -324,14 +351,49 @@ const resolvePlayerForClause = ({
   };
 };
 
-const clauseSplitPattern =
+const primaryClauseSplitPattern =
   /\s*(?:[,;]+|(?:\b(?:and then|then|and)\b)|(?:[.!?]+))\s*/i;
+
+const countResolvedEventMatches = (transcript: string) =>
+  eventAliases.reduce((count, { aliases }) => {
+    const hasMatch = aliases.some((alias) => includesPhrase(normalizeSearchText(transcript), alias));
+    return count + (hasMatch ? 1 : 0);
+  }, 0);
+
+const splitSegmentOnTo = (segment: string) => {
+  if (!/\bto\b/i.test(segment)) {
+    return [segment];
+  }
+
+  if (countResolvedEventMatches(segment) < 2) {
+    return [segment];
+  }
+
+  return segment
+    .split(/\s+\bto\b\s+/i)
+    .map((part) => part.trim())
+    .filter(Boolean);
+};
 
 const splitTranscriptIntoClauses = (transcript: string) =>
   transcript
-    .split(clauseSplitPattern)
-    .map((part) => part.trim())
+    .split(primaryClauseSplitPattern)
+    .flatMap((part) => splitSegmentOnTo(part.trim()))
     .filter(Boolean);
+
+export const buildProposalBatchResult = (
+  clauses: ParsedBatchClause[]
+): Extract<ParseMatchResult, { kind: "proposal_batch" }> => {
+  const proposals = clauses.flatMap((clause) => (clause.proposal ? [clause.proposal] : []));
+  const skippedClauses = clauses.flatMap((clause) => (clause.skipped ? [clause.skipped] : []));
+
+  return {
+    kind: "proposal_batch",
+    clauses,
+    proposals,
+    skippedClauses
+  };
+};
 
 const parseClause = ({
   clause,
@@ -348,6 +410,45 @@ const parseClause = ({
   const eventMatch = resolveEventType(clause);
 
   if (!eventMatch) {
+    if (isUnsupportedContextClause(clause)) {
+      return {
+        kind: "skipped" as const,
+        skipped: {
+          clauseId,
+          text: clause,
+          reason: "unsupported_event" as const,
+          message: "This clause looks like rally context, but it does not map to a supported persisted stat in v1."
+        }
+      };
+    }
+
+    const playerResolution = resolvePlayer(players, clause);
+
+    if (playerResolution.kind === "proposal") {
+      return {
+        kind: "skipped" as const,
+        skipped: {
+          clauseId,
+          text: clause,
+          reason: "missing_event_type" as const,
+          message: "I matched the player in this rally clause, but I could not map the stat wording to the supported vocabulary yet."
+        }
+      };
+    }
+
+    if (playerResolution.clarification.reason === "ambiguous_player") {
+      return {
+        kind: "skipped" as const,
+        skipped: {
+          clauseId,
+          text: clause,
+          reason: "ambiguous_player" as const,
+          message: "I matched more than one player in this rally clause. Try a jersey number or a more specific name.",
+          candidates: playerResolution.clarification.candidates
+        }
+      };
+    }
+
     return {
       kind: "skipped" as const,
       skipped: {
@@ -461,35 +562,23 @@ export const parseMatchTranscript = ({
     })
   );
 
-  const proposals = clauseResults.flatMap((result) =>
-    result.kind === "proposal" ? [result.proposal] : []
+  const batchClauses: ParsedBatchClause[] = clauseResults.map((result, clauseIndex) =>
+    result.kind === "proposal"
+      ? {
+          clauseId: result.proposal.uiId,
+          text: clauses[clauseIndex],
+          proposal: result.proposal,
+          skipped: null
+        }
+      : {
+          clauseId: result.skipped.clauseId,
+          text: clauses[clauseIndex],
+          proposal: null,
+          skipped: result.skipped
+        }
   );
-  const skippedClauses = clauseResults.flatMap((result) =>
-    result.kind === "skipped" ? [result.skipped] : []
-  );
 
-  if (proposals.length === 0) {
-    return {
-      kind: "clarification",
-      clarification: {
-        reason: "missing_event_type",
-        message: "I couldn't map that rally recap to supported stat proposals yet."
-      }
-    };
-  }
-
-  if (proposals.length === 1 && skippedClauses.length === 0) {
-    return {
-      kind: "proposal",
-      proposal: proposals[0]
-    };
-  }
-
-  return {
-    kind: "proposal_batch",
-    proposals,
-    skippedClauses
-  };
+  return buildProposalBatchResult(batchClauses);
 };
 
 export const parseLastEventCorrection = ({

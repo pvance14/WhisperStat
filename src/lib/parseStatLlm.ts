@@ -1,9 +1,11 @@
 import type { StatEventType } from "@/lib/database.types";
-import type { ParseClarification } from "@/lib/matchParser";
+import type { ParseClarification, ParsedSkippedClause } from "@/lib/matchParser";
 import { appEnv } from "@/lib/env";
 import { requireSupabase } from "@/lib/supabase";
 
-const allowedClarificationReasons = new Set<ParseClarification["reason"]>([
+export type LlmParseReason = ParseClarification["reason"] | ParsedSkippedClause["reason"];
+
+const allowedClarificationReasons = new Set<LlmParseReason>([
   "missing_event_type",
   "missing_player"
 ]);
@@ -39,7 +41,7 @@ export const getLlmParseEligibility = ({
   reason,
   transcript
 }: {
-  reason: ParseClarification["reason"];
+  reason: LlmParseReason;
   transcript: string;
 }) => {
   if (!appEnv.llmParseEnabled) {

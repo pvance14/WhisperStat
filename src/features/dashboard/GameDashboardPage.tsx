@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSpeechCapture } from "@/features/games/useSpeechCapture";
 import { StatusMessage } from "@/components/StatusMessage";
 import {
+  confirmStatEventBatch,
   confirmStatEvent,
   getGameBundle,
   softDeleteStatEvent,
@@ -20,13 +21,19 @@ import {
 } from "@/lib/gameScore";
 import { appLog } from "@/lib/logger";
 import {
+  buildProposalBatchResult,
   parseLastEventCorrection,
   parseMatchTranscript,
   type ParseMatchResult,
+  type ParsedBatchClause,
   type ParsedSkippedClause,
   type ParsedStatProposal
 } from "@/lib/matchParser";
-import { getLlmParseEligibility, parseStatLlm } from "@/lib/parseStatLlm";
+import {
+  getLlmParseEligibility,
+  parseStatLlm,
+  type LlmParseReason
+} from "@/lib/parseStatLlm";
 import { buildPlayerStatRows, summarizeEvents, trackedStatTypes } from "@/lib/stats";
 import { requireSupabase } from "@/lib/supabase";
 import { formatDateTime, getErrorMessage, titleCase } from "@/lib/utils";
@@ -44,13 +51,14 @@ interface ReviewItem {
   captureDurationMs: number | null;
   source: "speech" | "manual";
   result: ParseMatchResult;
-  llmAssist: {
-    status: "idle" | "loading" | "error" | "skipped";
-    message?: string;
-  };
+  llmAssist: ReviewItemLlmAssist;
+  batchClauseAssist: Record<string, ReviewItemLlmAssist>;
 }
 
-type ReviewItemLlmAssist = ReviewItem["llmAssist"];
+type ReviewItemLlmAssist = {
+  status: "idle" | "loading" | "error" | "skipped";
+  message?: string;
+};
 
 interface EventEditDraft {
   playerId: string;
@@ -70,15 +78,17 @@ const buildEventSummary = (event: StatEventRow, players: PlayerRow[]) => {
 };
 
 const buildProposalFromLlm = ({
+  uiId,
   player,
   eventType,
   setNumber
 }: {
+  uiId: string;
   player: PlayerRow;
   eventType: StatEventType;
   setNumber: number;
 }): ParsedStatProposal => ({
-  uiId: "llm-recovered",
+  uiId,
   playerId: player.id,
   playerDisplayName: `${player.first_name} ${player.last_name}`,
   jerseyNumber: player.jersey_number,
@@ -103,6 +113,22 @@ const getReviewItemProposals = (item: ReviewItem) => {
 const getReviewItemSkippedClauses = (item: ReviewItem): ParsedSkippedClause[] =>
   item.result.kind === "proposal_batch" ? item.result.skippedClauses : [];
 
+const getBatchClauseAssist = (item: ReviewItem, clauseId: string): ReviewItemLlmAssist =>
+  item.batchClauseAssist[clauseId] ?? { status: "idle" };
+
+const getReviewItemLoadingClauseCount = (item: ReviewItem) => {
+  if (item.result.kind === "proposal_batch") {
+    return item.result.clauses.filter((clause) => getBatchClauseAssist(item, clause.clauseId).status === "loading").length;
+  }
+
+  return item.llmAssist.status === "loading" ? 1 : 0;
+};
+
+const canConfirmReviewItem = (item: ReviewItem) =>
+  item.result.kind !== "clarification" &&
+  getReviewItemProposals(item).length > 0 &&
+  getReviewItemLoadingClauseCount(item) === 0;
+
 const buildProposalClientEventId = (item: ReviewItem, proposal: ParsedStatProposal) =>
   `${item.clientCaptureId}:${proposal.uiId}`;
 
@@ -112,7 +138,9 @@ const buildReviewHeading = (item: ReviewItem) => {
   }
 
   if (item.result.kind === "proposal_batch") {
-    return `${item.result.proposals.length} rally proposals ready for review`;
+    return item.result.proposals.length > 0
+      ? `${item.result.proposals.length} rally proposals ready for review`
+      : "Rally recap needs clarification";
   }
 
   return "Needs clarification";
@@ -125,6 +153,16 @@ const buildReviewStatusMessage = (item: ReviewItem) => {
 
   if (item.result.kind === "proposal_batch") {
     const skippedCount = item.result.skippedClauses.length;
+    const loadingCount = getReviewItemLoadingClauseCount(item);
+
+    if (loadingCount > 0) {
+      return `Parsed ${item.result.proposals.length} ordered rally proposal${item.result.proposals.length === 1 ? "" : "s"} so far. Checking ${loadingCount} unresolved clause${loadingCount === 1 ? "" : "s"} with AI before the batch is ready to confirm.`;
+    }
+
+    if (item.result.proposals.length === 0) {
+      return "This rally recap did not produce any supported proposals yet. Review the skipped clauses or discard the batch.";
+    }
+
     return skippedCount > 0
       ? `Parsed ${item.result.proposals.length} ordered rally proposals and skipped ${skippedCount} unsupported or unclear clause${skippedCount === 1 ? "" : "s"}. Confirm the supported rows to save them.`
       : `Parsed ${item.result.proposals.length} ordered rally proposals from one capture. Confirm all to save them in sequence.`;
@@ -132,6 +170,34 @@ const buildReviewStatusMessage = (item: ReviewItem) => {
 
   return item.result.clarification.message;
 };
+
+const buildBatchClauseAssistState = (
+  result: Extract<ParseMatchResult, { kind: "proposal_batch" }>
+) =>
+  Object.fromEntries(
+    result.clauses.flatMap((clause) => {
+      if (!clause.skipped) {
+        return [];
+      }
+
+      const eligibility = getLlmParseEligibility({
+        reason: clause.skipped.reason,
+        transcript: clause.text
+      });
+
+      return [
+        [
+          clause.clauseId,
+          eligibility.allowed
+            ? ({ status: "loading" } satisfies ReviewItemLlmAssist)
+            : ({
+                status: eligibility.status,
+                message: eligibility.message
+              } satisfies ReviewItemLlmAssist)
+        ]
+      ];
+    })
+  ) satisfies Record<string, ReviewItemLlmAssist>;
 
 export const GameDashboardPage = () => {
   const { gameId } = useParams();
@@ -171,14 +237,16 @@ export const GameDashboardPage = () => {
 
   const runLlmAssist = async ({
     reviewItemId,
+    clauseId,
     transcript,
     currentSet,
     clarificationReason
   }: {
     reviewItemId: string;
+    clauseId?: string;
     transcript: string;
     currentSet: number;
-    clarificationReason: "missing_event_type" | "missing_player" | "ambiguous_player";
+    clarificationReason: LlmParseReason;
   }) => {
     if (!game) {
       return;
@@ -189,6 +257,7 @@ export const GameDashboardPage = () => {
     appLog("info", "capture.parse.llm.started", {
       gameId: game.id,
       reviewItemId,
+      clauseId: clauseId ?? null,
       clarificationReason,
       transcriptLength: transcript.length
     });
@@ -206,6 +275,7 @@ export const GameDashboardPage = () => {
       }
 
       const nextProposal = buildProposalFromLlm({
+        uiId: clauseId ?? "llm-recovered",
         player: matchedPlayer,
         eventType: llmResult.eventType,
         setNumber: currentSet
@@ -215,8 +285,45 @@ export const GameDashboardPage = () => {
 
       setReviewItems((current) =>
         current.map((candidate) => {
+          if (candidate.id !== reviewItemId) {
+            return candidate;
+          }
+
+          if (clauseId) {
+            if (
+              candidate.result.kind !== "proposal_batch" ||
+              getBatchClauseAssist(candidate, clauseId).status !== "loading"
+            ) {
+              return candidate;
+            }
+
+            applied = true;
+
+            const nextClauses = candidate.result.clauses.map((clause) =>
+              clause.clauseId === clauseId
+                ? {
+                    clauseId,
+                    text: clause.text,
+                    proposal: nextProposal,
+                    skipped: null
+                  }
+                : clause
+            );
+
+            return {
+              ...candidate,
+              result: buildProposalBatchResult(nextClauses),
+              batchClauseAssist: {
+                ...candidate.batchClauseAssist,
+                [clauseId]: {
+                  status: "idle",
+                  message: "AI assist recovered this clause."
+                }
+              }
+            };
+          }
+
           if (
-            candidate.id !== reviewItemId ||
             candidate.result.kind !== "clarification" ||
             candidate.llmAssist.status !== "loading"
           ) {
@@ -242,6 +349,7 @@ export const GameDashboardPage = () => {
       appLog("info", "capture.parse.llm.completed", {
         gameId: game.id,
         reviewItemId,
+        clauseId: clauseId ?? null,
         latencyMs: Math.round(performance.now() - startedAt),
         applied,
         eventType: nextProposal.eventType,
@@ -251,7 +359,9 @@ export const GameDashboardPage = () => {
       if (applied) {
         setWorkflowStatus({
           tone: "success",
-          message: `AI assist suggested ${nextProposal.eventLabel} for #${nextProposal.jerseyNumber} ${nextProposal.playerDisplayName}. Confirm it to save, or reject it to discard it.`
+          message: clauseId
+            ? `AI assist recovered one rally clause as ${nextProposal.eventLabel} for #${nextProposal.jerseyNumber} ${nextProposal.playerDisplayName}. Review the full batch before confirming it.`
+            : `AI assist suggested ${nextProposal.eventLabel} for #${nextProposal.jerseyNumber} ${nextProposal.playerDisplayName}. Confirm it to save, or reject it to discard it.`
         });
       }
     } catch (error) {
@@ -259,8 +369,31 @@ export const GameDashboardPage = () => {
 
       setReviewItems((current) =>
         current.map((candidate) => {
+          if (candidate.id !== reviewItemId) {
+            return candidate;
+          }
+
+          if (clauseId) {
+            if (
+              candidate.result.kind !== "proposal_batch" ||
+              getBatchClauseAssist(candidate, clauseId).status !== "loading"
+            ) {
+              return candidate;
+            }
+
+            return {
+              ...candidate,
+              batchClauseAssist: {
+                ...candidate.batchClauseAssist,
+                [clauseId]: {
+                  status: "error",
+                  message
+                }
+              }
+            };
+          }
+
           if (
-            candidate.id !== reviewItemId ||
             candidate.result.kind !== "clarification" ||
             candidate.llmAssist.status !== "loading"
           ) {
@@ -280,6 +413,7 @@ export const GameDashboardPage = () => {
       appLog("warn", "capture.parse.llm.failed", {
         gameId: game.id,
         reviewItemId,
+        clauseId: clauseId ?? null,
         latencyMs: Math.round(performance.now() - startedAt),
         error: message
       });
@@ -324,10 +458,12 @@ export const GameDashboardPage = () => {
       eventType: result.kind === "proposal" ? result.proposal.eventType : null,
       proposalCount:
         result.kind === "proposal" ? 1 : result.kind === "proposal_batch" ? result.proposals.length : 0,
-      skippedClauseCount: result.kind === "proposal_batch" ? result.skippedClauses.length : 0
+      skippedClauseCount: result.kind === "proposal_batch" ? result.skippedClauses.length : 0,
+      clauseCount: result.kind === "proposal_batch" ? result.clauses.length : null
     });
 
     const reviewItemId = crypto.randomUUID();
+    const clientCaptureId = crypto.randomUUID();
     const eligibility =
       result.kind === "clarification"
         ? getLlmParseEligibility({
@@ -335,6 +471,8 @@ export const GameDashboardPage = () => {
             transcript
           })
         : null;
+    const batchClauseAssist =
+      result.kind === "proposal_batch" ? buildBatchClauseAssistState(result) : {};
 
     if (result.kind === "clarification" && eligibility && !eligibility.allowed) {
       appLog("info", "capture.parse.llm.skipped", {
@@ -342,6 +480,27 @@ export const GameDashboardPage = () => {
         reviewItemId,
         reason: result.clarification.reason,
         skipMessage: eligibility.message
+      });
+    }
+
+    if (result.kind === "proposal_batch") {
+      result.clauses.forEach((clause) => {
+        if (!clause.skipped) {
+          return;
+        }
+
+        const assist = batchClauseAssist[clause.clauseId];
+        if (!assist || assist.status === "loading") {
+          return;
+        }
+
+        appLog("info", "capture.parse.llm.skipped", {
+          gameId: game.id,
+          reviewItemId,
+          clauseId: clause.clauseId,
+          reason: clause.skipped.reason,
+          skipMessage: assist.message ?? null
+        });
       });
     }
 
@@ -359,14 +518,15 @@ export const GameDashboardPage = () => {
       [
         {
           id: reviewItemId,
-          clientCaptureId: crypto.randomUUID(),
+          clientCaptureId,
           transcript,
           createdAt: new Date().toISOString(),
           setNumber: game.current_set,
           captureDurationMs: durationMs,
           source,
           result,
-          llmAssist
+          llmAssist,
+          batchClauseAssist
         },
         ...current
       ].slice(0, 8)
@@ -396,7 +556,8 @@ export const GameDashboardPage = () => {
               captureDurationMs: durationMs,
               source,
               result,
-              llmAssist
+              llmAssist,
+              batchClauseAssist
             })
           }
     );
@@ -407,6 +568,55 @@ export const GameDashboardPage = () => {
         transcript: eligibility.normalizedTranscript,
         currentSet: game.current_set,
         clarificationReason: result.clarification.reason
+      });
+    }
+
+    if (result.kind === "proposal_batch") {
+      const eligibleClauses = result.clauses.flatMap((clause) => {
+        if (!clause.skipped) {
+          return [];
+        }
+
+        const assist = batchClauseAssist[clause.clauseId];
+        if (!assist || assist.status !== "loading") {
+          return [];
+        }
+
+        const clauseEligibility = getLlmParseEligibility({
+          reason: clause.skipped.reason,
+          transcript: clause.text
+        });
+
+        if (!clauseEligibility.allowed) {
+          return [];
+        }
+
+        return [
+          {
+            clauseId: clause.clauseId,
+            transcript: clauseEligibility.normalizedTranscript,
+            reason: clause.skipped.reason
+          }
+        ];
+      });
+
+      appLog("info", "capture.parse.batch.ready", {
+        gameId: game.id,
+        reviewItemId,
+        clauseCount: result.clauses.length,
+        deterministicProposalCount: result.proposals.length,
+        aiEligibleClauseCount: eligibleClauses.length,
+        skippedClauseCount: result.skippedClauses.length
+      });
+
+      eligibleClauses.forEach((clause) => {
+        void runLlmAssist({
+          reviewItemId,
+          clauseId: clause.clauseId,
+          transcript: clause.transcript,
+          currentSet: game.current_set,
+          clarificationReason: clause.reason
+        });
       });
     }
   };
@@ -724,6 +934,22 @@ export const GameDashboardPage = () => {
 
     const proposals = getReviewItemProposals(item);
 
+    if (proposals.length === 0) {
+      setWorkflowStatus({
+        tone: "warn",
+        message: "This review item does not have any supported proposals ready to confirm yet."
+      });
+      return;
+    }
+
+    if (getReviewItemLoadingClauseCount(item) > 0) {
+      setWorkflowStatus({
+        tone: "info",
+        message: "Wait for the in-flight AI clause recovery to finish before confirming this review item."
+      });
+      return;
+    }
+
     try {
       setActiveReviewId(itemId);
       appLog("info", "capture.review.confirm.started", {
@@ -732,22 +958,36 @@ export const GameDashboardPage = () => {
         proposalCount: proposals.length
       });
 
-      for (const [proposalIndex, proposal] of proposals.entries()) {
+      if (item.result.kind === "proposal_batch") {
+        await confirmStatEventBatch(requireSupabase(), {
+          target_game_id: game.id,
+          target_set_number: item.setNumber,
+          capture_created_at: item.createdAt,
+          target_client_capture_id: item.clientCaptureId,
+          proposals: proposals.map((proposal) => ({
+            ui_id: proposal.uiId,
+            player_id: proposal.playerId,
+            event_type: proposal.eventType
+          }))
+        });
+      } else {
         await confirmStatEvent(requireSupabase(), {
           game_id: game.id,
-          player_id: proposal.playerId,
-          event_type: proposal.eventType,
+          player_id: proposals[0].playerId,
+          event_type: proposals[0].eventType,
           set_number: item.setNumber,
-          timestamp: new Date(new Date(item.createdAt).getTime() + proposalIndex).toISOString(),
-          client_event_id: buildProposalClientEventId(item, proposal)
+          timestamp: item.createdAt,
+          client_event_id: buildProposalClientEventId(item, proposals[0])
         });
       }
+
       await loadBundle(gameId);
       setReviewItems((current) => current.filter((candidate) => candidate.id !== itemId));
       appLog("info", "capture.review.confirm.completed", {
         gameId: game.id,
         reviewItemId: item.id,
-        proposalCount: proposals.length
+        proposalCount: proposals.length,
+        mode: item.result.kind
       });
       setWorkflowStatus({
         tone: "success",
@@ -761,6 +1001,7 @@ export const GameDashboardPage = () => {
         gameId: game.id,
         reviewItemId: item.id,
         proposalCount: proposals.length,
+        mode: item.result.kind,
         error: getErrorMessage(error)
       });
       setWorkflowStatus({
@@ -1159,7 +1400,7 @@ export const GameDashboardPage = () => {
                         <button
                           className="button"
                           type="button"
-                          disabled={activeReviewId === item.id || isGameCompleted}
+                          disabled={activeReviewId === item.id || isGameCompleted || !canConfirmReviewItem(item)}
                           onClick={() => {
                             void handleConfirmReviewItem(item.id);
                           }}
@@ -1179,37 +1420,58 @@ export const GameDashboardPage = () => {
                   ) : item.result.kind === "proposal_batch" ? (
                     <div className="stack" style={{ gap: "0.75rem" }}>
                       <div className="supporting-text">
-                        One rally capture produced {item.result.proposals.length} ordered supported proposal
-                        {item.result.proposals.length === 1 ? "" : "s"}. Confirming writes them in order with
-                        stable per-row <span className="mono">client_event_id</span> values so retries stay safe.
+                        One rally capture stays grouped here. Supported rows can be confirmed together once any
+                        eligible AI clause recovery finishes, and each saved row keeps a stable{" "}
+                        <span className="mono">client_event_id</span> for idempotent retries.
                       </div>
 
                       <div className="batch-proposal-list">
-                        {item.result.proposals.map((proposal, index) => (
-                          <div className="batch-proposal-row" key={proposal.uiId}>
-                            <div className="batch-proposal-order">{index + 1}</div>
-                            <div className="stack" style={{ gap: "0.2rem" }}>
-                              <strong>
-                                {proposal.eventLabel} for #{proposal.jerseyNumber} {proposal.playerDisplayName}
-                              </strong>
-                              <div className="supporting-text">
-                                Matched by {proposal.matchedPlayerBy.join(", ")}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                        {item.result.clauses.map((clause, index) => {
+                          const clauseAssist = getBatchClauseAssist(item, clause.clauseId);
 
-                      {getReviewItemSkippedClauses(item).length ? (
-                        <div className="batch-skipped-list">
-                          {getReviewItemSkippedClauses(item).map((clause) => (
+                          if (clause.proposal) {
+                            return (
+                              <div className="batch-proposal-row" key={clause.clauseId}>
+                                <div className="batch-proposal-order">{index + 1}</div>
+                                <div className="stack" style={{ gap: "0.2rem" }}>
+                                  <strong>
+                                    {clause.proposal.eventLabel} for #{clause.proposal.jerseyNumber}{" "}
+                                    {clause.proposal.playerDisplayName}
+                                  </strong>
+                                  <div className="supporting-text">
+                                    Matched by {clause.proposal.matchedPlayerBy.join(", ")}
+                                  </div>
+                                  <div className="supporting-text">Clause: “{clause.text}”</div>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (!clause.skipped) {
+                            return null;
+                          }
+
+                          return (
                             <div className="list-item" key={clause.clauseId}>
                               <strong>Skipped clause: “{clause.text}”</strong>
-                              <div className="supporting-text">{clause.message}</div>
-                              {clause.candidates?.length ? (
+                              <div className="supporting-text">{clause.skipped.message}</div>
+                              {clauseAssist.status === "loading" ? (
+                                <div className="supporting-text">
+                                  Checking this unresolved clause with AI before the batch can be confirmed.
+                                </div>
+                              ) : null}
+                              {clauseAssist.status === "error" && clauseAssist.message ? (
+                                <div className="supporting-text">
+                                  AI assist could not recover this clause: {clauseAssist.message}
+                                </div>
+                              ) : null}
+                              {clauseAssist.status === "skipped" && clauseAssist.message ? (
+                                <div className="supporting-text">{clauseAssist.message}</div>
+                              ) : null}
+                              {clause.skipped.candidates?.length ? (
                                 <div className="supporting-text">
                                   Possible matches:{" "}
-                                  {clause.candidates
+                                  {clause.skipped.candidates
                                     .map(
                                       (candidate) =>
                                         `#${candidate.jerseyNumber} ${candidate.playerDisplayName}`
@@ -1218,20 +1480,37 @@ export const GameDashboardPage = () => {
                                 </div>
                               ) : null}
                             </div>
-                          ))}
-                        </div>
+                          );
+                        })}
+                      </div>
+
+                      {getReviewItemLoadingClauseCount(item) > 0 ? (
+                        <StatusMessage
+                          tone="info"
+                          message={`Waiting on ${getReviewItemLoadingClauseCount(item)} AI clause recovery ${getReviewItemLoadingClauseCount(item) === 1 ? "attempt" : "attempts"} before this batch is ready to confirm.`}
+                        />
+                      ) : null}
+                      {item.result.proposals.length === 0 && getReviewItemLoadingClauseCount(item) === 0 ? (
+                        <StatusMessage
+                          tone="warn"
+                          message="No supported proposals are ready in this batch, so there is nothing to confirm yet."
+                        />
                       ) : null}
 
                       <div className="form-actions">
                         <button
                           className="button"
                           type="button"
-                          disabled={activeReviewId === item.id || isGameCompleted}
+                          disabled={activeReviewId === item.id || isGameCompleted || !canConfirmReviewItem(item)}
                           onClick={() => {
                             void handleConfirmReviewItem(item.id);
                           }}
                         >
-                          {activeReviewId === item.id ? "Confirming..." : "Confirm all supported events"}
+                          {activeReviewId === item.id
+                            ? "Confirming..."
+                            : getReviewItemLoadingClauseCount(item) > 0
+                              ? "Waiting on AI..."
+                              : "Confirm all supported events"}
                         </button>
                         <button
                           className="button-ghost"
