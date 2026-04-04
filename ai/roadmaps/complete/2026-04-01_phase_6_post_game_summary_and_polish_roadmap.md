@@ -11,7 +11,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Current Status
 
 - Planning status: Ready for implementation planning.
-- Implementation status: Not started.
+- Implementation status: Completed.
 - Scope status: Focused on post-game summary behavior and targeted MVP-path polish.
 
 ## Document Status
@@ -23,19 +23,19 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] Implement **aggregate → narrative** pipeline (template + optional LLM via Edge).
-- [ ] Persist and display **`game_summaries`** for completed games.
-- [ ] Implement **prior-match comparison** vs **most recent other completed game** for the team when one exists (`mvp.md` + `aiDocs/evidence/mvp_implementation_decisions.md`).
-- [ ] Smooth **end-of-match** UX (complete game → summary screen).
-- [ ] Targeted **polish**: errors, loading, mobile layout for capture + board + **visual stats report**.
-- [ ] Re-read scope: no exports, no season trends, no shareable links unless stretch time permits.
+- [x] Implement **aggregate → narrative** pipeline (template + optional LLM via Edge).
+- [x] Persist and display **`game_summaries`** for completed games.
+- [x] Implement **prior-match comparison** vs **most recent other completed game** for the team when one exists (`mvp.md` + `aiDocs/evidence/mvp_implementation_decisions.md`).
+- [x] Smooth **end-of-match** UX (complete game → summary screen).
+- [x] Targeted **polish**: errors, loading, mobile layout for capture + board + **visual stats report**.
+- [x] Re-read scope: no exports, no season trends, no shareable links unless stretch time permits.
 
 ## Readiness Checks
 
-- [ ] The summary work remains grounded in MVP data and scope.
-- [ ] Polish decisions improve reliability and clarity rather than adding surface area.
-- [ ] No roadmap work expands into V1 exports, trends, or nonessential packaging.
-- [ ] The resulting experience supports a complete MVP demo path.
+- [x] The summary work remains grounded in MVP data and scope.
+- [x] Polish decisions improve reliability and clarity rather than adding surface area.
+- [x] No roadmap work expands into V1 exports, trends, or nonessential packaging.
+- [x] The resulting experience supports a complete MVP demo path.
 
 ## Completion Signal
 

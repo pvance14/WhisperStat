@@ -6,6 +6,7 @@ import { LoadingState } from "@/components/LoadingState";
 import { AuthPage } from "@/features/auth/AuthPage";
 import { SetupPage } from "@/features/auth/SetupPage";
 import { GameDashboardPage } from "@/features/dashboard/GameDashboardPage";
+import { PostGameSummaryPage } from "@/features/dashboard/PostGameSummaryPage";
 import { StatsReportPage } from "@/features/dashboard/StatsReportPage";
 import { GameSetupPage } from "@/features/games/GameSetupPage";
 import { RosterPage } from "@/features/roster/RosterPage";
@@ -79,6 +80,10 @@ export const router = createBrowserRouter([
       {
         path: "report/:gameId",
         element: <StatsReportPage />
+      },
+      {
+        path: "summary/:gameId",
+        element: <PostGameSummaryPage />
       }
     ]
   }

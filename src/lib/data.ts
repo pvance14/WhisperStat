@@ -14,6 +14,22 @@ type GameUpdate = Database["public"]["Tables"]["games"]["Update"];
 type StatEventRow = Database["public"]["Tables"]["stat_events"]["Row"];
 type StatEventInsert = Database["public"]["Tables"]["stat_events"]["Insert"];
 type StatEventUpdate = Database["public"]["Tables"]["stat_events"]["Update"];
+type GameSummaryRow = Database["public"]["Tables"]["game_summaries"]["Row"];
+type GameSummaryInsert = Database["public"]["Tables"]["game_summaries"]["Insert"];
+
+const compareGamesDescending = (left: GameRow, right: GameRow) => {
+  const gameDateDifference =
+    new Date(right.game_date).getTime() - new Date(left.game_date).getTime();
+
+  if (gameDateDifference !== 0) {
+    return gameDateDifference;
+  }
+
+  return new Date(right.created_at).getTime() - new Date(left.created_at).getTime();
+};
+
+const isEarlierCompletedGame = (candidate: GameRow, current: GameRow) =>
+  compareGamesDescending(candidate, current) > 0;
 
 export const listTeams = async (client: TypedSupabaseClient) =>
   logAsync("teams.list", async () => {
@@ -195,6 +211,96 @@ export const getGameBundle = async (client: TypedSupabaseClient, gameId: string)
       game: game satisfies GameRow,
       players: players satisfies PlayerRow[],
       events: events satisfies StatEventRow[]
+    };
+  }, { gameId });
+
+export const getGameSummary = async (client: TypedSupabaseClient, gameId: string) =>
+  logAsync("gameSummaries.get", async () => {
+    const { data, error } = await client
+      .from("game_summaries")
+      .select("*")
+      .eq("game_id", gameId)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? null) satisfies GameSummaryRow | null;
+  }, { gameId });
+
+export const upsertGameSummary = async (
+  client: TypedSupabaseClient,
+  payload: GameSummaryInsert
+) =>
+  logAsync("gameSummaries.upsert", async () => {
+    const { data, error } = await client
+      .from("game_summaries")
+      .upsert(payload, { onConflict: "game_id" })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data satisfies GameSummaryRow;
+  }, { gameId: payload.game_id });
+
+export const getMostRecentPriorCompletedGame = async (
+  client: TypedSupabaseClient,
+  game: GameRow
+) =>
+  logAsync("games.getMostRecentPriorCompletedGame", async () => {
+    const { data, error } = await client
+      .from("games")
+      .select("*")
+      .eq("team_id", game.team_id)
+      .eq("status", "completed")
+      .neq("id", game.id)
+      .order("game_date", { ascending: false })
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    const priorGame = (data satisfies GameRow[]).find((candidate) => isEarlierCompletedGame(candidate, game));
+    return priorGame ?? null;
+  }, { gameId: game.id, teamId: game.team_id });
+
+export const getPostGameSummaryBundle = async (client: TypedSupabaseClient, gameId: string) =>
+  logAsync("gameSummaries.bundle", async () => {
+    const currentBundle = await getGameBundle(client, gameId);
+    const [summary, priorGame] = await Promise.all([
+      getGameSummary(client, gameId),
+      getMostRecentPriorCompletedGame(client, currentBundle.game)
+    ]);
+
+    if (!priorGame) {
+      return {
+        ...currentBundle,
+        summary,
+        priorGame: null,
+        priorEvents: [] as StatEventRow[]
+      };
+    }
+
+    const { data: priorEvents, error: priorEventsError } = await client
+      .from("stat_events")
+      .select("*")
+      .eq("game_id", priorGame.id)
+      .order("timestamp", { ascending: false });
+
+    if (priorEventsError) {
+      throw priorEventsError;
+    }
+
+    return {
+      ...currentBundle,
+      summary,
+      priorGame,
+      priorEvents: priorEvents satisfies StatEventRow[]
     };
   }, { gameId });
 

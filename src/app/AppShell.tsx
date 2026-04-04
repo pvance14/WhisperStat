@@ -103,11 +103,11 @@ export const AppShell = ({ children }: PropsWithChildren) => {
         <aside className="sidebar">
           <div className="brand">
             <div className="brand-mark">WS</div>
-            <div className="brand-copy">
-              <h1>WhisperStat</h1>
-              <p>Phase 2 foundation for roster, game setup, and live workflow scaffolding.</p>
-            </div>
+          <div className="brand-copy">
+            <h1>WhisperStat</h1>
+            <p>Phase 6 MVP loop for roster setup, live capture, reports, and post-game review.</p>
           </div>
+        </div>
 
           <div className="sidebar-panel stack">
             <div>

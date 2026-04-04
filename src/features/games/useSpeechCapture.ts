@@ -11,6 +11,15 @@ const getSpeechRecognitionConstructor = () =>
     ? null
     : window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
 
+const isLikelyMobileSafari = () => {
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+
+  const userAgent = navigator.userAgent;
+  return /iPhone|iPad|iPod/.test(userAgent) && /Safari/.test(userAgent) && !/CriOS|FxiOS/.test(userAgent);
+};
+
 export const useSpeechCapture = (onCapture: (result: CaptureResult) => void) => {
   const onCaptureRef = useRef(onCapture);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -43,7 +52,11 @@ export const useSpeechCapture = (onCapture: (result: CaptureResult) => void) => 
     const SpeechRecognitionConstructor = getSpeechRecognitionConstructor();
 
     if (!SpeechRecognitionConstructor) {
-      setError("This browser does not expose Web Speech capture. Use the manual transcript fallback below.");
+      setError(
+        isLikelyMobileSafari()
+          ? "This browser is not exposing Web Speech capture right now. On iPhone or iPad, confirm Safari microphone permission first, then try again. The manual transcript fallback below is still safe."
+          : "This browser does not expose Web Speech capture. Use the manual transcript fallback below."
+      );
       return;
     }
 
@@ -97,8 +110,14 @@ export const useSpeechCapture = (onCapture: (result: CaptureResult) => void) => 
 
       setError(
         event.error === "not-allowed"
-          ? "Microphone access was denied. Allow microphone permission or use the manual transcript fallback."
-          : `Speech capture failed: ${event.error}.`
+          ? "Microphone access was denied. Allow microphone permission in the browser, then retry, or use the manual transcript fallback."
+          : event.error === "no-speech"
+            ? "No speech was detected before capture stopped. Try again or use the manual transcript fallback if the gym is too noisy."
+            : event.error === "audio-capture"
+              ? "No working microphone was detected. Check the device mic or switch to the manual transcript fallback."
+              : event.error === "network"
+                ? "Speech capture hit a network problem. If the connection is shaky, use the manual transcript fallback so the confirm flow still works."
+                : `Speech capture failed: ${event.error}.`
       );
     };
 

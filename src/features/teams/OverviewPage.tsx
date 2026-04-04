@@ -209,6 +209,11 @@ export const OverviewPage = () => {
                       <Link className="button-ghost" to={`/app/report/${game.id}`}>
                         Open report
                       </Link>
+                      {game.status === "completed" ? (
+                        <Link className="button-ghost" to={`/app/summary/${game.id}`}>
+                          Open summary
+                        </Link>
+                      ) : null}
                     </div>
                   </div>
                 ))

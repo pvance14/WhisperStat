@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useSpeechCapture } from "@/features/games/useSpeechCapture";
 import { StatusMessage } from "@/components/StatusMessage";
@@ -62,6 +62,7 @@ const buildEventSummary = (event: StatEventRow, players: PlayerRow[]) => {
 
 export const GameDashboardPage = () => {
   const { gameId } = useParams();
+  const navigate = useNavigate();
   const [game, setGame] = useState<GameRow | null>(null);
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [events, setEvents] = useState<StatEventRow[]>([]);
@@ -410,9 +411,13 @@ export const GameDashboardPage = () => {
         tone: "success",
         message:
           nextStatus === "completed"
-            ? "Game marked completed. Phase 6 post-game flow can now treat this match as ready."
+            ? "Game marked completed. Sending you to the post-game summary."
             : "Game moved back to in progress so you can keep capturing or correcting events."
       });
+
+      if (nextStatus === "completed") {
+        navigate(`/app/summary/${updatedGame.id}`);
+      }
     } catch (error) {
       setWorkflowStatus({
         tone: "error",
@@ -532,7 +537,7 @@ export const GameDashboardPage = () => {
           <div className="eyebrow">Live game dashboard</div>
           <div className="hero-title-row">
             <div className="stack-compact">
-              <span className="chip">Phase 5 live stats and game management</span>
+              <span className="chip">Phase 6 live capture and post-game loop</span>
               <h2>
                 vs {game.opponent_name} · Set {game.current_set}
               </h2>
@@ -558,7 +563,7 @@ export const GameDashboardPage = () => {
               {formatDateTime(game.game_date)}
             </div>
           </div>
-          <div className="cluster">
+          <div className="cluster hero-actions">
             <button
               className="button-secondary"
               type="button"
@@ -582,6 +587,11 @@ export const GameDashboardPage = () => {
             <Link className="button-ghost" to={`/app/report/${game.id}`}>
               Open report view
             </Link>
+            {game.status === "completed" ? (
+              <Link className="button-ghost" to={`/app/summary/${game.id}`}>
+                Open summary
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>
@@ -672,7 +682,7 @@ export const GameDashboardPage = () => {
               <div className="supporting-text">
                 {isSpeechCaptureSupported
                   ? "Web Speech is available in this browser."
-                  : "Web Speech is unavailable in this browser, so manual transcript parsing is the fallback."}
+                  : "Web Speech is unavailable in this browser, so manual transcript parsing is the fallback. This is expected on some phones and privacy-restricted browsers."}
               </div>
 
               {liveTranscript ? (
@@ -1077,16 +1087,21 @@ export const GameDashboardPage = () => {
 
             <div className="form-actions">
               {game.status === "completed" ? (
-                <button
-                  className="button-secondary"
-                  type="button"
-                  disabled={isUpdatingGameStatus}
-                  onClick={() => {
-                    void handleGameStatusChange("in_progress");
-                  }}
-                >
-                  {isUpdatingGameStatus ? "Saving..." : "Reopen game"}
-                </button>
+                <>
+                  <Link className="button" to={`/app/summary/${game.id}`}>
+                    Open post-game summary
+                  </Link>
+                  <button
+                    className="button-secondary"
+                    type="button"
+                    disabled={isUpdatingGameStatus}
+                    onClick={() => {
+                      void handleGameStatusChange("in_progress");
+                    }}
+                  >
+                    {isUpdatingGameStatus ? "Saving..." : "Reopen game"}
+                  </button>
+                </>
               ) : (
                 <button
                   className="button"
@@ -1316,24 +1331,34 @@ export const GameDashboardPage = () => {
               </tr>
             </thead>
             <tbody>
-              {statRows.map((row) => (
-                <tr key={row.playerId}>
-                  <td>
-                    <strong>
-                      #{row.jerseyNumber} {row.playerName}
-                    </strong>
-                  </td>
-                  <td>{row.currentSetTotals.kill}</td>
-                  <td>{row.currentSetTotals.ace}</td>
-                  <td>{row.currentSetTotals.block}</td>
-                  <td>{row.currentSetTotals.dig}</td>
-                  <td>
-                    {row.currentSetTotals.serve_error +
-                      row.currentSetTotals.reception_error +
-                      row.currentSetTotals.attack_error}
+              {activeEvents.length === 0 ? (
+                <tr>
+                  <td colSpan={6}>
+                    <div className="table-empty-state">
+                      No confirmed events yet. Confirm a review item to populate the live set table.
+                    </div>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                statRows.map((row) => (
+                  <tr key={row.playerId}>
+                    <td>
+                      <strong>
+                        #{row.jerseyNumber} {row.playerName}
+                      </strong>
+                    </td>
+                    <td>{row.currentSetTotals.kill}</td>
+                    <td>{row.currentSetTotals.ace}</td>
+                    <td>{row.currentSetTotals.block}</td>
+                    <td>{row.currentSetTotals.dig}</td>
+                    <td>
+                      {row.currentSetTotals.serve_error +
+                        row.currentSetTotals.reception_error +
+                        row.currentSetTotals.attack_error}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </section>

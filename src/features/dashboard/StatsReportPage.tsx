@@ -152,7 +152,7 @@ export const StatsReportPage = () => {
           <div className="eyebrow">Match report</div>
           <div className="hero-title-row">
             <div className="stack-compact">
-              <span className="chip">Phase 5 in-app visual stats report</span>
+              <span className="chip">Phase 6 in-app visual stats report</span>
               <h2>Current match report: vs {game.opponent_name}</h2>
               <p>
                 This report should answer the big questions fast: what set or match view you are in,
@@ -175,9 +175,16 @@ export const StatsReportPage = () => {
               {formatDateTime(game.game_date)}
             </div>
           </div>
-          <Link className="button-ghost" to={`/app/games/${game.id}`}>
-            Back to dashboard
-          </Link>
+          <div className="cluster hero-actions">
+            <Link className="button-ghost" to={`/app/games/${game.id}`}>
+              Back to dashboard
+            </Link>
+            {game.status === "completed" ? (
+              <Link className="button-secondary" to={`/app/summary/${game.id}`}>
+                Open summary
+              </Link>
+            ) : null}
+          </div>
         </div>
       </section>
 
@@ -354,29 +361,40 @@ export const StatsReportPage = () => {
               </tr>
             </thead>
             <tbody>
-              {statRows.map((row) => (
-                <tr key={row.playerId}>
-                  <td>
-                    <strong>
-                      #{row.jerseyNumber} {row.playerName}
-                    </strong>
-                  </td>
-                  <td>{row.currentSetTotals.kill}</td>
-                  <td>{row.currentSetTotals.ace}</td>
-                  <td>{row.currentSetTotals.dig}</td>
-                  <td>
-                    {row.currentSetTotals.serve_error +
-                      row.currentSetTotals.reception_error +
-                      row.currentSetTotals.attack_error}
-                  </td>
-                  <td>{row.totals.kill}</td>
-                  <td>{row.totals.ace}</td>
-                  <td>{row.totals.dig}</td>
-                  <td>
-                    {row.totals.serve_error + row.totals.reception_error + row.totals.attack_error}
+              {activeEvents.length === 0 ? (
+                <tr>
+                  <td colSpan={9}>
+                    <div className="table-empty-state">
+                      The report will populate after the first confirmed event. Until then, saved set
+                      scores still show match context.
+                    </div>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                statRows.map((row) => (
+                  <tr key={row.playerId}>
+                    <td>
+                      <strong>
+                        #{row.jerseyNumber} {row.playerName}
+                      </strong>
+                    </td>
+                    <td>{row.currentSetTotals.kill}</td>
+                    <td>{row.currentSetTotals.ace}</td>
+                    <td>{row.currentSetTotals.dig}</td>
+                    <td>
+                      {row.currentSetTotals.serve_error +
+                        row.currentSetTotals.reception_error +
+                        row.currentSetTotals.attack_error}
+                    </td>
+                    <td>{row.totals.kill}</td>
+                    <td>{row.totals.ace}</td>
+                    <td>{row.totals.dig}</td>
+                    <td>
+                      {row.totals.serve_error + row.totals.reception_error + row.totals.attack_error}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </section>
