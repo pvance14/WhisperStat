@@ -23,6 +23,7 @@ import {
   parseLastEventCorrection,
   parseMatchTranscript,
   type ParseMatchResult,
+  type ParsedSkippedClause,
   type ParsedStatProposal
 } from "@/lib/matchParser";
 import { getLlmParseEligibility, parseStatLlm } from "@/lib/parseStatLlm";
@@ -36,7 +37,7 @@ type StatEventRow = Database["public"]["Tables"]["stat_events"]["Row"];
 
 interface ReviewItem {
   id: string;
-  clientEventId: string;
+  clientCaptureId: string;
   transcript: string;
   createdAt: string;
   setNumber: number;
@@ -77,6 +78,7 @@ const buildProposalFromLlm = ({
   eventType: StatEventType;
   setNumber: number;
 }): ParsedStatProposal => ({
+  uiId: "llm-recovered",
   playerId: player.id,
   playerDisplayName: `${player.first_name} ${player.last_name}`,
   jerseyNumber: player.jersey_number,
@@ -85,6 +87,51 @@ const buildProposalFromLlm = ({
   setNumber,
   matchedPlayerBy: ["llm"]
 });
+
+const getReviewItemProposals = (item: ReviewItem) => {
+  if (item.result.kind === "proposal") {
+    return [item.result.proposal];
+  }
+
+  if (item.result.kind === "proposal_batch") {
+    return item.result.proposals;
+  }
+
+  return [];
+};
+
+const getReviewItemSkippedClauses = (item: ReviewItem): ParsedSkippedClause[] =>
+  item.result.kind === "proposal_batch" ? item.result.skippedClauses : [];
+
+const buildProposalClientEventId = (item: ReviewItem, proposal: ParsedStatProposal) =>
+  `${item.clientCaptureId}:${proposal.uiId}`;
+
+const buildReviewHeading = (item: ReviewItem) => {
+  if (item.result.kind === "proposal") {
+    return `${item.result.proposal.eventLabel} for #${item.result.proposal.jerseyNumber} ${item.result.proposal.playerDisplayName}`;
+  }
+
+  if (item.result.kind === "proposal_batch") {
+    return `${item.result.proposals.length} rally proposals ready for review`;
+  }
+
+  return "Needs clarification";
+};
+
+const buildReviewStatusMessage = (item: ReviewItem) => {
+  if (item.result.kind === "proposal") {
+    return `Parsed ${item.result.proposal.eventLabel} for #${item.result.proposal.jerseyNumber} ${item.result.proposal.playerDisplayName}. Confirm it to save, or reject it to keep the log clean.`;
+  }
+
+  if (item.result.kind === "proposal_batch") {
+    const skippedCount = item.result.skippedClauses.length;
+    return skippedCount > 0
+      ? `Parsed ${item.result.proposals.length} ordered rally proposals and skipped ${skippedCount} unsupported or unclear clause${skippedCount === 1 ? "" : "s"}. Confirm the supported rows to save them.`
+      : `Parsed ${item.result.proposals.length} ordered rally proposals from one capture. Confirm all to save them in sequence.`;
+  }
+
+  return item.result.clarification.message;
+};
 
 export const GameDashboardPage = () => {
   const { gameId } = useParams();
@@ -274,7 +321,10 @@ export const GameDashboardPage = () => {
       captureDurationMs: durationMs,
       parseDurationMs: Math.round(performance.now() - parseStartedAt),
       outcome: result.kind,
-      eventType: result.kind === "proposal" ? result.proposal.eventType : null
+      eventType: result.kind === "proposal" ? result.proposal.eventType : null,
+      proposalCount:
+        result.kind === "proposal" ? 1 : result.kind === "proposal_batch" ? result.proposals.length : 0,
+      skippedClauseCount: result.kind === "proposal_batch" ? result.skippedClauses.length : 0
     });
 
     const reviewItemId = crypto.randomUUID();
@@ -309,7 +359,7 @@ export const GameDashboardPage = () => {
       [
         {
           id: reviewItemId,
-          clientEventId: crypto.randomUUID(),
+          clientCaptureId: crypto.randomUUID(),
           transcript,
           createdAt: new Date().toISOString(),
           setNumber: game.current_set,
@@ -324,12 +374,8 @@ export const GameDashboardPage = () => {
 
     setManualTranscript("");
     setWorkflowStatus(
-      result.kind === "proposal"
+      result.kind === "clarification"
         ? {
-            tone: "success",
-            message: `Parsed ${result.proposal.eventLabel} for #${result.proposal.jerseyNumber} ${result.proposal.playerDisplayName}. Confirm it to save, or reject it to keep the log clean.`
-          }
-        : {
             tone: eligibility?.allowed
               ? "info"
               : result.clarification.reason === "missing_event_type"
@@ -338,6 +384,20 @@ export const GameDashboardPage = () => {
             message: eligibility?.allowed
               ? `${result.clarification.message} Checking with AI now.`
               : result.clarification.message
+          }
+        : {
+            tone: "success",
+            message: buildReviewStatusMessage({
+              id: reviewItemId,
+              clientCaptureId: "",
+              transcript,
+              createdAt: "",
+              setNumber: game.current_set,
+              captureDurationMs: durationMs,
+              source,
+              result,
+              llmAssist
+            })
           }
     );
 
@@ -658,27 +718,51 @@ export const GameDashboardPage = () => {
 
     const item = reviewItems.find((candidate) => candidate.id === itemId);
 
-    if (!item || item.result.kind !== "proposal") {
+    if (!item || item.result.kind === "clarification") {
       return;
     }
 
+    const proposals = getReviewItemProposals(item);
+
     try {
       setActiveReviewId(itemId);
-      await confirmStatEvent(requireSupabase(), {
-        game_id: game.id,
-        player_id: item.result.proposal.playerId,
-        event_type: item.result.proposal.eventType,
-        set_number: item.setNumber,
-        timestamp: item.createdAt,
-        client_event_id: item.clientEventId
+      appLog("info", "capture.review.confirm.started", {
+        gameId: game.id,
+        reviewItemId: item.id,
+        proposalCount: proposals.length
       });
+
+      for (const [proposalIndex, proposal] of proposals.entries()) {
+        await confirmStatEvent(requireSupabase(), {
+          game_id: game.id,
+          player_id: proposal.playerId,
+          event_type: proposal.eventType,
+          set_number: item.setNumber,
+          timestamp: new Date(new Date(item.createdAt).getTime() + proposalIndex).toISOString(),
+          client_event_id: buildProposalClientEventId(item, proposal)
+        });
+      }
       await loadBundle(gameId);
       setReviewItems((current) => current.filter((candidate) => candidate.id !== itemId));
+      appLog("info", "capture.review.confirm.completed", {
+        gameId: game.id,
+        reviewItemId: item.id,
+        proposalCount: proposals.length
+      });
       setWorkflowStatus({
         tone: "success",
-        message: `Confirmed ${item.result.proposal.eventLabel} for #${item.result.proposal.jerseyNumber} ${item.result.proposal.playerDisplayName}. The live stats now reflect it.`
+        message:
+          proposals.length === 1
+            ? `Confirmed ${proposals[0].eventLabel} for #${proposals[0].jerseyNumber} ${proposals[0].playerDisplayName}. The live stats now reflect it.`
+            : `Confirmed ${proposals.length} rally proposals in order. The live stats now reflect the full supported batch.`
       });
     } catch (error) {
+      appLog("warn", "capture.review.confirm.failed", {
+        gameId: game.id,
+        reviewItemId: item.id,
+        proposalCount: proposals.length,
+        error: getErrorMessage(error)
+      });
       setWorkflowStatus({
         tone: "error",
         message: getErrorMessage(error)
@@ -1039,17 +1123,13 @@ export const GameDashboardPage = () => {
               reviewItems.map((item) => (
                 <article
                   className={`review-card decision-card ${
-                    item.result.kind === "proposal" ? "proposal" : "clarification"
+                    item.result.kind === "clarification" ? "clarification" : "proposal"
                   }`}
                   key={item.id}
                 >
                   <div className="cluster review-header">
                     <div className="decision-summary">
-                      <strong className="decision-title">
-                        {item.result.kind === "proposal"
-                          ? `${item.result.proposal.eventLabel} for #${item.result.proposal.jerseyNumber} ${item.result.proposal.playerDisplayName}`
-                          : "Needs clarification"}
-                      </strong>
+                      <strong className="decision-title">{buildReviewHeading(item)}</strong>
                       <div className="supporting-text">
                         {formatSourceLabel(item.source)} · {formatDateTime(item.createdAt)} · Set {item.setNumber}
                       </div>
@@ -1096,6 +1176,73 @@ export const GameDashboardPage = () => {
                         </button>
                       </div>
                     </>
+                  ) : item.result.kind === "proposal_batch" ? (
+                    <div className="stack" style={{ gap: "0.75rem" }}>
+                      <div className="supporting-text">
+                        One rally capture produced {item.result.proposals.length} ordered supported proposal
+                        {item.result.proposals.length === 1 ? "" : "s"}. Confirming writes them in order with
+                        stable per-row <span className="mono">client_event_id</span> values so retries stay safe.
+                      </div>
+
+                      <div className="batch-proposal-list">
+                        {item.result.proposals.map((proposal, index) => (
+                          <div className="batch-proposal-row" key={proposal.uiId}>
+                            <div className="batch-proposal-order">{index + 1}</div>
+                            <div className="stack" style={{ gap: "0.2rem" }}>
+                              <strong>
+                                {proposal.eventLabel} for #{proposal.jerseyNumber} {proposal.playerDisplayName}
+                              </strong>
+                              <div className="supporting-text">
+                                Matched by {proposal.matchedPlayerBy.join(", ")}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {getReviewItemSkippedClauses(item).length ? (
+                        <div className="batch-skipped-list">
+                          {getReviewItemSkippedClauses(item).map((clause) => (
+                            <div className="list-item" key={clause.clauseId}>
+                              <strong>Skipped clause: “{clause.text}”</strong>
+                              <div className="supporting-text">{clause.message}</div>
+                              {clause.candidates?.length ? (
+                                <div className="supporting-text">
+                                  Possible matches:{" "}
+                                  {clause.candidates
+                                    .map(
+                                      (candidate) =>
+                                        `#${candidate.jerseyNumber} ${candidate.playerDisplayName}`
+                                    )
+                                    .join(", ")}
+                                </div>
+                              ) : null}
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+
+                      <div className="form-actions">
+                        <button
+                          className="button"
+                          type="button"
+                          disabled={activeReviewId === item.id || isGameCompleted}
+                          onClick={() => {
+                            void handleConfirmReviewItem(item.id);
+                          }}
+                        >
+                          {activeReviewId === item.id ? "Confirming..." : "Confirm all supported events"}
+                        </button>
+                        <button
+                          className="button-ghost"
+                          type="button"
+                          disabled={isGameCompleted}
+                          onClick={() => handleRejectReviewItem(item.id)}
+                        >
+                          Discard batch
+                        </button>
+                      </div>
+                    </div>
                   ) : (
                     <div className="stack" style={{ gap: "0.6rem" }}>
                       <StatusMessage tone="warn" message={item.result.clarification.message} />

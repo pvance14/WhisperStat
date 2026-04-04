@@ -600,6 +600,36 @@ button {
   gap: 0.75rem;
 }
 
+.batch-proposal-list,
+.batch-skipped-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.batch-proposal-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 0.85rem 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(18, 115, 255, 0.12);
+  background: rgba(18, 115, 255, 0.05);
+}
+
+.batch-proposal-order {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--blue-primary), var(--blue-bright));
+  color: var(--text-on-dark);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .section-header {
   justify-content: space-between;
   align-items: flex-end;

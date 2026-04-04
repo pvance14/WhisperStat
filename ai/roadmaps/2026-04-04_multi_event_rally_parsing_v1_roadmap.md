@@ -17,7 +17,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Current Status
 
 - Planning status: Ready for implementation planning.
-- Implementation status: Not started.
+- Implementation status: Core v1 parser, grouped review UX, and confirm flow implemented; manual live verification still pending.
 - Scope status: Narrow v1 focused on short, linear rally summaries and existing supported stat types.
 
 ## Document Status
@@ -28,18 +28,18 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] **Parser shape**: introduce a batch-capable parse result that can represent multiple ordered proposals from one transcript while preserving the current single-event path.
-- [ ] **Deterministic segmentation**: split short rally narration into candidate clauses and parse each clause against the roster and supported stat vocabulary.
-- [ ] **Batch review UX**: update the review queue so one captured transcript can render a grouped, ordered set of proposals with fast confirm/discard actions.
-- [ ] **Schema discipline**: keep v1 limited to stat types already supported by [`StatEventType`](../../src/lib/database.types.ts); unsupported rally actions remain context only.
+- [x] **Parser shape**: introduce a batch-capable parse result that can represent multiple ordered proposals from one transcript while preserving the current single-event path.
+- [x] **Deterministic segmentation**: split short rally narration into candidate clauses and parse each clause against the roster and supported stat vocabulary.
+- [x] **Batch review UX**: update the review queue so one captured transcript can render a grouped, ordered set of proposals with fast confirm/discard actions.
+- [x] **Schema discipline**: keep v1 limited to stat types already supported by [`StatEventType`](../../src/lib/database.types.ts); unsupported rally actions remain context only.
 - [ ] **Observability and verification**: log batch parse outcomes and manually verify short-rally examples, partial failures, and confirm behavior.
 
 ## Readiness Checks
 
-- [ ] The plan keeps the explicit human-confirm step before any write.
-- [ ] The plan does not require a schema expansion for positive passing/reception in v1.
-- [ ] The plan preserves backward compatibility for single-event captures so demo reliability does not regress.
-- [ ] The plan favors deterministic parsing first and leaves broader language understanding as a later extension.
+- [x] The plan keeps the explicit human-confirm step before any write.
+- [x] The plan does not require a schema expansion for positive passing/reception in v1.
+- [x] The plan preserves backward compatibility for single-event captures so demo reliability does not regress.
+- [x] The plan favors deterministic parsing first and leaves broader language understanding as a later extension.
 
 ## Completion Signal
 

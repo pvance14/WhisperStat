@@ -27,8 +27,9 @@ The repo now includes the full foundation slice for the MVP:
 For local Supabase Edge work, set secrets with the CLI before serving functions:
 
 - `npx supabase secrets set ANTHROPIC_API_KEY=<your-key>`
-- `npx supabase secrets set ANTHROPIC_MODEL=claude-3-5-haiku-20241022`
+- `npx supabase secrets set ANTHROPIC_MODEL=claude-sonnet-4-0`
 - `npx supabase functions serve parse-stat-llm`
+- `npx supabase functions deploy parse-stat-llm --no-verify-jwt`
 
 ## Optional Dev Admin Shortcut
 
@@ -53,6 +54,7 @@ The narrow LLM assist is intentionally behind the existing deterministic parser:
 - The browser only sends the signed-in user JWT; `ANTHROPIC_API_KEY` stays in Supabase Edge secrets.
 - Successful AI output is still just a normal review proposal, so nothing reaches `stat_events` until the coach presses Confirm.
 - `ambiguous_player` stays deterministic-only in v1 to avoid a fuzzy AI pick when the roster match is already contested.
+- This Anthropic account validated successfully with `claude-sonnet-4-0`. The cheaper `claude-3-5-haiku-latest` and `claude-3-5-sonnet-latest` aliases returned `not_found_error` during hosted testing, so use a cheaper model only if your account actually exposes it.
 
 ## Supabase Wiring
 

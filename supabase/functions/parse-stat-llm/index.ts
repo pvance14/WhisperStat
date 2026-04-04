@@ -45,6 +45,29 @@ const extractJsonObject = (content: string) => {
   return JSON.parse(content.slice(start, end + 1)) as Record<string, unknown>;
 };
 
+const parseAnthropicError = async (response: Response) => {
+  const fallback = `Anthropic request failed with status ${response.status}.`;
+
+  try {
+    const payload = (await response.json()) as {
+      error?: {
+        type?: string;
+        message?: string;
+      };
+    };
+
+    if (!payload.error?.message) {
+      return fallback;
+    }
+
+    return payload.error.type
+      ? `Anthropic ${payload.error.type}: ${payload.error.message}`
+      : `Anthropic request failed: ${payload.error.message}`;
+  } catch {
+    return fallback;
+  }
+};
+
 const buildPrompt = ({
   transcript,
   currentSet,
@@ -99,7 +122,7 @@ Deno.serve(async (request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
   const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY");
-  const anthropicModel = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-3-5-haiku-latest";
+  const anthropicModel = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-4-0";
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return json({ error: "Supabase function environment is not configured." }, 500);
@@ -210,7 +233,8 @@ Deno.serve(async (request) => {
     });
 
     if (!anthropicResponse.ok) {
-      return json({ error: "Anthropic request failed." }, 502);
+      const anthropicError = await parseAnthropicError(anthropicResponse);
+      return json({ error: anthropicError }, 502);
     }
 
     const anthropicJson = (await anthropicResponse.json()) as {

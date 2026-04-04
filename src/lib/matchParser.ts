@@ -10,6 +10,7 @@ interface PlayerCandidate {
 }
 
 export interface ParsedStatProposal {
+  uiId: string;
   playerId: string;
   playerDisplayName: string;
   jerseyNumber: number;
@@ -17,6 +18,19 @@ export interface ParsedStatProposal {
   eventLabel: string;
   setNumber: number;
   matchedPlayerBy: string[];
+}
+
+export interface ParsedSkippedClause {
+  clauseId: string;
+  text: string;
+  reason: "unsupported_event" | "missing_player" | "ambiguous_player";
+  message: string;
+  candidates?: Array<{
+    playerId: string;
+    playerDisplayName: string;
+    jerseyNumber: number;
+    matchedBy: string[];
+  }>;
 }
 
 export interface ParseClarification {
@@ -34,6 +48,11 @@ export type ParseMatchResult =
   | {
       kind: "proposal";
       proposal: ParsedStatProposal;
+    }
+  | {
+      kind: "proposal_batch";
+      proposals: ParsedStatProposal[];
+      skippedClauses: ParsedSkippedClause[];
     }
   | {
       kind: "clarification";
@@ -75,6 +94,16 @@ const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\
 const includesPhrase = (text: string, phrase: string) => {
   const pattern = new RegExp(`(^|\\s)${escapeRegExp(phrase).replace(/\s+/g, "\\s+")}(?=\\s|$)`);
   return pattern.test(text);
+};
+
+const findAliasIndex = (text: string, alias: string) => {
+  const pattern = new RegExp(`(^|\\s)${escapeRegExp(alias).replace(/\s+/g, "\\s+")}(?=\\s|$)`);
+  const match = pattern.exec(text);
+  if (!match || match.index === undefined) {
+    return -1;
+  }
+
+  return match.index + match[1].length;
 };
 
 export const resolveEventType = (transcript: string) => {
@@ -122,7 +151,7 @@ const addCandidate = (
   });
 };
 
-const resolvePlayer = (players: PlayerRow[], transcript: string) => {
+const buildCandidateMatches = (players: PlayerRow[], transcript: string) => {
   const normalizedTranscript = normalizeSearchText(transcript);
   const candidates = new Map<string, PlayerCandidate>();
   const jerseyMatches = normalizedTranscript.match(/(?:^|\s)#?(\d+)(?=\s|$)/g) ?? [];
@@ -159,7 +188,18 @@ const resolvePlayer = (players: PlayerRow[], transcript: string) => {
     });
   });
 
-  const rankedCandidates = [...candidates.values()].sort((left, right) => right.score - left.score);
+  return [...candidates.values()].sort((left, right) => right.score - left.score);
+};
+
+const toCandidateSummary = (candidate: PlayerCandidate) => ({
+  playerId: candidate.player.id,
+  playerDisplayName: `${candidate.player.first_name} ${candidate.player.last_name}`,
+  jerseyNumber: candidate.player.jersey_number,
+  matchedBy: candidate.matchedBy
+});
+
+const resolvePlayer = (players: PlayerRow[], transcript: string) => {
+  const rankedCandidates = buildCandidateMatches(players, transcript);
 
   if (rankedCandidates.length === 0) {
     return {
@@ -180,12 +220,7 @@ const resolvePlayer = (players: PlayerRow[], transcript: string) => {
       clarification: {
         reason: "ambiguous_player" as const,
         message: "I matched more than one player. Try a jersey number or a more specific name.",
-        candidates: rankedCandidates.slice(0, 3).map((candidate) => ({
-          playerId: candidate.player.id,
-          playerDisplayName: `${candidate.player.first_name} ${candidate.player.last_name}`,
-          jerseyNumber: candidate.player.jersey_number,
-          matchedBy: candidate.matchedBy
-        }))
+        candidates: rankedCandidates.slice(0, 3).map(toCandidateSummary)
       }
     };
   }
@@ -194,6 +229,168 @@ const resolvePlayer = (players: PlayerRow[], transcript: string) => {
     kind: "proposal" as const,
     player: rankedCandidates[0].player,
     matchedBy: rankedCandidates[0].matchedBy
+  };
+};
+
+const buildPlayerFragments = ({
+  clause,
+  eventAlias,
+  eventType
+}: {
+  clause: string;
+  eventAlias: string;
+  eventType: StatEventType;
+}) => {
+  const normalizedClause = normalizeSearchText(clause);
+  const aliasIndex = findAliasIndex(normalizedClause, eventAlias);
+  const fragments: string[] = [];
+
+  const addFragment = (value: string) => {
+    const normalizedValue = normalizeSearchText(value);
+    if (normalizedValue && !fragments.includes(normalizedValue)) {
+      fragments.push(normalizedValue);
+    }
+  };
+
+  const byIndex = normalizedClause.lastIndexOf(" by ");
+  if (byIndex >= 0) {
+    addFragment(normalizedClause.slice(byIndex + 4));
+  }
+
+  if (aliasIndex >= 0) {
+    addFragment(normalizedClause.slice(0, aliasIndex));
+    addFragment(normalizedClause.slice(aliasIndex + eventAlias.length));
+  }
+
+  if (eventType === "set" && aliasIndex >= 0) {
+    addFragment(normalizedClause.slice(0, aliasIndex));
+  }
+
+  addFragment(normalizedClause);
+  return fragments;
+};
+
+const resolvePlayerForClause = ({
+  players,
+  clause,
+  eventAlias,
+  eventType
+}: {
+  players: PlayerRow[];
+  clause: string;
+  eventAlias: string;
+  eventType: StatEventType;
+}) => {
+  const fragments = buildPlayerFragments({
+    clause,
+    eventAlias,
+    eventType
+  });
+
+  for (const fragment of fragments) {
+    const rankedCandidates = buildCandidateMatches(players, fragment);
+
+    if (rankedCandidates.length === 0) {
+      continue;
+    }
+
+    if (
+      rankedCandidates.length > 1 &&
+      rankedCandidates[0]?.score === rankedCandidates[1]?.score
+    ) {
+      return {
+        kind: "clarification" as const,
+        clarification: {
+          reason: "ambiguous_player" as const,
+          message: "I matched more than one player in this rally clause. Try a jersey number or a more specific name.",
+          candidates: rankedCandidates.slice(0, 3).map(toCandidateSummary)
+        }
+      };
+    }
+
+    return {
+      kind: "proposal" as const,
+      player: rankedCandidates[0].player,
+      matchedBy: rankedCandidates[0].matchedBy
+    };
+  }
+
+  return {
+    kind: "clarification" as const,
+    clarification: {
+      reason: "missing_player" as const,
+      message: "I found the stat type in this rally clause, but I couldn't match the player to this roster."
+    }
+  };
+};
+
+const clauseSplitPattern =
+  /\s*(?:[,;]+|(?:\b(?:and then|then|and)\b)|(?:[.!?]+))\s*/i;
+
+const splitTranscriptIntoClauses = (transcript: string) =>
+  transcript
+    .split(clauseSplitPattern)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+const parseClause = ({
+  clause,
+  clauseIndex,
+  players,
+  currentSet
+}: {
+  clause: string;
+  clauseIndex: number;
+  players: PlayerRow[];
+  currentSet: number;
+}) => {
+  const clauseId = `clause-${clauseIndex + 1}`;
+  const eventMatch = resolveEventType(clause);
+
+  if (!eventMatch) {
+    return {
+      kind: "skipped" as const,
+      skipped: {
+        clauseId,
+        text: clause,
+        reason: "unsupported_event" as const,
+        message: "This clause did not map to a supported persisted stat in v1."
+      }
+    };
+  }
+
+  const playerResolution = resolvePlayerForClause({
+    players,
+    clause,
+    eventAlias: eventMatch.alias,
+    eventType: eventMatch.eventType
+  });
+
+  if (playerResolution.kind === "clarification") {
+    return {
+      kind: "skipped" as const,
+      skipped: {
+        clauseId,
+        text: clause,
+        reason: playerResolution.clarification.reason,
+        message: playerResolution.clarification.message,
+        candidates: playerResolution.clarification.candidates
+      }
+    };
+  }
+
+  return {
+    kind: "proposal" as const,
+    proposal: {
+      uiId: clauseId,
+      playerId: playerResolution.player.id,
+      playerDisplayName: `${playerResolution.player.first_name} ${playerResolution.player.last_name}`,
+      jerseyNumber: playerResolution.player.jersey_number,
+      eventType: eventMatch.eventType,
+      eventLabel: titleCase(eventMatch.eventType),
+      setNumber: currentSet,
+      matchedPlayerBy: playerResolution.matchedBy
+    }
   };
 };
 
@@ -220,7 +417,10 @@ export const parseMatchTranscript = ({
 
   const eventMatch = resolveEventType(normalizedTranscript);
 
-  if (!eventMatch) {
+  const clauses = splitTranscriptIntoClauses(normalizedTranscript);
+  const shouldAttemptBatch = clauses.length > 1;
+
+  if (!shouldAttemptBatch && !eventMatch) {
     return {
       kind: "clarification",
       clarification: {
@@ -230,23 +430,65 @@ export const parseMatchTranscript = ({
     };
   }
 
-  const playerResolution = resolvePlayer(players, normalizedTranscript);
+  if (!shouldAttemptBatch) {
+    const playerResolution = resolvePlayer(players, normalizedTranscript);
 
-  if (playerResolution.kind === "clarification") {
-    return playerResolution;
+    if (playerResolution.kind === "clarification") {
+      return playerResolution;
+    }
+
+    return {
+      kind: "proposal",
+      proposal: {
+        uiId: "clause-1",
+        playerId: playerResolution.player.id,
+        playerDisplayName: `${playerResolution.player.first_name} ${playerResolution.player.last_name}`,
+        jerseyNumber: playerResolution.player.jersey_number,
+        eventType: eventMatch!.eventType,
+        eventLabel: titleCase(eventMatch!.eventType),
+        setNumber: currentSet,
+        matchedPlayerBy: playerResolution.matchedBy
+      }
+    };
+  }
+
+  const clauseResults = clauses.map((clause, clauseIndex) =>
+    parseClause({
+      clause,
+      clauseIndex,
+      players,
+      currentSet
+    })
+  );
+
+  const proposals = clauseResults.flatMap((result) =>
+    result.kind === "proposal" ? [result.proposal] : []
+  );
+  const skippedClauses = clauseResults.flatMap((result) =>
+    result.kind === "skipped" ? [result.skipped] : []
+  );
+
+  if (proposals.length === 0) {
+    return {
+      kind: "clarification",
+      clarification: {
+        reason: "missing_event_type",
+        message: "I couldn't map that rally recap to supported stat proposals yet."
+      }
+    };
+  }
+
+  if (proposals.length === 1 && skippedClauses.length === 0) {
+    return {
+      kind: "proposal",
+      proposal: proposals[0]
+    };
   }
 
   return {
-    kind: "proposal",
-    proposal: {
-      playerId: playerResolution.player.id,
-      playerDisplayName: `${playerResolution.player.first_name} ${playerResolution.player.last_name}`,
-      jerseyNumber: playerResolution.player.jersey_number,
-      eventType: eventMatch.eventType,
-      eventLabel: titleCase(eventMatch.eventType),
-      setNumber: currentSet,
-      matchedPlayerBy: playerResolution.matchedBy
-    }
+    kind: "proposal_batch",
+    proposals,
+    skippedClauses
   };
 };
 

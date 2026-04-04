@@ -15,6 +15,26 @@ export interface LlmParseResult {
   playerId: string;
 }
 
+const getFunctionErrorMessage = async (error: { message?: string; context?: unknown }) => {
+  const response = error.context instanceof Response ? error.context : null;
+
+  if (!response) {
+    return error.message || "AI assist could not parse this clarification.";
+  }
+
+  try {
+    const payload = (await response.clone().json()) as { error?: string; message?: string };
+    return payload.error || payload.message || error.message || "AI assist could not parse this clarification.";
+  } catch {
+    try {
+      const text = await response.clone().text();
+      return text || error.message || "AI assist could not parse this clarification.";
+    } catch {
+      return error.message || "AI assist could not parse this clarification.";
+    }
+  }
+};
+
 export const getLlmParseEligibility = ({
   reason,
   transcript
@@ -99,7 +119,7 @@ export const parseStatLlm = async ({
   });
 
   if (error) {
-    throw new Error(error.message || "AI assist could not parse this clarification.");
+    throw new Error(await getFunctionErrorMessage(error));
   }
 
   if (!data?.eventType || !data?.playerId) {
