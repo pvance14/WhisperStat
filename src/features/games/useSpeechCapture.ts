@@ -54,8 +54,8 @@ export const useSpeechCapture = (onCapture: (result: CaptureResult) => void) => 
     if (!SpeechRecognitionConstructor) {
       setError(
         isLikelyMobileSafari()
-          ? "This browser is not exposing Web Speech capture right now. On iPhone or iPad, confirm Safari microphone permission first, then try again. The manual transcript fallback below is still safe."
-          : "This browser does not expose Web Speech capture. Use the manual transcript fallback below."
+          ? "This browser isn’t using the mic for live dictation right now. On iPhone or iPad, allow the microphone in Safari, then try again. You can still type plays in the box below."
+          : "This browser doesn’t support live dictation. Type plays in the box below instead."
       );
       return;
     }

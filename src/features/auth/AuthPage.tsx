@@ -25,12 +25,12 @@ export const AuthPage = () => {
   return (
     <div className="auth-shell">
       <section className="auth-card card stack">
-        <span className="chip">Magic-link auth</span>
+        <span className="chip">Email sign-in</span>
         <div>
           <h2>Sign in to WhisperStat</h2>
           <p className="supporting-text">
-            Sign in with email; Supabase sends a magic link so coach sessions stay tied to secure,
-            RLS-backed data.
+            Enter your email and we will send a one-time link. Only your account can see your teams
+            and games.
           </p>
         </div>
 
@@ -79,10 +79,10 @@ export const AuthPage = () => {
         {isDevAdminShortcutAvailable ? (
           <div className="stack">
             <div>
-              <strong>Development shortcut</strong>
+              <strong>Local testing shortcut</strong>
               <p className="supporting-text" style={{ marginBottom: 0 }}>
-                This signs into a real Supabase test account using local-only env vars, so RLS and
-                session behavior still match the real app.
+                For developers only: sign in with the test account from your machine’s config file.
+                Behaves like a normal coach login.
               </p>
             </div>
             <div className="form-actions">
@@ -94,7 +94,7 @@ export const AuthPage = () => {
                   if (!appEnv.devAdminEmail || !appEnv.devAdminPassword) {
                     setStatus({
                       tone: "error",
-                      message: "Dev admin credentials are missing from local env vars."
+                      message: "Test account email or password is missing from your local config."
                     });
                     return;
                   }
@@ -112,7 +112,7 @@ export const AuthPage = () => {
                     .finally(() => setActiveAction(null));
                 }}
               >
-                {activeAction === "dev-admin" ? "Signing in..." : "Continue as dev admin"}
+                {activeAction === "dev-admin" ? "Signing in..." : "Continue as test coach"}
               </button>
             </div>
           </div>

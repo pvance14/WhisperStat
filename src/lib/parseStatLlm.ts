@@ -21,18 +21,18 @@ const getFunctionErrorMessage = async (error: { message?: string; context?: unkn
   const response = error.context instanceof Response ? error.context : null;
 
   if (!response) {
-    return error.message || "AI assist could not parse this clarification.";
+    return error.message || "Could not parse that suggestion automatically.";
   }
 
   try {
     const payload = (await response.clone().json()) as { error?: string; message?: string };
-    return payload.error || payload.message || error.message || "AI assist could not parse this clarification.";
+    return payload.error || payload.message || error.message || "Could not parse that suggestion automatically.";
   } catch {
     try {
       const text = await response.clone().text();
-      return text || error.message || "AI assist could not parse this clarification.";
+      return text || error.message || "Could not parse that suggestion automatically.";
     } catch {
-      return error.message || "AI assist could not parse this clarification.";
+      return error.message || "Could not parse that suggestion automatically.";
     }
   }
 };
@@ -48,7 +48,7 @@ export const getLlmParseEligibility = ({
     return {
       allowed: false as const,
       status: "skipped" as const,
-      message: "AI assist is off because VITE_LLM_PARSE_ENABLED is not enabled."
+      message: "Smart fill-in for unclear calls is turned off in this build."
     };
   }
 
@@ -56,7 +56,7 @@ export const getLlmParseEligibility = ({
     return {
       allowed: false as const,
       status: "skipped" as const,
-      message: "AI assist is only enabled for missing event type or missing player clarifications."
+      message: "Smart fill-in only runs when the stat type or player is unclear—not for other cases."
     };
   }
 
@@ -66,7 +66,7 @@ export const getLlmParseEligibility = ({
     return {
       allowed: false as const,
       status: "skipped" as const,
-      message: "AI assist was skipped because the transcript was empty."
+      message: "Smart fill-in was skipped because there was nothing typed in."
     };
   }
 
@@ -74,7 +74,7 @@ export const getLlmParseEligibility = ({
     return {
       allowed: false as const,
       status: "skipped" as const,
-      message: `AI assist was skipped because transcripts longer than ${maxTranscriptLength} characters are out of scope for this fallback.`
+      message: `Smart fill-in only accepts short notes (up to ${maxTranscriptLength} characters) for now.`
     };
   }
 
@@ -106,7 +106,7 @@ export const parseStatLlm = async ({
   const accessToken = session?.access_token;
 
   if (!accessToken) {
-    throw new Error("You need to be signed in before AI assist can check a clarification.");
+    throw new Error("Sign in first to use smart fill-in for unclear calls.");
   }
 
   const { data, error } = await supabase.functions.invoke<LlmParseResult>("parse-stat-llm", {
@@ -125,7 +125,7 @@ export const parseStatLlm = async ({
   }
 
   if (!data?.eventType || !data?.playerId) {
-    throw new Error("AI assist returned an incomplete proposal.");
+    throw new Error("Smart fill-in returned an incomplete play.");
   }
 
   return data;

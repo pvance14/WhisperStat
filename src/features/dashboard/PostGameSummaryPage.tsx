@@ -75,7 +75,7 @@ export const PostGameSummaryPage = () => {
         });
       } catch (error) {
         nextSummary = null;
-        persistenceWarning = `The summary could not be saved right now, so this page is showing a live preview instead. ${getErrorMessage(error)}`;
+        persistenceWarning = `The summary could not be saved right now—you are seeing an on-screen preview only. ${getErrorMessage(error)}`;
       }
     }
 
@@ -197,7 +197,7 @@ export const PostGameSummaryPage = () => {
               <span className="chip">Post-game summary</span>
               <h2>{headline}</h2>
               <p>
-                This view turns the saved event log and scoreboard into one clear coaching takeaway
+                This view turns saved plays and the scoreboard into one clear coaching takeaway
                 before you move on to the next match.
               </p>
             </div>
@@ -236,9 +236,9 @@ export const PostGameSummaryPage = () => {
 
       <div className="summary-strip">
         <div className="summary-tile featured">
-          <div className="summary-label">Confirmed events</div>
+          <div className="summary-label">Saved plays</div>
           <div className="summary-value">{events.length}</div>
-          <div className="summary-support">Only active, non-deleted events shape the narrative.</div>
+          <div className="summary-support">Undone plays are left out of the story.</div>
         </div>
         <div className="summary-tile">
           <div className="summary-label">Top kill leader</div>
@@ -269,8 +269,7 @@ export const PostGameSummaryPage = () => {
             <div className="section-copy">
               <h3>Saved narrative</h3>
               <p className="supporting-text">
-                The MVP ships a deterministic template first so this text stays explainable,
-                repeatable, and cheap to generate.
+                Built from the same rules every time so the write-up stays clear and easy to trust.
               </p>
             </div>
             {game.status === "completed" ? (
@@ -292,7 +291,7 @@ export const PostGameSummaryPage = () => {
                             }
                           : {
                               tone: "success",
-                              message: "Post-game summary regenerated from the latest saved events and scoreboard."
+                              message: "Post-game summary regenerated from the latest plays and scoreboard."
                             }
                       )
                     )
@@ -319,7 +318,7 @@ export const PostGameSummaryPage = () => {
             <article className="summary-narrative-card">
               <div className="summary-narrative-meta">
                 <span className="chip summary-chip">
-                  {summary?.model ?? regeneratedSummary?.model ?? "Template preview"}
+                  {summary?.model ?? regeneratedSummary?.model ?? "Draft summary"}
                 </span>
                 <span className="supporting-text">
                   Generated {summary ? formatDateTime(summary.generated_at) : "from current saved data"}
@@ -330,7 +329,7 @@ export const PostGameSummaryPage = () => {
           ) : (
             <StatusMessage
               tone="warn"
-              message="The summary text is not available yet. Try regenerating once the event log and scores are in place."
+              message="The summary text is not available yet. Try regenerating once plays and scores are saved."
             />
           )}
         </section>
@@ -340,8 +339,8 @@ export const PostGameSummaryPage = () => {
             <div className="section-copy">
               <h3>Comparison callout</h3>
               <p className="supporting-text">
-                The comparison rule is intentionally narrow: only the most recent other completed
-                game for this same team is used.
+                We only compare to the last other finished game for this team—keeps the callout easy
+                to read.
               </p>
             </div>
             <div className="summary-callout comparison">
@@ -360,7 +359,7 @@ export const PostGameSummaryPage = () => {
             {scoreBySet.length === 0 ? (
               <StatusMessage
                 tone="info"
-                message="No set scores were saved for this match, so the narrative falls back to event-only language."
+                message="No set scores were saved for this match, so the write-up describes plays only."
               />
             ) : (
               <div className="score-strip">

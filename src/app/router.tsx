@@ -16,7 +16,7 @@ const RootRedirect = () => {
   const { isConfigured, isLoading, session } = useAuth();
 
   if (isLoading) {
-    return <LoadingState label="Checking session" />;
+    return <LoadingState label="Checking sign-in" />;
   }
 
   if (!isConfigured) {
@@ -30,7 +30,7 @@ const ProtectedApp = () => {
   const { isConfigured, isLoading, session } = useAuth();
 
   if (isLoading) {
-    return <LoadingState label="Preparing app shell" />;
+    return <LoadingState label="Loading your workspace" />;
   }
 
   if (!isConfigured) {

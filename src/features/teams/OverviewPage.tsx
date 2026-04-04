@@ -44,11 +44,11 @@ export const OverviewPage = () => {
     <div className="grid">
       <section className="page-header page-panel">
         <div>
-          <span className="chip">Foundation status</span>
-          <h2>Product and technical baseline</h2>
+          <span className="chip">Overview</span>
+          <h2>Your teams and setup</h2>
           <p>
-            Home base for your program: authenticated coach sessions, team switching, roster setup,
-            game creation, and routes into the live workflow.
+            When you are signed in, manage teams, rosters, and games from here, with quick links into
+            live tracking and reports.
           </p>
         </div>
         <div className="cluster">
@@ -66,8 +66,7 @@ export const OverviewPage = () => {
           <div>
             <h3>Create a team</h3>
             <p className="supporting-text">
-              Multiple teams per coach are allowed by design so school, club, and demo data can
-              coexist.
+              You can run several teams under one account—handy for school, club, or separate squads.
             </p>
           </div>
 
@@ -192,7 +191,7 @@ export const OverviewPage = () => {
               {recentGames.length === 0 ? (
                 <div className="list-item">
                   <strong>No games yet</strong>
-                  <div className="supporting-text">Create the first match to seed the live workflow.</div>
+                  <div className="supporting-text">Create the first match to start tracking from the dashboard.</div>
                 </div>
               ) : (
                 recentGames.map((game) => (

@@ -9,36 +9,38 @@ export const SetupPage = () => {
   return (
     <div className="setup-shell">
       <section className="setup-card card stack">
-        <span className="chip">Environment setup</span>
+        <span className="chip">Connection setup</span>
         <div>
-          <h2>Supabase config is still missing</h2>
+          <h2>WhisperStat isn’t connected to your project yet</h2>
           <p className="supporting-text">
-            The app is ready, but auth and data need real Vite env values before sign-in and
-            Supabase CRUD can run.
+            The interface loads, but sign-in and saving games need your project URL and keys filled
+            in. A maintainer usually copies them from the hosting dashboard into a local{" "}
+            <span className="mono">.env</span> file.
           </p>
         </div>
 
         <StatusMessage
           tone="warn"
-          message={`Missing env keys: ${missingKeys.length > 0 ? missingKeys.join(", ") : "unknown"}`}
+          message={`Missing settings: ${missingKeys.length > 0 ? missingKeys.join(", ") : "unknown"}`}
         />
 
         <div className="stack" style={{ gap: "0.4rem" }}>
-          <strong>Next steps</strong>
+          <strong>Typical setup</strong>
           <div className="mono">cp .env.example .env</div>
-          <div className="mono">Set VITE_SUPABASE_REDIRECT_URL to your local or deployed origin</div>
-          <div className="mono">Allowlist that same URL in Supabase Auth settings</div>
+          <div className="mono">
+            Set VITE_SUPABASE_REDIRECT_URL to this app’s URL (local or deployed)
+          </div>
+          <div className="mono">Add that same URL under Auth → URL configuration in your project</div>
           <div className="mono">npm install</div>
           <div className="mono">npm run dev</div>
         </div>
 
         <p className="supporting-text">
-          Once those values are present, the app will enable magic-link auth and the RLS-backed
-          foundation routes.
+          After the keys are saved, reload and you can use email sign-in and the rest of the app.
         </p>
 
         <Link className="button-secondary" to="/auth">
-          Re-check auth route
+          Try sign-in again
         </Link>
       </section>
     </div>

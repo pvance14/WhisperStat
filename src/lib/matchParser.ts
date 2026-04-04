@@ -329,7 +329,7 @@ const resolvePlayerForClause = ({
         kind: "clarification" as const,
         clarification: {
           reason: "ambiguous_player" as const,
-          message: "I matched more than one player in this rally clause. Try a jersey number or a more specific name.",
+          message: "I matched more than one player in this part of the call. Try a jersey number or a more specific name.",
           candidates: rankedCandidates.slice(0, 3).map(toCandidateSummary)
         }
       };
@@ -346,7 +346,7 @@ const resolvePlayerForClause = ({
     kind: "clarification" as const,
     clarification: {
       reason: "missing_player" as const,
-      message: "I found the stat type in this rally clause, but I couldn't match the player to this roster."
+      message: "I found the stat type in this part of the call, but I couldn't match the player to this roster."
     }
   };
 };
@@ -417,7 +417,7 @@ const parseClause = ({
           clauseId,
           text: clause,
           reason: "unsupported_event" as const,
-          message: "This clause looks like rally context, but it does not map to a supported persisted stat in v1."
+          message: "That sounds like rally talk, but it isn’t a stat WhisperStat records yet."
         }
       };
     }
@@ -431,7 +431,7 @@ const parseClause = ({
           clauseId,
           text: clause,
           reason: "missing_event_type" as const,
-          message: "I matched the player in this rally clause, but I could not map the stat wording to the supported vocabulary yet."
+          message: "I matched the player in this part of the call, but not to a stat WhisperStat understands yet."
         }
       };
     }
@@ -443,7 +443,7 @@ const parseClause = ({
           clauseId,
           text: clause,
           reason: "ambiguous_player" as const,
-          message: "I matched more than one player in this rally clause. Try a jersey number or a more specific name.",
+          message: "I matched more than one player in this part of the call. Try a jersey number or a more specific name.",
           candidates: playerResolution.clarification.candidates
         }
       };
@@ -455,7 +455,7 @@ const parseClause = ({
         clauseId,
         text: clause,
         reason: "unsupported_event" as const,
-        message: "This clause did not map to a supported persisted stat in v1."
+        message: "That part of the call didn’t match a stat WhisperStat records yet."
       }
     };
   }
@@ -511,7 +511,7 @@ export const parseMatchTranscript = ({
       kind: "clarification",
       clarification: {
         reason: "missing_event_type",
-        message: "No transcript was provided to parse."
+        message: "Nothing was entered to interpret."
       }
     };
   }
@@ -526,7 +526,7 @@ export const parseMatchTranscript = ({
       kind: "clarification",
       clarification: {
         reason: "missing_event_type",
-        message: "I couldn't map that phrase to the MVP stat vocabulary yet."
+        message: "I couldn’t match that to a stat WhisperStat understands yet."
       }
     };
   }
@@ -605,7 +605,7 @@ export const parseLastEventCorrection = ({
       kind: "clarification",
       clarification: {
         reason: "missing_event_type",
-        message: "Say or enter the replacement stat for the last confirmed event."
+        message: "Say or type the replacement stat for the last saved play."
       }
     };
   }
@@ -629,7 +629,7 @@ export const parseLastEventCorrection = ({
       kind: "clarification",
       clarification: {
         reason: "missing_player",
-        message: "The original player for the last confirmed event is no longer available."
+        message: "The player on the last saved play is no longer on this roster."
       }
     };
   }

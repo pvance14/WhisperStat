@@ -66,7 +66,7 @@ interface EventEditDraft {
 }
 
 const formatSourceLabel = (source: ReviewItem["source"]) =>
-  source === "speech" ? "Voice capture" : "Manual transcript";
+  source === "speech" ? "Voice" : "Typed";
 
 const buildEventSummary = (event: StatEventRow, players: PlayerRow[]) => {
   const player = players.find((candidate) => candidate.id === event.player_id);
@@ -139,8 +139,8 @@ const buildReviewHeading = (item: ReviewItem) => {
 
   if (item.result.kind === "proposal_batch") {
     return item.result.proposals.length > 0
-      ? `${item.result.proposals.length} rally proposals ready for review`
-      : "Rally recap needs clarification";
+      ? `${item.result.proposals.length} plays ready to review`
+      : "That call needs clarification";
   }
 
   return "Needs clarification";
@@ -148,7 +148,7 @@ const buildReviewHeading = (item: ReviewItem) => {
 
 const buildReviewStatusMessage = (item: ReviewItem) => {
   if (item.result.kind === "proposal") {
-    return `Parsed ${item.result.proposal.eventLabel} for #${item.result.proposal.jerseyNumber} ${item.result.proposal.playerDisplayName}. Confirm it to save, or reject it to keep the log clean.`;
+    return `Interpreted ${item.result.proposal.eventLabel} for #${item.result.proposal.jerseyNumber} ${item.result.proposal.playerDisplayName}. Confirm to save it, or discard to skip.`;
   }
 
   if (item.result.kind === "proposal_batch") {
@@ -156,16 +156,16 @@ const buildReviewStatusMessage = (item: ReviewItem) => {
     const loadingCount = getReviewItemLoadingClauseCount(item);
 
     if (loadingCount > 0) {
-      return `Parsed ${item.result.proposals.length} ordered rally proposal${item.result.proposals.length === 1 ? "" : "s"} so far. Checking ${loadingCount} unresolved clause${loadingCount === 1 ? "" : "s"} with AI before the batch is ready to confirm.`;
+      return `Interpreted ${item.result.proposals.length} play${item.result.proposals.length === 1 ? "" : "s"} so far. Still checking ${loadingCount} unclear part${loadingCount === 1 ? "" : "s"} with smart fill-in before you can confirm the group.`;
     }
 
     if (item.result.proposals.length === 0) {
-      return "This rally recap did not produce any supported proposals yet. Review the skipped clauses or discard the batch.";
+      return "Nothing in that call could be saved yet. Review the skipped lines below or discard the whole group.";
     }
 
     return skippedCount > 0
-      ? `Parsed ${item.result.proposals.length} ordered rally proposals and skipped ${skippedCount} unsupported or unclear clause${skippedCount === 1 ? "" : "s"}. Confirm the supported rows to save them.`
-      : `Parsed ${item.result.proposals.length} ordered rally proposals from one capture. Confirm all to save them in sequence.`;
+      ? `Interpreted ${item.result.proposals.length} plays and skipped ${skippedCount} line${skippedCount === 1 ? "" : "s"} we could not use. Confirm the list below to save the good ones.`
+      : `Interpreted ${item.result.proposals.length} plays from one call. Confirm to save them in order.`;
   }
 
   return item.result.clarification.message;
@@ -271,7 +271,7 @@ export const GameDashboardPage = () => {
       const matchedPlayer = players.find((player) => player.id === llmResult.playerId);
 
       if (!matchedPlayer) {
-        throw new Error("AI assist returned a player who is not in the loaded roster.");
+        throw new Error("Smart fill-in named a player who is not on this roster.");
       }
 
       const nextProposal = buildProposalFromLlm({
@@ -317,7 +317,7 @@ export const GameDashboardPage = () => {
                 ...candidate.batchClauseAssist,
                 [clauseId]: {
                   status: "idle",
-                  message: "AI assist recovered this clause."
+                  message: "Smart fill-in filled in that line."
                 }
               }
             };
@@ -340,7 +340,7 @@ export const GameDashboardPage = () => {
             },
             llmAssist: {
               status: "idle",
-              message: "AI assist found a proposal. Review it before confirming."
+              message: "Smart fill-in suggested a play. Review it before confirming."
             }
           };
         })
@@ -360,8 +360,8 @@ export const GameDashboardPage = () => {
         setWorkflowStatus({
           tone: "success",
           message: clauseId
-            ? `AI assist recovered one rally clause as ${nextProposal.eventLabel} for #${nextProposal.jerseyNumber} ${nextProposal.playerDisplayName}. Review the full batch before confirming it.`
-            : `AI assist suggested ${nextProposal.eventLabel} for #${nextProposal.jerseyNumber} ${nextProposal.playerDisplayName}. Confirm it to save, or reject it to discard it.`
+            ? `Smart fill-in added ${nextProposal.eventLabel} for #${nextProposal.jerseyNumber} ${nextProposal.playerDisplayName} to the group. Review everything before you confirm.`
+            : `Smart fill-in suggested ${nextProposal.eventLabel} for #${nextProposal.jerseyNumber} ${nextProposal.playerDisplayName}. Confirm to save, or discard to skip.`
         });
       }
     } catch (error) {
@@ -436,7 +436,7 @@ export const GameDashboardPage = () => {
     if (game.status === "completed") {
       setWorkflowStatus({
         tone: "warn",
-        message: "This game is completed. Reopen it before capturing or parsing additional events."
+        message: "This game is completed. Reopen it before adding more plays."
       });
       return;
     }
@@ -653,7 +653,7 @@ export const GameDashboardPage = () => {
     if (!lastConfirmedEvent) {
       setWorkflowStatus({
         tone: "info",
-        message: "There is no confirmed event to correct yet."
+        message: "There is no saved play to correct yet."
       });
       return;
     }
@@ -690,7 +690,7 @@ export const GameDashboardPage = () => {
       setCorrectionTranscript("");
       setWorkflowStatus({
         tone: "success",
-        message: `Updated the last confirmed event to ${correctionResult.proposal.eventLabel} for #${correctionResult.proposal.jerseyNumber} ${correctionResult.proposal.playerDisplayName}.`
+        message: `Updated the last saved play to ${correctionResult.proposal.eventLabel} for #${correctionResult.proposal.jerseyNumber} ${correctionResult.proposal.playerDisplayName}.`
       });
     } catch (error) {
       setWorkflowStatus({
@@ -829,7 +829,7 @@ export const GameDashboardPage = () => {
       setGame(updatedGame);
       setWorkflowStatus({
         tone: "success",
-        message: `Current set updated to Set ${updatedGame.current_set}. New proposals and event-log filters will use that set.`
+        message: `Current set updated to Set ${updatedGame.current_set}. New plays and the event list filter will use that set.`
       });
     } catch (error) {
       setWorkflowStatus({
@@ -937,7 +937,7 @@ export const GameDashboardPage = () => {
     if (proposals.length === 0) {
       setWorkflowStatus({
         tone: "warn",
-        message: "This review item does not have any supported proposals ready to confirm yet."
+        message: "Nothing here is ready to save yet."
       });
       return;
     }
@@ -945,7 +945,7 @@ export const GameDashboardPage = () => {
     if (getReviewItemLoadingClauseCount(item) > 0) {
       setWorkflowStatus({
         tone: "info",
-        message: "Wait for the in-flight AI clause recovery to finish before confirming this review item."
+        message: "Wait for smart fill-in to finish on the unclear lines before you confirm this group."
       });
       return;
     }
@@ -994,7 +994,7 @@ export const GameDashboardPage = () => {
         message:
           proposals.length === 1
             ? `Confirmed ${proposals[0].eventLabel} for #${proposals[0].jerseyNumber} ${proposals[0].playerDisplayName}. The live stats now reflect it.`
-            : `Confirmed ${proposals.length} rally proposals in order. The live stats now reflect the full supported batch.`
+            : `Confirmed ${proposals.length} plays in order. Live stats now include the full group.`
       });
     } catch (error) {
       appLog("warn", "capture.review.confirm.failed", {
@@ -1025,7 +1025,7 @@ export const GameDashboardPage = () => {
     setReviewItems((current) => current.filter((candidate) => candidate.id !== itemId));
     setWorkflowStatus({
       tone: "info",
-      message: "Proposal discarded. Nothing was written to the database."
+      message: "Discarded. Nothing was saved."
     });
   };
 
@@ -1033,7 +1033,7 @@ export const GameDashboardPage = () => {
     if (game.status === "completed") {
       setWorkflowStatus({
         tone: "warn",
-        message: "This game is completed. Reopen it before undoing confirmed events."
+        message: "This game is completed. Reopen it before undoing saved plays."
       });
       return;
     }
@@ -1100,7 +1100,7 @@ export const GameDashboardPage = () => {
       setEventEditDraft(null);
       setWorkflowStatus({
         tone: "success",
-        message: "Event log change saved. Aggregates were recalculated from the updated event row."
+        message: "Play updated. Totals were recalculated."
       });
     } catch (error) {
       setWorkflowStatus({
@@ -1136,7 +1136,7 @@ export const GameDashboardPage = () => {
               <div className="meta-pill">
                 Score: <strong>{currentSetScore.us}-{currentSetScore.them}</strong>
               </div>
-              <div className="meta-pill">Sync: {lastLoadedAt ? "Live" : "Waiting"}</div>
+              <div className="meta-pill">Updates: {lastLoadedAt ? "Live" : "Waiting"}</div>
             </div>
           </div>
         </div>
@@ -1185,26 +1185,26 @@ export const GameDashboardPage = () => {
         <div className="summary-tile featured">
           <div className="summary-label">Current set</div>
           <div className="summary-value">{game.current_set}</div>
-          <div className="summary-support">New proposals and current-set filters use this value.</div>
+          <div className="summary-support">New plays and the current-set filter use this number.</div>
         </div>
         <div className="summary-tile">
           <div className="summary-label">Saved score</div>
           <div className="summary-value">
             {currentSetScore.us}-{currentSetScore.them}
           </div>
-          <div className="summary-support">Manual scoreboard source of truth for Set {game.current_set}.</div>
+          <div className="summary-support">The score you enter here is the official tally for Set {game.current_set}.</div>
         </div>
         <div className="summary-tile">
-          <div className="summary-label">Confirmed events</div>
+          <div className="summary-label">Saved plays</div>
           <div className="summary-value">{activeEvents.length}</div>
-          <div className="summary-support">Only active, confirmed rows count toward live totals.</div>
+          <div className="summary-support">Only confirmed plays count in live totals (undone plays are hidden).</div>
         </div>
         <div className="summary-tile">
           <div className="summary-label">Sets won</div>
           <div className="summary-value">
             {matchScore.us}-{matchScore.them}
           </div>
-          <div className="summary-support">Calculated from the saved set snapshots.</div>
+          <div className="summary-support">Based on the score you saved at the end of each set.</div>
         </div>
       </div>
 
@@ -1229,13 +1229,13 @@ export const GameDashboardPage = () => {
           {!canCapture ? (
             <StatusMessage
               tone="info"
-              message="Add players to the roster before capturing match events so player resolution has real context."
+              message="Add players to the roster before logging stats so we know who each call refers to."
             />
           ) : null}
           {isGameCompleted ? (
             <StatusMessage
               tone="info"
-              message="This match is locked because it is marked completed. Reopen the game to capture, confirm, undo, or edit anything."
+              message="This match is finished. Reopen the game if you need to add plays, confirm the queue, undo, or edit."
             />
           ) : null}
 
@@ -1244,7 +1244,7 @@ export const GameDashboardPage = () => {
               <div className="action-panel-header">
                 <h3>Voice capture</h3>
                 <p className="supporting-text">
-                  The fastest live path is still push-to-talk followed by an explicit confirm step.
+                  Hold the button, call the play, then confirm it so nothing saves by accident.
                 </p>
               </div>
 
@@ -1272,13 +1272,13 @@ export const GameDashboardPage = () => {
 
               <div className="supporting-text">
                 {isSpeechCaptureSupported
-                  ? "Web Speech is available in this browser."
-                  : "Web Speech is unavailable in this browser, so manual transcript parsing is the fallback. This is expected on some phones and privacy-restricted browsers."}
+                  ? "This browser can use the microphone for live dictation."
+                  : "This browser can’t use the microphone for live dictation, so type your call below. That’s normal on some phones or when mic access is blocked."}
               </div>
 
               {liveTranscript ? (
                 <div className="transcript-box">
-                  <div className="muted">Live transcript</div>
+                  <div className="muted">Live dictation</div>
                   <div className="mono">{liveTranscript}</div>
                 </div>
               ) : null}
@@ -1299,7 +1299,7 @@ export const GameDashboardPage = () => {
                 if (!manualTranscript.trim()) {
                   setWorkflowStatus({
                     tone: "warn",
-                    message: "Enter a transcript first so the review parser has something to work with."
+                    message: "Type or paste what you called before parsing."
                   });
                   return;
                 }
@@ -1312,15 +1312,15 @@ export const GameDashboardPage = () => {
               }}
             >
               <div className="action-panel-header">
-                <h3>Manual transcript fallback</h3>
+                <h3>Type your call</h3>
                 <p className="supporting-text">
-                  Use this when browser mic support is unreliable and you still want the same
-                  confirm flow.
+                  Use this when the mic is off or unreliable—you get the same review step before
+                  anything is saved.
                 </p>
               </div>
 
               <label className="stack" style={{ gap: "0.4rem" }}>
-                <span className="muted">Transcript to parse</span>
+                <span className="muted">What you said (or would say)</span>
                 <textarea
                   rows={5}
                   placeholder="Example: 12 kill"
@@ -1332,7 +1332,7 @@ export const GameDashboardPage = () => {
 
               <div className="form-actions">
                 <button className="button-secondary" type="submit" disabled={!canCapture || isGameCompleted}>
-                  Parse transcript
+                  Interpret text
                 </button>
                 <button
                   className="button-ghost"
@@ -1350,15 +1350,15 @@ export const GameDashboardPage = () => {
             <div className="section-copy">
               <h3>Review queue</h3>
               <p className="supporting-text">
-                Proposed events should read like decisions: who, what happened, and the confirm
-                action to commit it.
+                Each card should read clearly: who, what happened, and a button to save it to the
+                match.
               </p>
             </div>
 
             {reviewItems.length === 0 ? (
               <StatusMessage
                 tone="info"
-                message="No review items yet. Capture a voice event or parse a manual transcript to see the confirm/reject loop."
+                message="No review items yet. Use the mic or the text box to log a play, then confirm or discard it here."
               />
             ) : (
               reviewItems.map((item) => (
@@ -1386,15 +1386,15 @@ export const GameDashboardPage = () => {
                   </div>
 
                   <div className="transcript-box">
-                    <div className="muted">Review transcript</div>
+                    <div className="muted">Original wording</div>
                     <div className="mono">{item.transcript}</div>
                   </div>
 
                   {item.result.kind === "proposal" ? (
                     <>
                       <div className="supporting-text">
-                        Matched by {item.result.proposal.matchedPlayerBy.join(", ")}. Confirming uses the review
-                        card&apos;s stable <span className="mono">client_event_id</span> so retries stay idempotent.
+                        Matched by {item.result.proposal.matchedPlayerBy.join(", ")}. If your connection drops,
+                        confirming again won&apos;t create a duplicate play.
                       </div>
                       <div className="form-actions">
                         <button
@@ -1420,9 +1420,9 @@ export const GameDashboardPage = () => {
                   ) : item.result.kind === "proposal_batch" ? (
                     <div className="stack" style={{ gap: "0.75rem" }}>
                       <div className="supporting-text">
-                        One rally capture stays grouped here. Supported rows can be confirmed together once any
-                        eligible AI clause recovery finishes, and each saved row keeps a stable{" "}
-                        <span className="mono">client_event_id</span> for idempotent retries.
+                        One voice or typed call stays grouped here. When smart fill-in finishes on any unclear
+                        lines, you can confirm the whole list at once—each saved play is deduplicated if you tap
+                        confirm twice by mistake.
                       </div>
 
                       <div className="batch-proposal-list">
@@ -1441,7 +1441,7 @@ export const GameDashboardPage = () => {
                                   <div className="supporting-text">
                                     Matched by {clause.proposal.matchedPlayerBy.join(", ")}
                                   </div>
-                                  <div className="supporting-text">Clause: “{clause.text}”</div>
+                                  <div className="supporting-text">Heard: &ldquo;{clause.text}&rdquo;</div>
                                 </div>
                               </div>
                             );
@@ -1453,16 +1453,16 @@ export const GameDashboardPage = () => {
 
                           return (
                             <div className="list-item" key={clause.clauseId}>
-                              <strong>Skipped clause: “{clause.text}”</strong>
+                              <strong>Couldn&apos;t use: &ldquo;{clause.text}&rdquo;</strong>
                               <div className="supporting-text">{clause.skipped.message}</div>
                               {clauseAssist.status === "loading" ? (
                                 <div className="supporting-text">
-                                  Checking this unresolved clause with AI before the batch can be confirmed.
+                                  Checking this line with smart fill-in before you can confirm the group.
                                 </div>
                               ) : null}
                               {clauseAssist.status === "error" && clauseAssist.message ? (
                                 <div className="supporting-text">
-                                  AI assist could not recover this clause: {clauseAssist.message}
+                                  Smart fill-in couldn&apos;t finish this line: {clauseAssist.message}
                                 </div>
                               ) : null}
                               {clauseAssist.status === "skipped" && clauseAssist.message ? (
@@ -1487,13 +1487,13 @@ export const GameDashboardPage = () => {
                       {getReviewItemLoadingClauseCount(item) > 0 ? (
                         <StatusMessage
                           tone="info"
-                          message={`Waiting on ${getReviewItemLoadingClauseCount(item)} AI clause recovery ${getReviewItemLoadingClauseCount(item) === 1 ? "attempt" : "attempts"} before this batch is ready to confirm.`}
+                          message={`Waiting on ${getReviewItemLoadingClauseCount(item)} smart fill-in ${getReviewItemLoadingClauseCount(item) === 1 ? "check" : "checks"} before this group is ready to confirm.`}
                         />
                       ) : null}
                       {item.result.proposals.length === 0 && getReviewItemLoadingClauseCount(item) === 0 ? (
                         <StatusMessage
                           tone="warn"
-                          message="No supported proposals are ready in this batch, so there is nothing to confirm yet."
+                          message="No plays in this group are ready to save yet."
                         />
                       ) : null}
 
@@ -1509,8 +1509,8 @@ export const GameDashboardPage = () => {
                           {activeReviewId === item.id
                             ? "Confirming..."
                             : getReviewItemLoadingClauseCount(item) > 0
-                              ? "Waiting on AI..."
-                              : "Confirm all supported events"}
+                              ? "Waiting on smart fill-in..."
+                              : "Confirm all supported plays"}
                         </button>
                         <button
                           className="button-ghost"
@@ -1528,13 +1528,13 @@ export const GameDashboardPage = () => {
                       {item.llmAssist.status === "loading" ? (
                         <StatusMessage
                           tone="info"
-                          message="Checking with AI for a narrow fallback suggestion. Nothing will be saved unless you confirm the final proposal."
+                          message="Asking smart fill-in for a tighter match. Nothing saves until you confirm."
                         />
                       ) : null}
                       {item.llmAssist.status === "error" && item.llmAssist.message ? (
                         <StatusMessage
                           tone="info"
-                          message={`AI assist could not recover this clarification: ${item.llmAssist.message}`}
+                          message={`Smart fill-in could not help here: ${item.llmAssist.message}`}
                         />
                       ) : null}
                       {item.llmAssist.status === "skipped" && item.llmAssist.message ? (
@@ -1556,7 +1556,9 @@ export const GameDashboardPage = () => {
                   )}
 
                   {item.captureDurationMs !== null ? (
-                    <div className="supporting-text">Voice capture time: {item.captureDurationMs} ms</div>
+                    <div className="supporting-text">
+                      Voice note: about {Math.max(1, Math.round(item.captureDurationMs / 1000))} sec
+                    </div>
                   ) : null}
                 </article>
               ))
@@ -1570,12 +1572,12 @@ export const GameDashboardPage = () => {
               <div className="section-copy">
                 <h3>Match state</h3>
                 <p className="supporting-text">
-                  Manual scorekeeping and saved set snapshots stay visible here so the current match
-                  state is always close to the live workflow.
+                  Score, set number, and game status stay in one place so you always know where the
+                  match stands.
                 </p>
               </div>
               <div className="supporting-text">
-                {lastLoadedAt ? `Last sync ${formatDateTime(lastLoadedAt)}` : "Waiting for first sync..."}
+                {lastLoadedAt ? `Last updated ${formatDateTime(lastLoadedAt)}` : "Loading match data..."}
               </div>
             </div>
 
@@ -1670,21 +1672,21 @@ export const GameDashboardPage = () => {
 
           <section className="card stack feature-panel">
             <div className="section-copy">
-              <h3>Fast trust actions</h3>
+              <h3>Quick fixes</h3>
               <p className="supporting-text">
-                The quickest recovery path stays focused on the most recent confirmed event.
+                Jump straight to the most recent play you saved if you need to undo or rephrase it.
               </p>
             </div>
 
             {!lastConfirmedEvent ? (
               <StatusMessage
                 tone="info"
-                message="Confirm an event first to unlock undo and last-event correction."
+                message="Save a play from the review queue first to use undo or correction."
               />
             ) : (
               <>
                 <div className="recovery-anchor">
-                  <div className="recovery-anchor-label">Last confirmed event</div>
+                  <div className="recovery-anchor-label">Last saved play</div>
                   <strong>{buildEventSummary(lastConfirmedEvent, players)}</strong>
                   <div className="supporting-text">
                     Logged {formatDateTime(lastConfirmedEvent.timestamp)} · Set {lastConfirmedEvent.set_number}
@@ -1699,17 +1701,17 @@ export const GameDashboardPage = () => {
                     onClick={() => {
                       void handleUndoEvent(
                         lastConfirmedEvent.id,
-                        "Last confirmed event undone with a soft delete. Live aggregates now exclude it."
+                        "Last play undone. It no longer counts in live totals."
                       );
                     }}
                   >
-                    {activeEventId === lastConfirmedEvent.id ? "Undoing..." : "Undo last confirmed"}
+                    {activeEventId === lastConfirmedEvent.id ? "Undoing..." : "Undo last play"}
                   </button>
                 </div>
 
                 <div className="surface stack correction-panel action-panel secondary">
                   <div className="action-panel-header">
-                    <h3>Correct last confirmed event</h3>
+                    <h3>Correct last saved play</h3>
                     <p className="supporting-text">
                       Example: <span className="mono">actually attack error</span> or{" "}
                       <span className="mono">actually Jane ace</span>.
@@ -1731,18 +1733,18 @@ export const GameDashboardPage = () => {
                         startCorrectionListening();
                       }}
                     >
-                      {isCorrectionListening ? "Stop correction capture" : "Voice correct last event"}
+                      {isCorrectionListening ? "Stop voice correction" : "Voice correct last play"}
                     </button>
                     <span className="capture-state">
                       {isCorrectionListening
-                        ? "Listening for a correction to the last confirmed event..."
-                        : "Idle until you start correction capture"}
+                        ? "Listening for how you want to change the last play..."
+                        : "Idle until you start voice correction"}
                     </span>
                   </div>
 
                   {liveCorrectionTranscript ? (
                     <div className="transcript-box">
-                      <div className="muted">Live correction transcript</div>
+                      <div className="muted">Live correction</div>
                       <div className="mono">{liveCorrectionTranscript}</div>
                     </div>
                   ) : null}
@@ -1762,7 +1764,7 @@ export const GameDashboardPage = () => {
                     }}
                   >
                     <label className="stack" style={{ gap: "0.4rem" }}>
-                      <span className="muted">Manual correction transcript</span>
+                      <span className="muted">Type your correction</span>
                       <input
                         placeholder="actually attack error"
                         value={correctionTranscript}
@@ -1845,14 +1847,14 @@ export const GameDashboardPage = () => {
       <section className="card stack feature-panel event-log-panel">
         <div className="section-toolbar">
           <div className="section-copy">
-            <h3>Event log</h3>
+            <h3>Play history</h3>
             <p className="supporting-text">
-              Older fixes happen here through soft delete or lightweight edits so correction stays visible and audit-friendly.
+              Undo the last save or tweak a play here. Undone plays stay listed but no longer count in totals.
             </p>
           </div>
           <div className="stack" style={{ gap: "0.35rem" }}>
-            <span className="muted">Show events</span>
-            <div className="segmented-control" aria-label="Event log filter">
+            <span className="muted">Show plays</span>
+            <div className="segmented-control" aria-label="Play history filter">
               <button
                 className={`button-ghost segment-button ${eventLogFilter === "current" ? "is-active" : ""}`}
                 type="button"
@@ -1876,7 +1878,7 @@ export const GameDashboardPage = () => {
         {visibleEventLog.length === 0 ? (
           <StatusMessage
             tone="info"
-            message="No confirmed events match this filter yet."
+            message="No saved plays match this filter yet."
           />
         ) : (
           <div className="event-log">
@@ -1894,7 +1896,6 @@ export const GameDashboardPage = () => {
                       <div className="supporting-text event-meta-line">
                         Set {event.set_number} · {formatDateTime(event.timestamp)}
                       </div>
-                      <div className="supporting-text mono event-meta-line">Event id: {event.id.slice(0, 8)}</div>
                     </div>
                     <div className="event-badge">{isDeleted ? "Undone" : "Active"}</div>
                   </div>
@@ -1987,7 +1988,7 @@ export const GameDashboardPage = () => {
                               disabled={isGameCompleted}
                               onClick={() => handleStartEventEdit(event)}
                             >
-                              Edit event
+                              Edit play
                             </button>
                             <button
                               className="button-ghost"
@@ -1996,18 +1997,18 @@ export const GameDashboardPage = () => {
                               onClick={() => {
                                 void handleUndoEvent(
                                   event.id,
-                                  "Event soft-deleted from the log. Live counts now exclude it."
+                                  "Play removed from totals. It stays visible in history as undone."
                                 );
                               }}
                             >
-                              {isWorking ? "Undoing..." : "Soft delete"}
+                              {isWorking ? "Undoing..." : "Undo play"}
                             </button>
                           </>
                         )}
                       </>
                     ) : (
                       <div className="supporting-text">
-                        Soft-deleted at {event.deleted_at ? formatDateTime(event.deleted_at) : "unknown time"}
+                        Undone at {event.deleted_at ? formatDateTime(event.deleted_at) : "unknown time"}
                       </div>
                     )}
                   </div>
@@ -2021,9 +2022,9 @@ export const GameDashboardPage = () => {
       <div className="info-grid">
         <section className="card stack feature-panel">
           <div className="section-copy">
-            <h3>Event totals</h3>
+            <h3>Stat totals</h3>
             <p className="supporting-text">
-              These counts now reflect confirmed and still-active events only.
+              Counts include saved plays only—undone plays are left out.
             </p>
           </div>
           <div className="grid three">
@@ -2042,8 +2043,7 @@ export const GameDashboardPage = () => {
           <div className="section-copy">
             <h3>Per-player set table</h3>
             <p className="supporting-text">
-              This table updates from confirmed edits and soft deletes, so it reflects the same
-              trust-aware event history as the event log.
+              Updates when you edit or undo plays, matching what you see in play history.
             </p>
           </div>
           <table className="table">
@@ -2062,7 +2062,7 @@ export const GameDashboardPage = () => {
                 <tr>
                   <td colSpan={6}>
                     <div className="table-empty-state">
-                      No confirmed events yet. Confirm a review item to populate the live set table.
+                      No saved plays yet. Confirm something from the review queue to fill this table.
                     </div>
                   </td>
                 </tr>

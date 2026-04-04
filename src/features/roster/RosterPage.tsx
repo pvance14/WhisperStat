@@ -51,11 +51,11 @@ export const RosterPage = () => {
     <div className="grid two">
       <section className="card stack">
         <div>
-          <span className="chip">Roster CRUD</span>
+          <span className="chip">Roster</span>
           <h3>{editingPlayerId ? "Edit player" : "Add player"}</h3>
           <p className="supporting-text">
-            Jersey uniqueness is enforced in the database so parser and dashboard work do not have
-            to guess between duplicate numbers on the same team.
+            Each jersey number must be unique on a team so voice and manual entry always map to the
+            right player.
           </p>
         </div>
 

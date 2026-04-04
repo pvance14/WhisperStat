@@ -164,7 +164,7 @@ export const StatsReportPage = () => {
               <div className="meta-pill">
                 Sets won: <strong>{matchScore.us}-{matchScore.them}</strong>
               </div>
-              <div className="meta-pill">Sync: {lastLoadedAt ? "Live" : "Waiting"}</div>
+              <div className="meta-pill">Updates: {lastLoadedAt ? "Live" : "Waiting"}</div>
             </div>
           </div>
         </div>
@@ -199,7 +199,7 @@ export const StatsReportPage = () => {
             </p>
           </div>
           <div className="supporting-text">
-            {lastLoadedAt ? `Last sync ${formatDateTime(lastLoadedAt)}` : "Waiting for first sync..."}
+            {lastLoadedAt ? `Last updated ${formatDateTime(lastLoadedAt)}` : "Loading match data..."}
           </div>
         </div>
 
@@ -243,12 +243,12 @@ export const StatsReportPage = () => {
         <div className="summary-tile featured">
           <div className="summary-label">{viewMode === "full_match" ? "Match kills" : `Set ${effectiveSet} kills`}</div>
           <div className="summary-value">{displayedTotals.kill}</div>
-          <div className="summary-support">Confirmed, non-deleted events only.</div>
+          <div className="summary-support">Saved plays only (undone plays hidden).</div>
         </div>
         <div className="summary-tile">
           <div className="summary-label">{viewMode === "full_match" ? "Match digs" : `Set ${effectiveSet} digs`}</div>
           <div className="summary-value">{displayedTotals.dig}</div>
-          <div className="summary-support">The same aggregate rules used on the dashboard.</div>
+          <div className="summary-support">Same counting rules as the live dashboard.</div>
         </div>
         <div className="summary-tile">
           <div className="summary-label">Sets won</div>
@@ -270,7 +270,7 @@ export const StatsReportPage = () => {
         <div className="section-copy">
           <h3>Score by set</h3>
           <p className="supporting-text">
-            Manual scorekeeping persists on the game record, so refreshes and the report route agree on the match state.
+            Scores you save stay on the game, so refreshing or opening the report always matches what you entered.
           </p>
         </div>
         <div className="score-strip">
@@ -303,7 +303,7 @@ export const StatsReportPage = () => {
           </p>
         </div>
         {leaders.length === 0 ? (
-          <StatusMessage tone="info" message="No stat leaders yet because the event log is empty." />
+          <StatusMessage tone="info" message="No stat leaders yet because no plays have been saved." />
         ) : (
           <div className="leaderboard-list">
             {leaders.map((row) => {
@@ -365,8 +365,8 @@ export const StatsReportPage = () => {
                 <tr>
                   <td colSpan={9}>
                     <div className="table-empty-state">
-                      The report will populate after the first confirmed event. Until then, saved set
-                      scores still show match context.
+                      The report fills in after you save the first play. Until then, the set scores you
+                      entered still describe the match.
                     </div>
                   </td>
                 </tr>
@@ -403,7 +403,7 @@ export const StatsReportPage = () => {
           <div className="section-copy">
             <h3>All tracked totals</h3>
             <p className="supporting-text">
-              This is the compact cross-check section for the MVP stat vocabulary.
+              Every stat type WhisperStat tracks for this view, in one place for a quick sanity check.
             </p>
           </div>
           <div className="grid three">

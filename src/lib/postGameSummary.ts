@@ -74,7 +74,7 @@ const buildMatchResultText = (game: GameRow) => {
   const scores = normalizeScoreBySet(game.score_by_set);
 
   if (scores.length === 0) {
-    return "Manual set scores were not saved, so the result is still based on the event log alone.";
+    return "Set scores were not saved, so the story is based on the plays logged so far.";
   }
 
   const matchScore = summarizeMatchScore(scores);
@@ -90,7 +90,7 @@ const buildComparisonText = (
   priorEvents: StatEventRow[]
 ) => {
   if (!priorGame) {
-    return "Comparison to a prior completed match is not available yet because this is the first completed game saved for this team.";
+    return "There is no earlier finished game for this team to compare against yet.";
   }
 
   const totals = summarizeEvents(events);
@@ -133,7 +133,7 @@ const buildComparisonText = (
     comparisonBits.push("nearly identical headline totals");
   }
 
-  return `Compared with the previous completed match against ${priorGame.opponent_name} on ${formatDateTime(priorGame.game_date)}, this game finished with ${comparisonBits.slice(0, 3).join(", ")}.`;
+  return `Compared with the last game against ${priorGame.opponent_name} on ${formatDateTime(priorGame.game_date)}, this one finished with ${comparisonBits.slice(0, 3).join(", ")}.`;
 };
 
 const buildStandoutText = (players: PlayerRow[], events: StatEventRow[]) => {
@@ -162,7 +162,7 @@ const buildStandoutText = (players: PlayerRow[], events: StatEventRow[]) => {
   }
 
   if (sentences.length === 0) {
-    return "The event log is still light, so standout contributors were not clear from the saved stats.";
+    return "Not many plays are logged yet, so it is hard to name clear standouts from the numbers.";
   }
 
   return sentences.join(" ");
@@ -173,7 +173,7 @@ const buildPressureText = (players: PlayerRow[], events: StatEventRow[]) => {
   const totalErrors = errorTypes.reduce((sum, eventType) => sum + totals[eventType], 0);
 
   if (totalErrors === 0) {
-    return "No serve, reception, or attack errors were logged, so the saved stats do not point to a clear pressure area.";
+    return "No serve, reception, or attack errors were logged, so the numbers do not point to a clear pressure area.";
   }
 
   const topErrorType = [...errorTypes].sort((left, right) => totals[right] - totals[left])[0];
@@ -181,10 +181,10 @@ const buildPressureText = (players: PlayerRow[], events: StatEventRow[]) => {
   const topErrorTypeLabel = titleCase(topErrorType).replace("Error", " error");
 
   if (!errorLeaders) {
-    return `${topErrorTypeLabel} showed up ${totals[topErrorType]} ${totals[topErrorType] === 1 ? "time" : "times"}, which was the clearest pressure point in the saved match data.`;
+    return `${topErrorTypeLabel} showed up ${totals[topErrorType]} ${totals[topErrorType] === 1 ? "time" : "times"}, which was the clearest pressure point in the saved numbers.`;
   }
 
-  return `${topErrorTypeLabel} was the biggest pressure point at ${totals[topErrorType]} ${totals[topErrorType] === 1 ? "event" : "events"}, and ${formatPlayerList(errorLeaders.leaders)} accounted for ${errorLeaders.count} of the team's logged errors across attack, serve, and reception.`;
+  return `${topErrorTypeLabel} was the biggest pressure point at ${totals[topErrorType]} ${totals[topErrorType] === 1 ? "time" : "times"}, and ${formatPlayerList(errorLeaders.leaders)} accounted for ${errorLeaders.count} of the team's logged errors across attack, serve, and reception.`;
 };
 
 export interface PostGameSummaryBuildResult {

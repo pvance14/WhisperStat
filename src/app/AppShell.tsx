@@ -111,7 +111,7 @@ export const AppShell = ({ children }: PropsWithChildren) => {
 
           <div className="sidebar-panel stack">
             <div>
-              <strong>Coach session</strong>
+              <strong>Signed in</strong>
               <p className="supporting-text" style={{ marginTop: "0.35rem" }}>
                 {user?.email ?? "Signed in"}
               </p>
