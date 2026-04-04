@@ -152,7 +152,7 @@ export const StatsReportPage = () => {
           <div className="eyebrow">Match report</div>
           <div className="hero-title-row">
             <div className="stack-compact">
-              <span className="chip">Phase 6 in-app visual stats report</span>
+              <span className="chip">Match stats report</span>
               <h2>Current match report: vs {game.opponent_name}</h2>
               <p>
                 This report should answer the big questions fast: what set or match view you are in,

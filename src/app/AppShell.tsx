@@ -105,7 +105,7 @@ export const AppShell = ({ children }: PropsWithChildren) => {
             <div className="brand-mark">WS</div>
           <div className="brand-copy">
             <h1>WhisperStat</h1>
-            <p>Phase 6 MVP loop for roster setup, live capture, reports, and post-game review.</p>
+            <p>Roster setup, live capture, reports, and post-game review.</p>
           </div>
         </div>
 

@@ -194,7 +194,7 @@ export const PostGameSummaryPage = () => {
           <div className="eyebrow">Post-game summary</div>
           <div className="hero-title-row">
             <div className="stack-compact">
-              <span className="chip">Phase 6 post-game summary and polish</span>
+              <span className="chip">Post-game summary</span>
               <h2>{headline}</h2>
               <p>
                 This view turns the saved event log and scoreboard into one clear coaching takeaway

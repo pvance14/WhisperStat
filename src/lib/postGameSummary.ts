@@ -7,7 +7,7 @@ type GameRow = Database["public"]["Tables"]["games"]["Row"];
 type PlayerRow = Database["public"]["Tables"]["players"]["Row"];
 type StatEventRow = Database["public"]["Tables"]["stat_events"]["Row"];
 
-const summaryTemplateVersion = "template-phase-6-v1";
+const summaryTemplateVersion = "summary-template-v1";
 const errorTypes: StatEventType[] = ["attack_error", "serve_error", "reception_error"];
 
 const formatPlayerLabel = (player: PlayerRow) =>

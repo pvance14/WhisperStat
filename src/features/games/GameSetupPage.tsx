@@ -54,8 +54,8 @@ export const GameSetupPage = () => {
           <span className="chip">Game setup</span>
           <h3>Create a match context</h3>
           <p className="supporting-text">
-            Phase 2 stores the match metadata that later phases will attach capture, live stats,
-            and post-game reporting to.
+            Opponent, date, and venue anchor each match so live capture and reports stay tied to
+            the right context.
           </p>
         </div>
 

@@ -1122,7 +1122,7 @@ export const GameDashboardPage = () => {
           <div className="eyebrow">Live game dashboard</div>
           <div className="hero-title-row">
             <div className="stack-compact">
-              <span className="chip">Phase 6 live capture and post-game loop</span>
+              <span className="chip">Live capture &amp; post-game</span>
               <h2>
                 vs {game.opponent_name} · Set {game.current_set}
               </h2>
@@ -1797,7 +1797,7 @@ export const GameDashboardPage = () => {
             <div className="section-copy">
               <h3>Game lifecycle</h3>
               <p className="supporting-text">
-                Finishing the match is explicit so Phase 6 can safely key off completed games.
+                Finishing the match is explicit so reports and summaries run on completed games.
               </p>
             </div>
 

@@ -29,8 +29,8 @@ export const AuthPage = () => {
         <div>
           <h2>Sign in to WhisperStat</h2>
           <p className="supporting-text">
-            Phase 2 locks in the Supabase email login flow so later feature work can depend on
-            real coach sessions and RLS.
+            Sign in with email; Supabase sends a magic link so coach sessions stay tied to secure,
+            RLS-backed data.
           </p>
         </div>
 

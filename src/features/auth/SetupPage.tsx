@@ -13,8 +13,8 @@ export const SetupPage = () => {
         <div>
           <h2>Supabase config is still missing</h2>
           <p className="supporting-text">
-            The app scaffold is ready, but the Phase 2 auth and data flows need real Vite env
-            values before sign-in and CRUD can run against Supabase.
+            The app is ready, but auth and data need real Vite env values before sign-in and
+            Supabase CRUD can run.
           </p>
         </div>
 

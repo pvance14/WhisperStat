@@ -47,9 +47,8 @@ export const OverviewPage = () => {
           <span className="chip">Foundation status</span>
           <h2>Product and technical baseline</h2>
           <p>
-            This Phase 2 surface gives the rest of the MVP a real place to live: authenticated
-            coach sessions, team switching, roster setup, game creation, and routed placeholders
-            for the live workflow.
+            Home base for your program: authenticated coach sessions, team switching, roster setup,
+            game creation, and routes into the live workflow.
           </p>
         </div>
         <div className="cluster">
@@ -118,8 +117,7 @@ export const OverviewPage = () => {
           <div>
             <h3>Rename active team</h3>
             <p className="supporting-text">
-              Phase 2 includes the basic edit path so roster and game work do not depend on
-              dashboard-only setup.
+              Rename the active team when the name changes so roster and games stay aligned.
             </p>
           </div>
 
@@ -169,8 +167,7 @@ export const OverviewPage = () => {
           <div>
             <h3>Next setup steps</h3>
             <p className="supporting-text">
-              These routes are intentionally practical so Phase 3 can add capture logic without
-              rethinking setup flows.
+              Finish roster and game setup here, then jump into capture from the dashboard.
             </p>
           </div>
 
@@ -187,7 +184,7 @@ export const OverviewPage = () => {
         <section className="card stack">
           <div>
             <h3>Recent games for active team</h3>
-            <p className="supporting-text">Dashboard and report routes are already wired for the next phases.</p>
+            <p className="supporting-text">Open a game from the list to use the live dashboard and reports.</p>
           </div>
 
           {selectedTeam ? (
