@@ -100,6 +100,22 @@ export const AppShell = ({ children }: PropsWithChildren) => {
   return (
     <AppShellContext.Provider value={contextValue}>
       <div className="app-shell">
+        <div className="mobile-top-bar">
+          <div className="brand-mark">WS</div>
+          <select
+            value={selectedTeamId ?? ""}
+            onChange={(event) => setSelectedTeamId(event.target.value)}
+            disabled={teams.length === 0}
+          >
+            {teams.length === 0 ? <option value="">Create team</option> : null}
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <aside className="sidebar">
           <div className="brand">
             <div className="brand-mark">WS</div>
@@ -134,7 +150,7 @@ export const AppShell = ({ children }: PropsWithChildren) => {
             {teamError ? <StatusMessage tone="error" message={teamError} /> : null}
           </div>
 
-          <nav>
+          <nav style={{ marginTop: "1rem" }}>
             <NavLink to="/app" end className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
               <span>Overview</span>
               <span className="muted">{teams.length} teams</span>
@@ -174,6 +190,24 @@ export const AppShell = ({ children }: PropsWithChildren) => {
           ) : null}
           {children ?? <Outlet />}
         </main>
+
+        <nav className="mobile-bottom-bar">
+          <NavLink to="/app" end className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+            <span>Dashboard</span>
+            <span className="muted">Teams</span>
+          </NavLink>
+          <NavLink to="/app/roster" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+            <span>Roster</span>
+            <span className="muted">Players</span>
+          </NavLink>
+          <NavLink
+            to="/app/games/new"
+            className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
+          >
+            <span>Play</span>
+            <span className="muted">Matches</span>
+          </NavLink>
+        </nav>
       </div>
     </AppShellContext.Provider>
   );

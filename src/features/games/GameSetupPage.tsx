@@ -163,7 +163,7 @@ export const GameSetupPage = () => {
               </label>
             </div>
 
-            <div className="form-actions">
+            <div className="form-actions sticky-bottom-actions">
               <button className="button" type="submit">
                 Create game
               </button>

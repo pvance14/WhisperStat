@@ -106,7 +106,7 @@ export const OverviewPage = () => {
                 onChange={(event) => setTeamName(event.target.value)}
               />
             </label>
-            <div className="form-actions">
+            <div className="form-actions sticky-bottom-actions">
               <button className="button" type="submit" disabled={isWorking}>
                 {isWorking ? "Saving..." : "Create team"}
               </button>
@@ -154,7 +154,7 @@ export const OverviewPage = () => {
                 <span className="muted">Selected team</span>
                 <input value={renameValue} onChange={(event) => setRenameValue(event.target.value)} />
               </label>
-              <div className="form-actions">
+              <div className="form-actions sticky-bottom-actions">
                 <button className="button-secondary" type="submit" disabled={isWorking}>
                   Save rename
                 </button>
@@ -175,10 +175,10 @@ export const OverviewPage = () => {
           </div>
 
           <div className="cluster">
-            <Link className="button" to="/app/roster">
+            <Link className="button-secondary" to="/app/roster">
               Manage roster
             </Link>
-            <Link className="button-secondary" to="/app/games/new">
+            <Link className="button" to="/app/games/new">
               Create game
             </Link>
           </div>

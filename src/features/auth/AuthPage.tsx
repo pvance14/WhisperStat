@@ -57,7 +57,7 @@ export const AuthPage = () => {
               .finally(() => setActiveAction(null));
           }}
         >
-          <label className="stack" style={{ gap: "0.4rem" }}>
+          <label className="stack" style={{ gap: "0.6rem", marginBottom: "1.5rem" }}>
             <span className="muted">Email address</span>
             <input
               type="email"
@@ -87,7 +87,7 @@ export const AuthPage = () => {
             </div>
             <div className="form-actions">
               <button
-                className="button-secondary"
+                className="button-ghost"
                 type="button"
                 disabled={activeAction !== null}
                 onClick={() => {

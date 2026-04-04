@@ -156,7 +156,7 @@ export const RosterPage = () => {
               />
             </label>
 
-            <div className="form-actions">
+            <div className="form-actions sticky-bottom-actions">
               <button className="button" type="submit">
                 {editingPlayerId ? "Save player" : "Add player"}
               </button>
@@ -190,7 +190,7 @@ export const RosterPage = () => {
         {players.length === 0 ? (
           <StatusMessage tone="info" message="No players yet. Add the roster on the left to get started." />
         ) : (
-          <table className="table">
+          <table className="table table-responsive-mobile">
             <thead>
               <tr>
                 <th>Player</th>
