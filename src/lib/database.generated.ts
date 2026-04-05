@@ -233,6 +233,7 @@ export type Database = {
         | "ace"
         | "serve_error"
         | "reception_error"
+        | "serve_receive"
         | "block"
         | "dig"
         | "attack_error"
@@ -370,6 +371,7 @@ export const Constants = {
         "ace",
         "serve_error",
         "reception_error",
+        "serve_receive",
         "block",
         "dig",
         "attack_error",

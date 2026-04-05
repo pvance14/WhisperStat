@@ -5,6 +5,7 @@ const validEventTypes = [
   "ace",
   "serve_error",
   "reception_error",
+  "serve_receive",
   "block",
   "dig",
   "attack_error",
