@@ -82,8 +82,40 @@ const eventAliases: Array<{ eventType: StatEventType; aliases: string[] }> = [
     eventType: "reception_error",
     aliases: ["reception error", "serve receive error", "passing error", "pass error", "shank", "shanked"]
   },
+  {
+    eventType: "serve_receive",
+    aliases: [
+      "serve receive",
+      "service receive",
+      "serve reception",
+      "service reception",
+      "got the serve receive",
+      "got serve receive",
+      "received serve",
+      "received the serve",
+      "good serve receive",
+      "good service receive",
+      "good serve reception",
+      "good service reception"
+    ]
+  },
   { eventType: "attack_error", aliases: ["attack error", "hitting error", "hit out", "hit long"] },
-  { eventType: "set", aliases: ["set assist", "assist", "set", "sets"] },
+  {
+    eventType: "set",
+    aliases: [
+      "set assist",
+      "assist",
+      "set to",
+      "sets to",
+      "set for",
+      "sets for",
+      "set",
+      "sets",
+      "fed",
+      "feeds",
+      "sent"
+    ]
+  },
   { eventType: "kill", aliases: ["kill", "kills", "killed"] },
   { eventType: "ace", aliases: ["ace", "aces", "aced"] },
   { eventType: "block", aliases: ["block", "blocks", "blocked", "stuff block"] },
@@ -127,6 +159,9 @@ const findAliasIndex = (text: string, alias: string) => {
 
   return match.index + match[1].length;
 };
+
+const stripLeadingConnectors = (value: string) =>
+  value.replace(/^(?:who|that)\s+/i, "").trim();
 
 export const resolveEventType = (transcript: string) => {
   const normalizedTranscript = normalizeSearchText(transcript);
@@ -293,6 +328,10 @@ const buildPlayerFragments = ({
     addFragment(normalizedClause.slice(0, aliasIndex));
   }
 
+  if (eventType === "kill" && aliasIndex >= 0) {
+    addFragment(normalizedClause.slice(0, aliasIndex));
+  }
+
   addFragment(normalizedClause);
   return fragments;
 };
@@ -375,10 +414,89 @@ const splitSegmentOnTo = (segment: string) => {
     .filter(Boolean);
 };
 
-const splitTranscriptIntoClauses = (transcript: string) =>
+const findPlayerMentions = (players: PlayerRow[], transcript: string) => {
+  const normalizedTranscript = normalizeSearchText(transcript);
+  const mentions = new Map<string, { text: string; index: number }>();
+
+  const tryRegisterMention = (player: PlayerRow, value: string, label: string) => {
+    if (!value || mentions.has(player.id)) {
+      return;
+    }
+
+    const index = findAliasIndex(normalizedTranscript, value);
+
+    if (index >= 0) {
+      mentions.set(player.id, {
+        text: label,
+        index
+      });
+    }
+  };
+
+  players.forEach((player) => {
+    tryRegisterMention(
+      player,
+      normalizeSearchText(`${player.first_name} ${player.last_name}`),
+      `${player.first_name} ${player.last_name}`
+    );
+    tryRegisterMention(player, normalizeSearchText(player.first_name), player.first_name);
+    tryRegisterMention(player, normalizeSearchText(player.last_name), player.last_name);
+
+    (player.aliases ?? []).forEach((alias) => {
+      tryRegisterMention(player, normalizeSearchText(alias), alias);
+    });
+
+    const jerseyLabel = `#${player.jersey_number}`;
+    tryRegisterMention(player, jerseyLabel, jerseyLabel);
+    tryRegisterMention(player, String(player.jersey_number), jerseyLabel);
+  });
+
+  return [...mentions.entries()]
+    .map(([playerId, mention]) => ({
+      playerId,
+      ...mention
+    }))
+    .sort((left, right) => left.index - right.index);
+};
+
+const expandNaturalVolleyballClauses = (segment: string, players: PlayerRow[]) => {
+  const trimmedSegment = stripLeadingConnectors(segment.trim());
+
+  if (!trimmedSegment) {
+    return [];
+  }
+
+  const normalizedSegment = normalizeSearchText(trimmedSegment);
+  const hasSetLanguage = ["set", "sets", "set to", "sets to", "set for", "sets for", "fed", "feeds", "sent"].some(
+    (alias) => includesPhrase(normalizedSegment, alias)
+  );
+  const hasKillLanguage =
+    includesPhrase(normalizedSegment, "kill") ||
+    includesPhrase(normalizedSegment, "kills") ||
+    includesPhrase(normalizedSegment, "killed");
+
+  if (!hasSetLanguage || !hasKillLanguage || !/\bfor\s+(?:the|a)\s+kill\b/i.test(normalizedSegment)) {
+    return [trimmedSegment];
+  }
+
+  const orderedMentions = findPlayerMentions(players, trimmedSegment);
+
+  if (orderedMentions.length < 2) {
+    return [trimmedSegment];
+  }
+
+  const setter = orderedMentions[0];
+  const attacker = orderedMentions[1];
+
+  return [`${setter.text} set`, `${attacker.text} kill`];
+};
+
+const splitTranscriptIntoClauses = (transcript: string, players: PlayerRow[]) =>
   transcript
     .split(primaryClauseSplitPattern)
     .flatMap((part) => splitSegmentOnTo(part.trim()))
+    .flatMap((part) => expandNaturalVolleyballClauses(part, players))
+    .map((part) => stripLeadingConnectors(part))
     .filter(Boolean);
 
 export const buildProposalBatchResult = (
@@ -518,7 +636,7 @@ export const parseMatchTranscript = ({
 
   const eventMatch = resolveEventType(normalizedTranscript);
 
-  const clauses = splitTranscriptIntoClauses(normalizedTranscript);
+  const clauses = splitTranscriptIntoClauses(normalizedTranscript, players);
   const shouldAttemptBatch = clauses.length > 1;
 
   if (!shouldAttemptBatch && !eventMatch) {
@@ -532,10 +650,18 @@ export const parseMatchTranscript = ({
   }
 
   if (!shouldAttemptBatch) {
-    const playerResolution = resolvePlayer(players, normalizedTranscript);
+    const playerResolution = resolvePlayerForClause({
+      players,
+      clause: normalizedTranscript,
+      eventAlias: eventMatch!.alias,
+      eventType: eventMatch!.eventType
+    });
 
     if (playerResolution.kind === "clarification") {
-      return playerResolution;
+      return {
+        kind: "clarification",
+        clarification: playerResolution.clarification
+      };
     }
 
     return {
@@ -634,7 +760,12 @@ export const parseLastEventCorrection = ({
     };
   }
 
-  const playerResolution = resolvePlayer(players, normalizedTranscript);
+  const playerResolution = resolvePlayerForClause({
+    players,
+    clause: normalizedTranscript,
+    eventAlias: eventMatch.alias,
+    eventType: eventMatch.eventType
+  });
 
   if (playerResolution.kind === "clarification") {
     if (playerResolution.clarification.reason === "ambiguous_player") {
