@@ -27,10 +27,12 @@ export const SetupPage = () => {
         <div className="stack" style={{ gap: "0.4rem" }}>
           <strong>Typical setup</strong>
           <div className="mono">cp .env.example .env</div>
+          <div className="mono">Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY</div>
           <div className="mono">
-            Set VITE_SUPABASE_REDIRECT_URL to this app’s URL (local or deployed)
+            Optional: set VITE_SUPABASE_REDIRECT_URL if you want to override the app’s current
+            origin
           </div>
-          <div className="mono">Add that same URL under Auth → URL configuration in your project</div>
+          <div className="mono">Allowlist your local and deployed app URLs under Auth → URL configuration</div>
           <div className="mono">npm install</div>
           <div className="mono">npm run dev</div>
         </div>

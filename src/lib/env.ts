@@ -15,7 +15,7 @@ export const appEnv = {
   devAdminEmail: normalize(import.meta.env.VITE_DEV_ADMIN_EMAIL),
   devAdminPassword: normalize(import.meta.env.VITE_DEV_ADMIN_PASSWORD),
   enableDevAdminShortcut: normalize(import.meta.env.VITE_ENABLE_DEV_ADMIN_SHORTCUT) === "true",
-  environment: normalize(import.meta.env.VITE_APP_ENV) ?? "development",
+  environment: normalize(import.meta.env.VITE_APP_ENV) ?? (import.meta.env.PROD ? "production" : "development"),
   debugLogs: normalize(import.meta.env.VITE_ENABLE_DEBUG_LOGS) === "true"
 };
 
