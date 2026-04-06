@@ -11,6 +11,7 @@ export const appEnv = {
   supabaseUrl: normalize(import.meta.env.VITE_SUPABASE_URL),
   supabaseAnonKey: normalize(import.meta.env.VITE_SUPABASE_ANON_KEY),
   supabaseRedirectUrl: normalize(import.meta.env.VITE_SUPABASE_REDIRECT_URL),
+  deepgramBrowserApiKey: normalize(import.meta.env.VITE_DEEPGRAM_API_KEY),
   llmParseEnabled: normalize(import.meta.env.VITE_LLM_PARSE_ENABLED) === "true",
   devAdminEmail: normalize(import.meta.env.VITE_DEV_ADMIN_EMAIL),
   devAdminPassword: normalize(import.meta.env.VITE_DEV_ADMIN_PASSWORD),

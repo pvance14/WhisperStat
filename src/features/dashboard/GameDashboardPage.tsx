@@ -19,6 +19,7 @@ import {
   summarizeMatchScore,
   upsertSetScore
 } from "@/lib/gameScore";
+import { buildDeepgramKeyterms } from "@/lib/deepgram";
 import { appLog } from "@/lib/logger";
 import {
   buildProposalBatchResult,
@@ -67,6 +68,66 @@ interface EventEditDraft {
 
 const formatSourceLabel = (source: ReviewItem["source"]) =>
   source === "speech" ? "Voice" : "Typed";
+
+type SpeechCapturePhase = "idle" | "requesting_mic" | "authenticating" | "connecting" | "ready" | "finalizing";
+
+const getCapturePhaseSummary = (phase: SpeechCapturePhase) => {
+  switch (phase) {
+    case "requesting_mic":
+      return "Waiting for microphone access";
+    case "authenticating":
+      return "Preparing live dictation";
+    case "connecting":
+      return "Connecting to live transcription";
+    case "ready":
+      return "Ready for you to speak";
+    case "finalizing":
+      return "Finishing the transcript";
+    case "idle":
+    default:
+      return "Ready for the next stat call";
+  }
+};
+
+const getCapturePhaseInstruction = (phase: SpeechCapturePhase) => {
+  switch (phase) {
+    case "requesting_mic":
+      return "Allow the mic if the browser asks for permission.";
+    case "authenticating":
+      return "Hold on while we prepare the live transcription session.";
+    case "connecting":
+      return "Wait to speak until this changes to ready so your important words are captured.";
+    case "ready":
+      return "Deepgram is live now. Say the play, then tap again to stop and review it.";
+    case "finalizing":
+      return "We heard you and are waiting for the last transcript chunk to arrive.";
+    case "idle":
+    default:
+      return "Idle until you start capture";
+  }
+};
+
+const getCaptureButtonLabel = (phase: SpeechCapturePhase, isListening: boolean, idleLabel: string, stopLabel: string) => {
+  if (!isListening) {
+    return idleLabel;
+  }
+
+  switch (phase) {
+    case "requesting_mic":
+      return "Allowing mic...";
+    case "authenticating":
+      return "Starting dictation...";
+    case "connecting":
+      return "Connecting...";
+    case "ready":
+      return stopLabel;
+    case "finalizing":
+      return "Finishing...";
+    case "idle":
+    default:
+      return stopLabel;
+  }
+};
 
 const buildEventSummary = (event: StatEventRow, players: PlayerRow[]) => {
   const player = players.find((candidate) => candidate.id === event.player_id);
@@ -224,6 +285,7 @@ export const GameDashboardPage = () => {
   const [isSavingScore, setIsSavingScore] = useState(false);
   const [isUpdatingGameStatus, setIsUpdatingGameStatus] = useState(false);
   const [lastLoadedAt, setLastLoadedAt] = useState<string | null>(null);
+  const speechKeyterms = buildDeepgramKeyterms(players);
 
   const loadBundle = async (targetGameId: string) => {
     const nextBundle = await getGameBundle(requireSupabase(), targetGameId);
@@ -624,12 +686,17 @@ export const GameDashboardPage = () => {
   const {
     isSupported: isSpeechCaptureSupported,
     isListening,
+    phase: speechPhase,
+    isReadyToCapture,
     liveTranscript,
     error: speechError,
     clearError: clearSpeechError,
     startListening,
     stopListening
-  } = useSpeechCapture(handleCapturedTranscript);
+  } = useSpeechCapture(handleCapturedTranscript, {
+    keyterms: speechKeyterms,
+    sessionLabel: "stat-capture"
+  });
 
   const applyLastEventCorrection = async ({
     transcript,
@@ -705,6 +772,8 @@ export const GameDashboardPage = () => {
   const {
     isSupported: isCorrectionSpeechSupported,
     isListening: isCorrectionListening,
+    phase: correctionSpeechPhase,
+    isReadyToCapture: isCorrectionReadyToCapture,
     liveTranscript: liveCorrectionTranscript,
     error: correctionSpeechError,
     clearError: clearCorrectionSpeechError,
@@ -716,6 +785,9 @@ export const GameDashboardPage = () => {
       durationMs,
       source
     });
+  }, {
+    keyterms: speechKeyterms,
+    sessionLabel: "last-event-correction"
   });
 
   useEffect(() => {
@@ -1222,7 +1294,7 @@ export const GameDashboardPage = () => {
               </p>
             </div>
             <div className="supporting-text">
-              {isListening ? "Mic active" : "Ready for the next stat call"}
+              {getCapturePhaseSummary(speechPhase)}
             </div>
           </div>
 
@@ -1263,12 +1335,16 @@ export const GameDashboardPage = () => {
                     startListening();
                   }}
                 >
-                  {isListening ? "Stop listening" : "Push to talk"}
+                  {getCaptureButtonLabel(speechPhase, isListening, "Push to talk", "Stop listening")}
                 </button>
                 <span className="capture-state">
-                  {isListening ? "Listening for the next stat call..." : "Idle until you start capture"}
+                  {getCapturePhaseInstruction(speechPhase)}
                 </span>
               </div>
+
+              {isListening && !isReadyToCapture ? (
+                <StatusMessage tone="info" message="Wait for “Ready for you to speak” before saying the play." />
+              ) : null}
 
               <div className="supporting-text">
                 {isSpeechCaptureSupported
@@ -1733,14 +1809,24 @@ export const GameDashboardPage = () => {
                         startCorrectionListening();
                       }}
                     >
-                      {isCorrectionListening ? "Stop voice correction" : "Voice correct last play"}
+                      {getCaptureButtonLabel(
+                        correctionSpeechPhase,
+                        isCorrectionListening,
+                        "Voice correct last play",
+                        "Stop voice correction"
+                      )}
                     </button>
                     <span className="capture-state">
-                      {isCorrectionListening
-                        ? "Listening for how you want to change the last play..."
-                        : "Idle until you start voice correction"}
+                      {getCapturePhaseInstruction(correctionSpeechPhase)}
                     </span>
                   </div>
+
+                  {isCorrectionListening && !isCorrectionReadyToCapture ? (
+                    <StatusMessage
+                      tone="info"
+                      message="Wait for the correction mic to finish connecting before you say how the last play should change."
+                    />
+                  ) : null}
 
                   {liveCorrectionTranscript ? (
                     <div className="transcript-box">
