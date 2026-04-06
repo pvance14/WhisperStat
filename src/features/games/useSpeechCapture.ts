@@ -176,11 +176,20 @@ const buildSocketUrl = (keyterms: string[]) => {
   const url = new URL("wss://api.deepgram.com/v1/listen");
 
   url.searchParams.set("model", "nova-3");
+  url.searchParams.set("language", "en-US");
   url.searchParams.set("encoding", "linear16");
   url.searchParams.set("sample_rate", String(targetSampleRate));
   url.searchParams.set("channels", "1");
   url.searchParams.set("interim_results", "true");
   url.searchParams.set("smart_format", "true");
+  url.searchParams.set("endpointing", "300");
+  url.searchParams.set("vad_events", "true");
+
+  // `utterance_end_ms` consistently caused non-101 websocket handshakes with
+  // browser-safe temporary JWT auth, so we leave it off and rely on finalize.
+  keyterms.slice(0, maxKeyterms).forEach((term) => {
+    url.searchParams.append("keyterm", term);
+  });
 
   return url.toString();
 };

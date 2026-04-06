@@ -18,7 +18,7 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Current Status
 
 - Planning status: Ready for implementation planning.
-- Implementation status: Core code implementation completed; credentialed live-capture verification still pending.
+- Implementation status: Implemented and verified through a full localhost Deepgram capture pass.
 - Scope status: Browser speech recognition has been replaced in code with Deepgram realtime streaming while preserving the current downstream capture flow.
 
 ## Document Status
@@ -34,11 +34,11 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 - [x] **Audio streaming pipeline**: capture microphone audio, normalize it into a Deepgram-supported realtime format, and stream it over a live socket during push-to-talk sessions.
 - [x] **Roster-aware vocabulary biasing**: send active-roster names and useful volleyball phrases as Deepgram keyterms to improve transcript quality for names and sport language.
 - [x] **Workflow preservation**: keep the same review queue, parser, LLM fallback, correction flow, and confirm-before-write behavior after the new transcript arrives.
-- [ ] **Verification**: local code/build verification is recorded, but credentialed live-capture checks still need one pass before archiving.
+- [x] **Verification**: local code/build verification and a credentialed localhost full-flow capture pass are recorded.
 
 ## Readiness Checks
 
-- [x] No client-exposed Deepgram API key or other secret is introduced.
+- [x] Production capture uses the Supabase token-mint path rather than a client-exposed Deepgram secret. A local-only debug fallback exists, but production builds ignore it in code.
 - [x] Push-to-talk remains the capture posture for both live stat entry and last-event correction.
 - [x] Existing review/confirm semantics remain unchanged after the STT swap.
 - [x] The Deepgram path has a clear failure fallback to manual transcript entry instead of blocking the workflow.
@@ -47,10 +47,11 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Implementation Notes
 
 - Added [`supabase/functions/deepgram-token/index.ts`](../../supabase/functions/deepgram-token/index.ts) for authenticated short-lived Deepgram token minting.
-- Replaced the capture engine in [`src/features/games/useSpeechCapture.ts`](../../src/features/games/useSpeechCapture.ts) with a direct microphone + websocket Deepgram pipeline that still returns the same final capture payload shape.
+- Replaced the capture engine in [`src/features/games/useSpeechCapture.ts`](../../src/features/games/useSpeechCapture.ts) with a direct microphone + websocket Deepgram pipeline that still returns the same final capture payload shape, now with explicit capture phases so the UI can distinguish connecting from ready-to-speak.
 - Added roster-aware keyterm assembly in [`src/lib/deepgram.ts`](../../src/lib/deepgram.ts) and passed it from [`src/features/dashboard/GameDashboardPage.tsx`](../../src/features/dashboard/GameDashboardPage.tsx) into both capture entry points.
+- Verified the browser-safe temporary JWT path uses `Sec-WebSocket-Protocol: bearer, <JWT>` and intentionally leaves out `utterance_end_ms` because that option consistently caused non-101 websocket handshakes during live token-path debugging.
 - Removed the old Web Speech type shim because the code no longer depends on that browser API.
-- Recorded repo-local verification in [`aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md`](../../aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md).
+- Recorded repo-local verification plus the credentialed localhost full-pass notes in [`aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md`](../../aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md).
 
 ## Completion Signal
 

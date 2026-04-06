@@ -81,7 +81,7 @@ When capture starts:
 
 - request mic permission with `getUserMedia`
 - request a short-lived Deepgram token from the new Edge function
-- create a Deepgram realtime connection using the SDK
+- create a Deepgram realtime connection with a browser `WebSocket` using Deepgram's browser-safe auth pattern
 - begin streaming microphone audio chunks while the button is held
 - show interim transcript text in the existing live transcript UI
 
@@ -118,7 +118,7 @@ Use Deepgram's live transcription websocket with a narrow, explicit configuratio
 - language: `en-US`
 - `smart_format: true`
 - `interim_results: true`
-- low-latency endpointing / end-of-utterance settings suitable for push-to-talk
+- low-latency endpointing settings suitable for push-to-talk
 - one-channel speech input
 
 Add roster-aware vocabulary biasing on each connection using:
@@ -133,6 +133,7 @@ Important constraint:
 - Build the vocabulary list from the active game roster at capture time.
 - Deduplicate and cap it so the integration stays simple and predictable.
 - Treat this as transcript help, not as player-resolution authority. The roster-aware parser still owns final player matching.
+- Keep `utterance_end_ms` optional rather than required. In the final browser temp-token path, it caused repeated non-101 websocket handshakes, so finalize-on-stop remained the safer closeout strategy.
 
 ## Downstream Behavior To Preserve
 
@@ -178,14 +179,14 @@ Create a short evidence note once implemented. It should cover:
 
 Implementation note:
 
-- Added [`aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md`](../../aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md) with the completed local verification steps and the remaining credentialed live-capture checks.
+- Added [`aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md`](../../aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md) with the local verification steps, temporary-token handshake debugging notes, and the completed localhost full-flow validation.
 
 ## Implementation Checklist
 
 | # | Task |
 |---|------|
 | 1 | Add a Supabase Edge function for short-lived Deepgram token minting using server-side secrets |
-| 2 | Add Deepgram SDK dependency and any minimal browser audio plumbing needed for realtime mic streaming |
+| 2 | Add minimal browser audio plumbing and browser-safe Deepgram websocket auth for realtime mic streaming |
 | 3 | Replace `useSpeechCapture` internals with a Deepgram-backed push-to-talk implementation while preserving its public contract |
 | 4 | Add active-roster and volleyball keyterm biasing to the Deepgram session setup |
 | 5 | Verify the main dashboard and last-event correction flows still work unchanged downstream |
@@ -197,7 +198,7 @@ Implementation note:
 - [x] Task 2 completed without adding a browser SDK dependency; a direct websocket implementation kept the slice smaller.
 - [x] Task 3 completed.
 - [x] Task 4 completed.
-- [x] Task 5 completed at the code-contract level and through local typecheck/build verification.
-- [x] Task 6 completed for docs/changelog/evidence updates, with one credentialed live Deepgram verification pass still pending before archive.
+- [x] Task 5 completed through localhost full-flow validation of main capture, confirm, last-event voice correction, and manual fallback.
+- [x] Task 6 completed with roadmap/changelog/evidence updates after the token-path handshake investigation and live verification pass.
 
 When this pair is fully implemented, update the roadmap checkboxes, move both files to `ai/roadmaps/complete`, and add a line to [`ai/changelog.md`](../changelog.md) per [`aiDocs/context.md`](../../aiDocs/context.md).

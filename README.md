@@ -42,7 +42,7 @@ WhisperStat is a React PWA backed by Supabase: magic-link auth, Postgres schema 
 3. Optional: set `VITE_SUPABASE_REDIRECT_URL` for local test redirects only. Hosted builds ignore this override and use the current deployed origin.
 4. Optional for the clarification-only AI fallback: set `VITE_LLM_PARSE_ENABLED=true`.
 5. If you want live voice dictation to work with the safer temporary-token flow, set the Supabase function secret `DEEPGRAM_API_KEY` and serve or deploy `deepgram-token`.
-6. Optional temporary fallback for debugging only: set `VITE_DEEPGRAM_API_KEY` in `.env` to let the browser connect directly with one API key instead of minting per-session temporary tokens.
+6. Optional temporary fallback for debugging only: set `VITE_DEEPGRAM_API_KEY` in `.env` to let local development connect directly with one API key instead of minting per-session temporary tokens.
 7. If you want the Edge fallback to work locally or remotely, set the Supabase function secret `ANTHROPIC_API_KEY` and optionally `ANTHROPIC_MODEL`.
 8. In Supabase Auth settings, allowlist the local and deployed app URLs you plan to use.
 9. Run `npm install`.
@@ -63,7 +63,7 @@ If browser-specific temporary-token websocket handshakes are giving you trouble 
 
 - `VITE_DEEPGRAM_API_KEY=<your Deepgram API key>`
 
-This exposes the key to the browser bundle, so treat it as a short-term development fallback only, not the preferred deployed setup.
+This exposes the key to the browser bundle, so treat it as a short-term development fallback only, not the preferred deployed setup. Production builds ignore this fallback in code and continue to use the Supabase `deepgram-token` path.
 
 ## Optional dev admin shortcut
 
