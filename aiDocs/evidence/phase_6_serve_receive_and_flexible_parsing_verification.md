@@ -32,7 +32,24 @@ Temporary parser harness verification against [`src/lib/matchParser.ts`](../../s
 - `"kill by Cosmo"` returned a single deterministic proposal for `Cosmo -> kill`.
 - A duplicate-name roster test with `"Jordan serve receive"` returned an `ambiguous_player` clarification instead of guessing, confirming the safe-failure path still holds after the new serve-receive support.
 
+## Supabase Migration Apply Verification
+
+Commands run after the repo-local parser verification:
+
+- `npm run supabase:status`
+- `psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -f supabase/migrations/20260404190100_phase_6_serve_receive_enum.sql`
+- `psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -c "select enumlabel from pg_enum join pg_type on pg_enum.enumtypid = pg_type.oid where pg_type.typname = 'stat_event_type' order by enumsortorder;"`
+- `npx supabase db push`
+- `npx supabase db push`
+
+What those checks confirmed:
+
+- Local Supabase was already running before the migration apply.
+- The local enum migration in [`supabase/migrations/20260404190100_phase_6_serve_receive_enum.sql`](../../supabase/migrations/20260404190100_phase_6_serve_receive_enum.sql) applied successfully.
+- Querying the local `stat_event_type` enum confirmed the value order now includes `serve_receive`.
+- The linked hosted Supabase project accepted the same migration through `npx supabase db push`.
+- A second hosted `db push` returned `Remote database is up to date.`, which confirmed there were no remaining pending migrations after the apply.
+
 ## Notes
 
-- This verification was repo-local only. The new migration file [`supabase/migrations/20260404190100_phase_6_serve_receive_enum.sql`](../../supabase/migrations/20260404190100_phase_6_serve_receive_enum.sql) was authored, but no hosted or local Supabase migration apply was run in this pass.
 - The parser intentionally still treats generic pass movement like `"passed it to Shane"` as visible context, not a persisted stat, unless the clause safely maps to the supported vocabulary.

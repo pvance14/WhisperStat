@@ -8,6 +8,11 @@ import { VitePWA } from "vite-plugin-pwa";
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  server: {
+    port: 5173,
+    // Keep local URL stable so Supabase auth redirects (5173 in supabase/config.toml + .env) match.
+    strictPort: true
+  },
   plugins: [
     react(),
     VitePWA({
