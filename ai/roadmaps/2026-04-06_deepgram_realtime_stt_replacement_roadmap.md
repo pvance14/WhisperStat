@@ -18,8 +18,8 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 ## Current Status
 
 - Planning status: Ready for implementation planning.
-- Implementation status: Not started.
-- Scope status: Replace browser speech recognition with Deepgram realtime streaming while preserving the current downstream capture flow.
+- Implementation status: Core code implementation completed; credentialed live-capture verification still pending.
+- Scope status: Browser speech recognition has been replaced in code with Deepgram realtime streaming while preserving the current downstream capture flow.
 
 ## Document Status
 
@@ -29,20 +29,28 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 ## Milestones
 
-- [ ] **Server-side auth boundary**: add a Supabase Edge token-minting function so the browser never receives the long-lived Deepgram API key.
-- [ ] **Client capture replacement**: swap `window.SpeechRecognition` for Deepgram live streaming behind the existing `useSpeechCapture` contract.
-- [ ] **Audio streaming pipeline**: capture microphone audio, normalize it into a Deepgram-supported realtime format, and stream it over a live socket during push-to-talk sessions.
-- [ ] **Roster-aware vocabulary biasing**: send active-roster names and useful volleyball phrases as Deepgram keyterms to improve transcript quality for names and sport language.
-- [ ] **Workflow preservation**: keep the same review queue, parser, LLM fallback, correction flow, and confirm-before-write behavior after the new transcript arrives.
-- [ ] **Verification**: record implementation notes and live-capture checks for token flow, transcript quality, and push-to-talk behavior before archiving.
+- [x] **Server-side auth boundary**: add a Supabase Edge token-minting function so the browser never receives the long-lived Deepgram API key.
+- [x] **Client capture replacement**: swap `window.SpeechRecognition` for Deepgram live streaming behind the existing `useSpeechCapture` contract.
+- [x] **Audio streaming pipeline**: capture microphone audio, normalize it into a Deepgram-supported realtime format, and stream it over a live socket during push-to-talk sessions.
+- [x] **Roster-aware vocabulary biasing**: send active-roster names and useful volleyball phrases as Deepgram keyterms to improve transcript quality for names and sport language.
+- [x] **Workflow preservation**: keep the same review queue, parser, LLM fallback, correction flow, and confirm-before-write behavior after the new transcript arrives.
+- [ ] **Verification**: local code/build verification is recorded, but credentialed live-capture checks still need one pass before archiving.
 
 ## Readiness Checks
 
-- [ ] No client-exposed Deepgram API key or other secret is introduced.
-- [ ] Push-to-talk remains the capture posture for both live stat entry and last-event correction.
-- [ ] Existing review/confirm semantics remain unchanged after the STT swap.
-- [ ] The Deepgram path has a clear failure fallback to manual transcript entry instead of blocking the workflow.
-- [ ] The implementation stays narrow enough to attribute improvements to the STT change, not to unrelated parsing rewrites.
+- [x] No client-exposed Deepgram API key or other secret is introduced.
+- [x] Push-to-talk remains the capture posture for both live stat entry and last-event correction.
+- [x] Existing review/confirm semantics remain unchanged after the STT swap.
+- [x] The Deepgram path has a clear failure fallback to manual transcript entry instead of blocking the workflow.
+- [x] The implementation stays narrow enough to attribute improvements to the STT change, not to unrelated parsing rewrites.
+
+## Implementation Notes
+
+- Added [`supabase/functions/deepgram-token/index.ts`](../../supabase/functions/deepgram-token/index.ts) for authenticated short-lived Deepgram token minting.
+- Replaced the capture engine in [`src/features/games/useSpeechCapture.ts`](../../src/features/games/useSpeechCapture.ts) with a direct microphone + websocket Deepgram pipeline that still returns the same final capture payload shape.
+- Added roster-aware keyterm assembly in [`src/lib/deepgram.ts`](../../src/lib/deepgram.ts) and passed it from [`src/features/dashboard/GameDashboardPage.tsx`](../../src/features/dashboard/GameDashboardPage.tsx) into both capture entry points.
+- Removed the old Web Speech type shim because the code no longer depends on that browser API.
+- Recorded repo-local verification in [`aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md`](../../aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md).
 
 ## Completion Signal
 

@@ -9,7 +9,7 @@ WhisperStat is a React PWA backed by Supabase: magic-link auth, Postgres schema 
 **Capture and parsing**
 
 - Roster-aware transcript parsing (deterministic path first), including **multi-event rally** proposals from a single utterance (ordered batches, mixed success/clarification rows).
-- **Web Speech** push-to-talk plus **manual text** fallback when the browser cannot capture audio.
+- **Deepgram realtime** push-to-talk plus **manual text** fallback when the browser cannot capture audio or the network path fails.
 - Parser and schema extensions such as **`serve_receive`** as a first-class stat type (see the `serve_receive` enum migration in [`supabase/migrations/`](./supabase/migrations/)).
 
 **Trust and data**
@@ -41,18 +41,29 @@ WhisperStat is a React PWA backed by Supabase: magic-link auth, Postgres schema 
 2. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 3. Optional: set `VITE_SUPABASE_REDIRECT_URL` for local test redirects only. Hosted builds ignore this override and use the current deployed origin.
 4. Optional for the clarification-only AI fallback: set `VITE_LLM_PARSE_ENABLED=true`.
-5. If you want the Edge fallback to work locally or remotely, set the Supabase function secret `ANTHROPIC_API_KEY` and optionally `ANTHROPIC_MODEL`.
-6. In Supabase Auth settings, allowlist the local and deployed app URLs you plan to use.
-7. Run `npm install`.
-8. Run `npm run smoke`.
-9. Run `npm run dev`.
+5. If you want live voice dictation to work with the safer temporary-token flow, set the Supabase function secret `DEEPGRAM_API_KEY` and serve or deploy `deepgram-token`.
+6. Optional temporary fallback for debugging only: set `VITE_DEEPGRAM_API_KEY` in `.env` to let the browser connect directly with one API key instead of minting per-session temporary tokens.
+7. If you want the Edge fallback to work locally or remotely, set the Supabase function secret `ANTHROPIC_API_KEY` and optionally `ANTHROPIC_MODEL`.
+8. In Supabase Auth settings, allowlist the local and deployed app URLs you plan to use.
+9. Run `npm install`.
+10. Run `npm run smoke`.
+11. Run `npm run dev`.
 
 For local Supabase Edge work, set secrets with the CLI before serving functions:
 
+- `npx supabase secrets set DEEPGRAM_API_KEY=<your-key>`
 - `npx supabase secrets set ANTHROPIC_API_KEY=<your-key>`
 - `npx supabase secrets set ANTHROPIC_MODEL=claude-sonnet-4-0`
+- `npx supabase functions serve deepgram-token`
 - `npx supabase functions serve parse-stat-llm`
+- `npx supabase functions deploy deepgram-token --no-verify-jwt`
 - `npx supabase functions deploy parse-stat-llm --no-verify-jwt`
+
+If browser-specific temporary-token websocket handshakes are giving you trouble during development, you can temporarily bypass the token mint step by adding this local-only env var:
+
+- `VITE_DEEPGRAM_API_KEY=<your Deepgram API key>`
+
+This exposes the key to the browser bundle, so treat it as a short-term development fallback only, not the preferred deployed setup.
 
 ## Optional dev admin shortcut
 
@@ -117,6 +128,7 @@ If you want to run the local Supabase stack as well, use:
 - `npm run supabase:db:pull`: pull remote schema changes into local migration history (use with care)
 - `npm run supabase:types`: generate `src/lib/database.generated.ts` from the linked project schema
 - `npx supabase functions serve parse-stat-llm`: run the clarification-only LLM fallback locally
+- `npx supabase functions serve deepgram-token`: run the Deepgram temp-token function locally
 
 ## Supabase notes
 
@@ -136,6 +148,7 @@ If you want to run the local Supabase stack as well, use:
 - Canonical deployed app URL: **https://whisperstat.vercel.app**
 - SPA routing fallback: [`vercel.json`](./vercel.json)
 - Supabase handles auth, data, and RPCs; the optional AI clarification fallback runs as a Supabase Edge Function and expects `ANTHROPIC_API_KEY` in that environment
+- Live dictation now also depends on the Supabase Edge function `deepgram-token`, which expects `DEEPGRAM_API_KEY` in that environment and returns short-lived browser-safe tokens for Deepgram realtime capture.
 - Magic-link auth expects the deployed site URL or redirect URL to be allowlisted in Supabase Auth settings.
 
 ## Supporting docs

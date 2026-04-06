@@ -176,6 +176,10 @@ Create a short evidence note once implemented. It should cover:
 - at least a few real examples showing better handling of player names and core volleyball phrases than the current browser-managed speech path
 - at least one failure example showing the user can fall back to manual transcript entry without losing the rest of the workflow
 
+Implementation note:
+
+- Added [`aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md`](../../aiDocs/evidence/2026-04-06_deepgram_realtime_stt_replacement_verification.md) with the completed local verification steps and the remaining credentialed live-capture checks.
+
 ## Implementation Checklist
 
 | # | Task |
@@ -186,5 +190,14 @@ Create a short evidence note once implemented. It should cover:
 | 4 | Add active-roster and volleyball keyterm biasing to the Deepgram session setup |
 | 5 | Verify the main dashboard and last-event correction flows still work unchanged downstream |
 | 6 | Add evidence notes and update roadmap/changelog when implementation is complete |
+
+## Status Update
+
+- [x] Task 1 completed.
+- [x] Task 2 completed without adding a browser SDK dependency; a direct websocket implementation kept the slice smaller.
+- [x] Task 3 completed.
+- [x] Task 4 completed.
+- [x] Task 5 completed at the code-contract level and through local typecheck/build verification.
+- [x] Task 6 completed for docs/changelog/evidence updates, with one credentialed live Deepgram verification pass still pending before archive.
 
 When this pair is fully implemented, update the roadmap checkboxes, move both files to `ai/roadmaps/complete`, and add a line to [`ai/changelog.md`](../changelog.md) per [`aiDocs/context.md`](../../aiDocs/context.md).
