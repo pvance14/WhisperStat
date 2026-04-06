@@ -24,16 +24,25 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+const CANONICAL_HOSTED_ORIGIN = "https://whisperstat.vercel.app";
+
 const getMagicLinkRedirectUrl = () => {
   const currentOrigin = window.location.origin;
   const currentHost = window.location.hostname;
   const isLocalHost =
     currentHost === "localhost" || currentHost === "127.0.0.1" || currentHost === "::1";
+  const isVercelHost = currentHost.endsWith(".vercel.app");
 
   // Keep the explicit redirect override for local testing, but never let a stale
   // localhost env value hijack hosted auth flows.
   if (isLocalHost && appEnv.supabaseRedirectUrl) {
     return appEnv.supabaseRedirectUrl;
+  }
+
+  // Force hosted magic-link flows onto the canonical production URL so auth emails
+  // don't keep older Vercel hostnames alive after a rename.
+  if (import.meta.env.PROD && isVercelHost) {
+    return CANONICAL_HOSTED_ORIGIN;
   }
 
   return currentOrigin;

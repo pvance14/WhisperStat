@@ -133,6 +133,7 @@ If you want to run the local Supabase stack as well, use:
 ## Deployment assumptions
 
 - Static frontend host: **Vercel**
+- Canonical deployed app URL: **https://whisperstat.vercel.app**
 - SPA routing fallback: [`vercel.json`](./vercel.json)
 - Supabase handles auth, data, and RPCs; the optional AI clarification fallback runs as a Supabase Edge Function and expects `ANTHROPIC_API_KEY` in that environment
 - Magic-link auth expects the deployed site URL or redirect URL to be allowlisted in Supabase Auth settings.
