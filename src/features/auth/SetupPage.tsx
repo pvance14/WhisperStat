@@ -29,8 +29,7 @@ export const SetupPage = () => {
           <div className="mono">cp .env.example .env</div>
           <div className="mono">Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY</div>
           <div className="mono">
-            Optional: set VITE_SUPABASE_REDIRECT_URL if you want to override the app’s current
-            origin
+            Optional: set VITE_SUPABASE_REDIRECT_URL for local test redirects only
           </div>
           <div className="mono">Allowlist your local and deployed app URLs under Auth → URL configuration</div>
           <div className="mono">npm install</div>

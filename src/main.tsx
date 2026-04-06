@@ -5,13 +5,14 @@ import { App } from "@/app/App";
 import { appLog } from "@/lib/logger";
 import "@/styles/global.css";
 
-registerSW({
+const updateSW = registerSW({
   immediate: true,
   onOfflineReady() {
     appLog("info", "pwa.offline_ready");
   },
   onNeedRefresh() {
     appLog("info", "pwa.update_available");
+    void updateSW(true);
   }
 });
 

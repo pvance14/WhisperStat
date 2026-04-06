@@ -24,6 +24,21 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+const getMagicLinkRedirectUrl = () => {
+  const currentOrigin = window.location.origin;
+  const currentHost = window.location.hostname;
+  const isLocalHost =
+    currentHost === "localhost" || currentHost === "127.0.0.1" || currentHost === "::1";
+
+  // Keep the explicit redirect override for local testing, but never let a stale
+  // localhost env value hijack hosted auth flows.
+  if (isLocalHost && appEnv.supabaseRedirectUrl) {
+    return appEnv.supabaseRedirectUrl;
+  }
+
+  return currentOrigin;
+};
+
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,7 +108,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         const { error } = await supabase.auth.signInWithOtp({
           email,
           options: {
-            emailRedirectTo: appEnv.supabaseRedirectUrl ?? window.location.origin
+            emailRedirectTo: getMagicLinkRedirectUrl()
           }
         });
 

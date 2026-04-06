@@ -39,7 +39,7 @@ WhisperStat is a React PWA backed by Supabase: magic-link auth, Postgres schema 
 
 1. Copy `.env.example` to `.env`.
 2. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
-3. Optional: set `VITE_SUPABASE_REDIRECT_URL` if you want to force a specific auth redirect URL. If omitted, the app falls back to the current origin (works well for Vercel deploys).
+3. Optional: set `VITE_SUPABASE_REDIRECT_URL` for local test redirects only. Hosted builds ignore this override and use the current deployed origin.
 4. Optional for the clarification-only AI fallback: set `VITE_LLM_PARSE_ENABLED=true`.
 5. If you want the Edge fallback to work locally or remotely, set the Supabase function secret `ANTHROPIC_API_KEY` and optionally `ANTHROPIC_MODEL`.
 6. In Supabase Auth settings, allowlist the local and deployed app URLs you plan to use.
