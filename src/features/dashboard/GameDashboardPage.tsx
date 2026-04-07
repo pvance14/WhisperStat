@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useSpeechCapture } from "@/features/games/useSpeechCapture";
@@ -224,6 +224,24 @@ export const GameDashboardPage = () => {
   const [isSavingScore, setIsSavingScore] = useState(false);
   const [isUpdatingGameStatus, setIsUpdatingGameStatus] = useState(false);
   const [lastLoadedAt, setLastLoadedAt] = useState<string | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const primaryMicRefCallback = useCallback((node: HTMLDivElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+    if (node) {
+      observerRef.current = new IntersectionObserver(
+        ([entry]) => {
+          setIsScrolled(!entry.isIntersecting);
+        },
+        { rootMargin: "0px", threshold: 0 }
+      );
+      observerRef.current.observe(node);
+    }
+  }, []);
 
   const loadBundle = async (targetGameId: string) => {
     const nextBundle = await getGameBundle(requireSupabase(), targetGameId);
@@ -1131,12 +1149,15 @@ export const GameDashboardPage = () => {
                 coaches can trust the current match state without hunting.
               </p>
             </div>
-            <div className="hero-meta">
+            <div className="hero-meta" style={{ flexWrap: "wrap", gap: "0.5rem" }}>
               <div className="meta-pill">Status: {titleCase(game.status)}</div>
+              <div className="meta-pill">Set: {game.current_set}</div>
               <div className="meta-pill">
                 Score: <strong>{currentSetScore.us}-{currentSetScore.them}</strong>
               </div>
-              <div className="meta-pill">Updates: {lastLoadedAt ? "Live" : "Waiting"}</div>
+              <div className="meta-pill">Match: {matchScore.us}-{matchScore.them}</div>
+              <div className="meta-pill">Plays: {activeEvents.length}</div>
+              <div className="meta-pill" style={{ opacity: 0.7 }}>Updates: {lastLoadedAt ? "Live" : "Waiting"}</div>
             </div>
           </div>
         </div>
@@ -1181,30 +1202,120 @@ export const GameDashboardPage = () => {
         </div>
       </section>
 
-      <div className="summary-strip">
-        <div className="summary-tile featured">
-          <div className="summary-label">Current set</div>
-          <div className="summary-value">{game.current_set}</div>
-          <div className="summary-support">New plays and the current-set filter use this number.</div>
+      {/* 1. Static Large Microphone Block (Normal Flow) */}
+      <div 
+        ref={primaryMicRefCallback}
+        style={{
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96))",
+          padding: "3rem 1.5rem",
+          margin: "0 -1.6rem 1.25rem -1.6rem",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.02)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "2rem",
+          borderBottomLeftRadius: "1.5rem",
+          borderBottomRightRadius: "1.5rem"
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <h3 style={{ fontSize: "2.25rem", color: "var(--text-strong)" }}>Live Voice Capture</h3>
+          <p className="supporting-text" style={{ fontSize: "1.1rem", maxWidth: "400px", margin: "0.5rem auto 0" }}>
+            Tap the microphone and speak naturally (e.g. "12 got a kill"). Scroll down to view stats while recording.
+          </p>
         </div>
-        <div className="summary-tile">
-          <div className="summary-label">Saved score</div>
-          <div className="summary-value">
-            {currentSetScore.us}-{currentSetScore.them}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.25rem", width: "100%" }}>
+          <button
+            className="button"
+            type="button"
+            disabled={!canCapture || !isSpeechCaptureSupported || isGameCompleted}
+            onClick={() => {
+              if (isListening) stopListening();
+              else { clearSpeechError(); startListening(); }
+            }}
+            style={{
+              padding: "1.75rem 3.5rem",
+              fontSize: "1.6rem",
+              borderRadius: "999px",
+              boxShadow: isListening 
+                ? "0 0 0 6px rgba(255, 107, 44, 0.2), 0 10px 30px rgba(255, 107, 44, 0.4)" 
+                : "0 18px 36px rgba(255, 107, 44, 0.28)",
+              background: isListening ? "linear-gradient(135deg, #FF3B3B, #FF6B2C)" : undefined,
+              transition: "all 0.2s ease"
+            }}
+          >
+            {isListening ? "Stop Listening" : "Push to start live capture"}
+          </button>
+          
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+            <span className="capture-state" style={{ color: isListening ? "var(--orange-primary)" : "var(--text-soft)", fontSize: "1.1rem", fontWeight: "700" }}>
+              {isListening ? "Listening for the next play..." : "Idle until you start capture"}
+            </span>
+            {liveTranscript && (
+              <div className="mono" style={{ fontSize: "1.25rem", color: "var(--text-strong)", backgroundColor: "var(--bg-muted)", padding: "0.75rem 1.25rem", borderRadius: "1rem", marginTop: "1rem" }}>
+                "{liveTranscript}"
+              </div>
+            )}
           </div>
-          <div className="summary-support">The score you enter here is the official tally for Set {game.current_set}.</div>
         </div>
-        <div className="summary-tile">
-          <div className="summary-label">Saved plays</div>
-          <div className="summary-value">{activeEvents.length}</div>
-          <div className="summary-support">Only confirmed plays count in live totals (undone plays are hidden).</div>
-        </div>
-        <div className="summary-tile">
-          <div className="summary-label">Sets won</div>
-          <div className="summary-value">
-            {matchScore.us}-{matchScore.them}
-          </div>
-          <div className="summary-support">Based on the score you saved at the end of each set.</div>
+        {speechError && <StatusMessage tone="error" message={speechError} />}
+      </div>
+
+      {/* 2. Slide-In Compact Sticky Header (Fixed Overlay) */}
+      <div 
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 200,
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96))",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid var(--line-strong)",
+          padding: "0.75rem 1.5rem",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
+          visibility: isScrolled ? "visible" : "hidden",
+          opacity: isScrolled ? 1 : 0,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1.5rem"
+        }}
+      >
+        <button
+          className="button"
+          type="button"
+          disabled={!canCapture || !isSpeechCaptureSupported || isGameCompleted}
+          onClick={() => {
+            if (isListening) stopListening();
+            else { clearSpeechError(); startListening(); }
+          }}
+          style={{
+            padding: "0.75rem 1.25rem",
+            fontSize: "0.95rem",
+            borderRadius: "999px",
+            boxShadow: isListening 
+              ? "0 0 0 4px rgba(255, 107, 44, 0.2), 0 4px 10px rgba(255, 107, 44, 0.3)" 
+              : "0 4px 12px rgba(255, 107, 44, 0.2)",
+            background: isListening ? "linear-gradient(135deg, #FF3B3B, #FF6B2C)" : undefined,
+            transition: "all 0.2s ease",
+            whiteSpace: "nowrap"
+          }}
+        >
+          {isListening ? "Recording..." : "Start Mic"}
+        </button>
+        
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", flex: 1, overflow: "hidden" }}>
+          <span className="capture-state" style={{ color: isListening ? "var(--orange-primary)" : "var(--text-soft)", fontSize: "0.85rem", fontWeight: "700" }}>
+            {isListening ? "Listening for the next play..." : "Idle until you start capture"}
+          </span>
+          {liveTranscript && (
+            <div className="mono" style={{ fontSize: "0.9rem", color: "var(--text-strong)", maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              "{liveTranscript}"
+            </div>
+          )}
         </div>
       </div>
 
@@ -1212,19 +1323,7 @@ export const GameDashboardPage = () => {
       {workflowStatus ? <StatusMessage tone={workflowStatus.tone} message={workflowStatus.message} /> : null}
 
       <div className="split-layout sidebar-heavy">
-        <section className="card stack feature-panel feature-panel-primary">
-          <div className="section-toolbar">
-            <div className="section-copy">
-              <h3>Live capture and confirmation</h3>
-              <p className="supporting-text">
-                Start capture, review the parse, then confirm or discard it without leaving this
-                work zone.
-              </p>
-            </div>
-            <div className="supporting-text">
-              {isListening ? "Mic active" : "Ready for the next stat call"}
-            </div>
-          </div>
+        <section className="card stack feature-panel feature-panel-primary" style={{ paddingTop: "1rem" }}>
 
           {!canCapture ? (
             <StatusMessage
@@ -1240,56 +1339,6 @@ export const GameDashboardPage = () => {
           ) : null}
 
           <div className="split-layout capture-layout">
-            <section className="surface stack capture-panel action-panel primary">
-              <div className="action-panel-header">
-                <h3>Voice capture</h3>
-                <p className="supporting-text">
-                  Hold the button, call the play, then confirm it so nothing saves by accident.
-                </p>
-              </div>
-
-              <div className="cluster">
-                <button
-                  className="button capture-cta"
-                  type="button"
-                  disabled={!canCapture || !isSpeechCaptureSupported || isGameCompleted}
-                  onClick={() => {
-                    if (isListening) {
-                      stopListening();
-                      return;
-                    }
-
-                    clearSpeechError();
-                    startListening();
-                  }}
-                >
-                  {isListening ? "Stop listening" : "Push to talk"}
-                </button>
-                <span className="capture-state">
-                  {isListening ? "Listening for the next stat call..." : "Idle until you start capture"}
-                </span>
-              </div>
-
-              <div className="supporting-text">
-                {isSpeechCaptureSupported
-                  ? "This browser can use the microphone for live dictation."
-                  : "This browser can’t use the microphone for live dictation, so type your call below. That’s normal on some phones or when mic access is blocked."}
-              </div>
-
-              {liveTranscript ? (
-                <div className="transcript-box">
-                  <div className="muted">Live dictation</div>
-                  <div className="mono">{liveTranscript}</div>
-                </div>
-              ) : null}
-
-              {speechError ? <StatusMessage tone="error" message={speechError} /> : null}
-
-              <div className="supporting-text">
-                Try <span className="mono">12 kill</span>, <span className="mono">Jane ace</span>,{" "}
-                <span className="mono">Mia serve error</span>, or <span className="mono">Julie dig</span>.
-              </div>
-            </section>
 
             <form
               className="surface stack form-grid capture-panel action-panel"

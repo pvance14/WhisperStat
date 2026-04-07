@@ -166,12 +166,6 @@ export const AppShell = ({ children }: PropsWithChildren) => {
         </aside>
 
         <main className="main-content">
-          {teams.length === 0 ? (
-            <StatusMessage
-              tone="info"
-              message="No teams yet. Use the overview page to create one, then the roster and game setup pages will unlock."
-            />
-          ) : null}
           {children ?? <Outlet />}
         </main>
       </div>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAppShell } from "@/app/AppShell";
 import { StatusMessage } from "@/components/StatusMessage";
-import { createTeam, listGames, updateTeam } from "@/lib/data";
+import { createGame, createTeam, listGames, listPlayers } from "@/lib/data";
 import type { Database } from "@/lib/database.types";
 import { requireSupabase } from "@/lib/supabase";
 import { formatDateTime, getErrorMessage } from "@/lib/utils";
@@ -11,65 +11,70 @@ import { formatDateTime, getErrorMessage } from "@/lib/utils";
 type GameRow = Database["public"]["Tables"]["games"]["Row"];
 
 export const OverviewPage = () => {
+  const navigate = useNavigate();
   const { teams, selectedTeam, selectedTeamId, refreshTeams } = useAppShell();
   const [teamName, setTeamName] = useState("");
-  const [renameValue, setRenameValue] = useState(selectedTeam?.name ?? "");
   const [recentGames, setRecentGames] = useState<GameRow[]>([]);
-  const [status, setStatus] = useState<{ tone: "success" | "error"; message: string } | null>(
-    null
-  );
+  const [hasPlayers, setHasPlayers] = useState<boolean | null>(null);
+  const [status, setStatus] = useState<{ tone: "success" | "error"; message: string } | null>(null);
   const [isWorking, setIsWorking] = useState(false);
-
-  useEffect(() => {
-    setRenameValue(selectedTeam?.name ?? "");
-  }, [selectedTeam?.id, selectedTeam?.name]);
 
   useEffect(() => {
     if (!selectedTeamId) {
       setRecentGames([]);
+      setHasPlayers(null);
       return;
     }
 
-    void listGames(requireSupabase(), selectedTeamId)
-      .then((games) => setRecentGames(games.slice(0, 4)))
-      .catch((error) =>
+    const loadData = async () => {
+      try {
+        const [games, players] = await Promise.all([
+          listGames(requireSupabase(), selectedTeamId),
+          listPlayers(requireSupabase(), selectedTeamId)
+        ]);
+        setRecentGames(games.slice(0, 4));
+        setHasPlayers(players.length > 0);
+      } catch (error) {
         setStatus({
           tone: "error",
           message: getErrorMessage(error)
-        })
-      );
+        });
+      }
+    };
+    void loadData();
   }, [selectedTeamId]);
 
-  return (
-    <div className="grid">
-      <section className="page-header page-panel">
-        <div>
-          <span className="chip">Overview</span>
-          <h2>Your teams and setup</h2>
-          <p>
-            When you are signed in, manage teams, rosters, and games from here, with quick links into
-            live tracking and reports.
-          </p>
-        </div>
-        <div className="cluster">
-          <div className="metric-card">
-            <p>Teams ready</p>
-            <div className="metric-value">{teams.length}</div>
-          </div>
-        </div>
-      </section>
+  const handleStartQuickMatch = async () => {
+    if (!selectedTeam) return;
+    setStatus(null);
+    setIsWorking(true);
+    try {
+      const newGame = await createGame(requireSupabase(), {
+        team_id: selectedTeam.id,
+        opponent_name: "Unknown Opponent",
+        game_date: new Date().toISOString(),
+        location: "",
+        status: "in_progress",
+        current_set: 1
+      });
+      navigate(`/app/games/${newGame.id}`);
+    } catch (error) {
+      setStatus({ tone: "error", message: getErrorMessage(error) });
+      setIsWorking(false);
+    }
+  };
 
-      {status ? <StatusMessage tone={status.tone} message={status.message} /> : null}
-
-      <div className="grid two">
-        <section className="card stack">
+  if (teams.length === 0) {
+    return (
+      <div className="setup-shell" style={{ minHeight: 'auto', padding: 0 }}>
+        <section className="setup-card card stack" style={{ width: '100%', maxWidth: '100%' }}>
           <div>
-            <h3>Create a team</h3>
-            <p className="supporting-text">
-              You can run several teams under one account—handy for school, club, or separate squads.
+            <span className="chip">Welcome</span>
+            <h2 style={{ fontSize: "2rem", marginTop: "0.5rem" }}>Create your first team</h2>
+            <p className="supporting-text" style={{ fontSize: "1.1rem" }}>
+              Let's set up your squad so you can jump right into live gametime stats tracking.
             </p>
           </div>
-
           <form
             className="form-grid"
             onSubmit={(event) => {
@@ -81,10 +86,6 @@ export const OverviewPage = () => {
                 .then(async () => {
                   setTeamName("");
                   await refreshTeams();
-                  setStatus({
-                    tone: "success",
-                    message: "Team created. You can switch to it from the left sidebar."
-                  });
                 })
                 .catch((error) =>
                   setStatus({
@@ -99,127 +100,140 @@ export const OverviewPage = () => {
               <span className="muted">Team name</span>
               <input
                 required
+                autoFocus
                 placeholder="Varsity Volleyball"
                 value={teamName}
                 onChange={(event) => setTeamName(event.target.value)}
               />
             </label>
-            <div className="form-actions">
-              <button className="button" type="submit" disabled={isWorking}>
-                {isWorking ? "Saving..." : "Create team"}
+            <div className="form-actions" style={{ marginTop: "1rem" }}>
+              <button className="button" type="submit" disabled={isWorking} style={{ width: "100%", padding: "1.2rem", fontSize: "1.1rem" }}>
+                {isWorking ? "Saving..." : "Create Team"}
               </button>
             </div>
           </form>
-        </section>
-
-        <section className="card stack">
-          <div>
-            <h3>Rename active team</h3>
-            <p className="supporting-text">
-              Rename the active team when the name changes so roster and games stay aligned.
-            </p>
-          </div>
-
-          {!selectedTeam ? (
-            <StatusMessage tone="info" message="Create a team first to unlock team-level editing." />
-          ) : (
-            <form
-              className="form-grid"
-              onSubmit={(event) => {
-                event.preventDefault();
-                setStatus(null);
-                setIsWorking(true);
-
-                void updateTeam(requireSupabase(), selectedTeam.id, { name: renameValue })
-                  .then(async () => {
-                    await refreshTeams();
-                    setStatus({
-                      tone: "success",
-                      message: "Team name updated."
-                    });
-                  })
-                  .catch((error) =>
-                    setStatus({
-                      tone: "error",
-                      message: getErrorMessage(error)
-                    })
-                  )
-                  .finally(() => setIsWorking(false));
-              }}
-            >
-              <label className="stack" style={{ gap: "0.4rem" }}>
-                <span className="muted">Selected team</span>
-                <input value={renameValue} onChange={(event) => setRenameValue(event.target.value)} />
-              </label>
-              <div className="form-actions">
-                <button className="button-secondary" type="submit" disabled={isWorking}>
-                  Save rename
-                </button>
-              </div>
-            </form>
-          )}
+          {status ? <StatusMessage tone={status.tone} message={status.message} /> : null}
         </section>
       </div>
+    );
+  }
+
+  if (hasPlayers === false) {
+    return (
+      <div className="setup-shell" style={{ minHeight: 'auto', padding: 0 }}>
+        <section className="setup-card card stack" style={{ width: '100%', maxWidth: '100%' }}>
+          <div>
+            <span className="chip">Setup Required</span>
+            <h2 style={{ fontSize: "2rem", marginTop: "0.5rem" }}>Add players to {selectedTeam?.name}</h2>
+            <p className="supporting-text" style={{ fontSize: "1.1rem" }}>
+              Before you can capture stats, the AI needs to know your roster so it can recognize player names and numbers.
+            </p>
+          </div>
+          <div className="cluster" style={{ marginTop: "1rem" }}>
+            <Link className="button" to="/app/roster" style={{ padding: "1.2rem", fontSize: "1.1rem", width: "100%" }}>
+              Go to Roster Setup
+            </Link>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  const todayStr = new Date().toDateString();
+  const gameToday = recentGames.find(
+    (g) => new Date(g.game_date).toDateString() === todayStr && g.status === "in_progress"
+  );
+
+  return (
+    <div className="grid">
+      <section className="card stack" style={{ background: "linear-gradient(135deg, rgba(8, 27, 58, 0.98), rgba(18, 48, 95, 0.98))", color: "white", padding: "2.5rem 1.5rem" }}>
+        {gameToday ? (
+          <>
+            <div>
+              <span className="chip" style={{ background: "rgba(255, 255, 255, 0.2)", color: "white", border: "none" }}>Active Match Found</span>
+              <h2 style={{ color: "white", fontSize: "2.5rem", marginTop: "0.5rem", marginBottom: "0.5rem" }}>Game in progress!</h2>
+              <p style={{ color: "rgba(255, 255, 255, 0.8)", fontSize: "1.1rem" }}>
+                You have a match against {gameToday.opponent_name} happening right now.
+              </p>
+            </div>
+            <Link 
+              className="button" 
+              to={`/app/games/${gameToday.id}`}
+              style={{ padding: "1.5rem", fontSize: "1.2rem", marginTop: "1rem", boxShadow: "0 10px 25px rgba(255, 107, 44, 0.4)" }}
+            >
+              Resume Today's Match
+            </Link>
+          </>
+        ) : (
+          <>
+            <div>
+              <span className="chip" style={{ background: "rgba(255, 255, 255, 0.2)", color: "white", border: "none" }}>Live Capture</span>
+              <h2 style={{ color: "white", fontSize: "2.5rem", marginTop: "0.5rem", marginBottom: "0.5rem" }}>Ready to track?</h2>
+              <p style={{ color: "rgba(255, 255, 255, 0.8)", fontSize: "1.1rem" }}>
+                Hit start to immediately open the microphone and begin logging stats for {selectedTeam?.name}.
+              </p>
+            </div>
+            <button 
+              className="button" 
+              onClick={handleStartQuickMatch} 
+              disabled={isWorking}
+              style={{ padding: "1.5rem", fontSize: "1.2rem", marginTop: "1rem", boxShadow: "0 10px 25px rgba(255, 107, 44, 0.4)" }}
+            >
+              {isWorking ? "Starting..." : "Start Live Match"}
+            </button>
+          </>
+        )}
+        {status ? <StatusMessage tone={status.tone} message={status.message} /> : null}
+      </section>
 
       <div className="grid two">
         <section className="card stack">
           <div>
-            <h3>Next setup steps</h3>
-            <p className="supporting-text">
-              Finish roster and game setup here, then jump into capture from the dashboard.
-            </p>
+            <h3>Recent games</h3>
+            <p className="supporting-text">View reports and summaries from past matches.</p>
           </div>
 
-          <div className="cluster">
-            <Link className="button" to="/app/roster">
-              Manage roster
-            </Link>
-            <Link className="button-secondary" to="/app/games/new">
-              Create game
-            </Link>
+          <div className="list">
+            {recentGames.length === 0 ? (
+              <div className="list-item">
+                <strong>No games yet</strong>
+                <div className="supporting-text">Capture your first match to see it here.</div>
+              </div>
+            ) : (
+              recentGames.map((game) => (
+                <div className="list-item" key={game.id}>
+                  <strong>vs {game.opponent_name}</strong>
+                  <div className="supporting-text">{formatDateTime(game.game_date)}</div>
+                  <div className="cluster" style={{ marginTop: "0.8rem" }}>
+                    <Link className="button-secondary" to={`/app/games/${game.id}`}>
+                      Dashboard
+                    </Link>
+                    <Link className="button-ghost" to={`/app/report/${game.id}`}>
+                      Report
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </section>
 
-        <section className="card stack">
+        <section className="card stack" style={{ alignSelf: "start" }}>
           <div>
-            <h3>Recent games for active team</h3>
-            <p className="supporting-text">Open a game from the list to use the live dashboard and reports.</p>
+            <h3>Team Settings</h3>
+            <p className="supporting-text">Make quick adjustments to {selectedTeam?.name}.</p>
           </div>
-
-          {selectedTeam ? (
-            <div className="list">
-              {recentGames.length === 0 ? (
-                <div className="list-item">
-                  <strong>No games yet</strong>
-                  <div className="supporting-text">Create the first match to start tracking from the dashboard.</div>
-                </div>
-              ) : (
-                recentGames.map((game) => (
-                  <div className="list-item" key={game.id}>
-                    <strong>vs {game.opponent_name}</strong>
-                    <div className="supporting-text">{formatDateTime(game.game_date)}</div>
-                    <div className="cluster" style={{ marginTop: "0.8rem" }}>
-                      <Link className="button-secondary" to={`/app/games/${game.id}`}>
-                        Open dashboard
-                      </Link>
-                      <Link className="button-ghost" to={`/app/report/${game.id}`}>
-                        Open report
-                      </Link>
-                      {game.status === "completed" ? (
-                        <Link className="button-ghost" to={`/app/summary/${game.id}`}>
-                          Open summary
-                        </Link>
-                      ) : null}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          ) : (
-            <StatusMessage tone="info" message="Select or create a team to see its recent games." />
-          )}
+          <div className="cluster">
+            <Link className="button-secondary" to="/app/roster">
+              Manage Roster
+            </Link>
+            <Link className="button-ghost" to="/app/games/new">
+              Advanced Game Setup
+            </Link>
+          </div>
         </section>
       </div>
     </div>
   );
 };
+
