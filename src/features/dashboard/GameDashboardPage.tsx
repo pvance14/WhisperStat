@@ -19,6 +19,7 @@ import {
   summarizeMatchScore,
   upsertSetScore
 } from "@/lib/gameScore";
+import { buildDeepgramKeyterms } from "@/lib/deepgram";
 import { appLog } from "@/lib/logger";
 import {
   buildProposalBatchResult,
@@ -67,6 +68,66 @@ interface EventEditDraft {
 
 const formatSourceLabel = (source: ReviewItem["source"]) =>
   source === "speech" ? "Voice" : "Typed";
+
+type SpeechCapturePhase = "idle" | "requesting_mic" | "authenticating" | "connecting" | "ready" | "finalizing";
+
+const getCapturePhaseSummary = (phase: SpeechCapturePhase) => {
+  switch (phase) {
+    case "requesting_mic":
+      return "Waiting for microphone access";
+    case "authenticating":
+      return "Preparing live dictation";
+    case "connecting":
+      return "Connecting to live transcription";
+    case "ready":
+      return "Ready for you to speak";
+    case "finalizing":
+      return "Finishing the transcript";
+    case "idle":
+    default:
+      return "Ready for the next stat call";
+  }
+};
+
+const getCapturePhaseInstruction = (phase: SpeechCapturePhase) => {
+  switch (phase) {
+    case "requesting_mic":
+      return "Allow the mic if the browser asks for permission.";
+    case "authenticating":
+      return "Hold on while we prepare the live transcription session.";
+    case "connecting":
+      return "Wait to speak until this changes to ready so your important words are captured.";
+    case "ready":
+      return "Deepgram is live now. Say the play, then tap again to stop and review it.";
+    case "finalizing":
+      return "We heard you and are waiting for the last transcript chunk to arrive.";
+    case "idle":
+    default:
+      return "Idle until you start capture";
+  }
+};
+
+const getCaptureButtonLabel = (phase: SpeechCapturePhase, isListening: boolean, idleLabel: string, stopLabel: string) => {
+  if (!isListening) {
+    return idleLabel;
+  }
+
+  switch (phase) {
+    case "requesting_mic":
+      return "Allowing mic...";
+    case "authenticating":
+      return "Starting dictation...";
+    case "connecting":
+      return "Connecting...";
+    case "ready":
+      return stopLabel;
+    case "finalizing":
+      return "Finishing...";
+    case "idle":
+    default:
+      return stopLabel;
+  }
+};
 
 const buildEventSummary = (event: StatEventRow, players: PlayerRow[]) => {
   const player = players.find((candidate) => candidate.id === event.player_id);
@@ -191,9 +252,9 @@ const buildBatchClauseAssistState = (
           eligibility.allowed
             ? ({ status: "loading" } satisfies ReviewItemLlmAssist)
             : ({
-                status: eligibility.status,
-                message: eligibility.message
-              } satisfies ReviewItemLlmAssist)
+              status: eligibility.status,
+              message: eligibility.message
+            } satisfies ReviewItemLlmAssist)
         ]
       ];
     })
@@ -242,6 +303,7 @@ export const GameDashboardPage = () => {
       observerRef.current.observe(node);
     }
   }, []);
+  const speechKeyterms = buildDeepgramKeyterms(players);
 
   const loadBundle = async (targetGameId: string) => {
     const nextBundle = await getGameBundle(requireSupabase(), targetGameId);
@@ -320,11 +382,11 @@ export const GameDashboardPage = () => {
             const nextClauses = candidate.result.clauses.map((clause) =>
               clause.clauseId === clauseId
                 ? {
-                    clauseId,
-                    text: clause.text,
-                    proposal: nextProposal,
-                    skipped: null
-                  }
+                  clauseId,
+                  text: clause.text,
+                  proposal: nextProposal,
+                  skipped: null
+                }
                 : clause
             );
 
@@ -485,9 +547,9 @@ export const GameDashboardPage = () => {
     const eligibility =
       result.kind === "clarification"
         ? getLlmParseEligibility({
-            reason: result.clarification.reason,
-            transcript
-          })
+          reason: result.clarification.reason,
+          transcript
+        })
         : null;
     const batchClauseAssist =
       result.kind === "proposal_batch" ? buildBatchClauseAssistState(result) : {};
@@ -527,9 +589,9 @@ export const GameDashboardPage = () => {
         ? eligibility?.allowed
           ? { status: "loading" }
           : {
-              status: eligibility?.status ?? "skipped",
-              message: eligibility?.message
-            }
+            status: eligibility?.status ?? "skipped",
+            message: eligibility?.message
+          }
         : { status: "idle" };
 
     setReviewItems((current) =>
@@ -554,30 +616,30 @@ export const GameDashboardPage = () => {
     setWorkflowStatus(
       result.kind === "clarification"
         ? {
-            tone: eligibility?.allowed
-              ? "info"
-              : result.clarification.reason === "missing_event_type"
-                ? "warn"
-                : "info",
-            message: eligibility?.allowed
-              ? `${result.clarification.message} Checking with AI now.`
-              : result.clarification.message
-          }
+          tone: eligibility?.allowed
+            ? "info"
+            : result.clarification.reason === "missing_event_type"
+              ? "warn"
+              : "info",
+          message: eligibility?.allowed
+            ? `${result.clarification.message} Checking with AI now.`
+            : result.clarification.message
+        }
         : {
-            tone: "success",
-            message: buildReviewStatusMessage({
-              id: reviewItemId,
-              clientCaptureId: "",
-              transcript,
-              createdAt: "",
-              setNumber: game.current_set,
-              captureDurationMs: durationMs,
-              source,
-              result,
-              llmAssist,
-              batchClauseAssist
-            })
-          }
+          tone: "success",
+          message: buildReviewStatusMessage({
+            id: reviewItemId,
+            clientCaptureId: "",
+            transcript,
+            createdAt: "",
+            setNumber: game.current_set,
+            captureDurationMs: durationMs,
+            source,
+            result,
+            llmAssist,
+            batchClauseAssist
+          })
+        }
     );
 
     if (result.kind === "clarification" && eligibility?.allowed) {
@@ -642,12 +704,17 @@ export const GameDashboardPage = () => {
   const {
     isSupported: isSpeechCaptureSupported,
     isListening,
+    phase: speechPhase,
+    isReadyToCapture,
     liveTranscript,
     error: speechError,
     clearError: clearSpeechError,
     startListening,
     stopListening
-  } = useSpeechCapture(handleCapturedTranscript);
+  } = useSpeechCapture(handleCapturedTranscript, {
+    keyterms: speechKeyterms,
+    sessionLabel: "stat-capture"
+  });
 
   const applyLastEventCorrection = async ({
     transcript,
@@ -723,6 +790,8 @@ export const GameDashboardPage = () => {
   const {
     isSupported: isCorrectionSpeechSupported,
     isListening: isCorrectionListening,
+    phase: correctionSpeechPhase,
+    isReadyToCapture: isCorrectionReadyToCapture,
     liveTranscript: liveCorrectionTranscript,
     error: correctionSpeechError,
     clearError: clearCorrectionSpeechError,
@@ -734,6 +803,9 @@ export const GameDashboardPage = () => {
       durationMs,
       source
     });
+  }, {
+    keyterms: speechKeyterms,
+    sessionLabel: "last-event-correction"
   });
 
   useEffect(() => {
@@ -1203,7 +1275,7 @@ export const GameDashboardPage = () => {
       </section>
 
       {/* 1. Static Large Microphone Block (Normal Flow) */}
-      <div 
+      <div
         ref={primaryMicRefCallback}
         style={{
           background: "linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96))",
@@ -1238,8 +1310,8 @@ export const GameDashboardPage = () => {
               padding: "1.75rem 3.5rem",
               fontSize: "1.6rem",
               borderRadius: "999px",
-              boxShadow: isListening 
-                ? "0 0 0 6px rgba(255, 107, 44, 0.2), 0 10px 30px rgba(255, 107, 44, 0.4)" 
+              boxShadow: isListening
+                ? "0 0 0 6px rgba(255, 107, 44, 0.2), 0 10px 30px rgba(255, 107, 44, 0.4)"
                 : "0 18px 36px rgba(255, 107, 44, 0.28)",
               background: isListening ? "linear-gradient(135deg, #FF3B3B, #FF6B2C)" : undefined,
               transition: "all 0.2s ease"
@@ -1247,7 +1319,7 @@ export const GameDashboardPage = () => {
           >
             {isListening ? "Stop Listening" : "Push to start live capture"}
           </button>
-          
+
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
             <span className="capture-state" style={{ color: isListening ? "var(--orange-primary)" : "var(--text-soft)", fontSize: "1.1rem", fontWeight: "700" }}>
               {isListening ? "Listening for the next play..." : "Idle until you start capture"}
@@ -1263,7 +1335,7 @@ export const GameDashboardPage = () => {
       </div>
 
       {/* 2. Slide-In Compact Sticky Header (Fixed Overlay) */}
-      <div 
+      <div
         style={{
           position: "fixed",
           top: 0,
@@ -1296,8 +1368,8 @@ export const GameDashboardPage = () => {
             padding: "0.75rem 1.25rem",
             fontSize: "0.95rem",
             borderRadius: "999px",
-            boxShadow: isListening 
-              ? "0 0 0 4px rgba(255, 107, 44, 0.2), 0 4px 10px rgba(255, 107, 44, 0.3)" 
+            boxShadow: isListening
+              ? "0 0 0 4px rgba(255, 107, 44, 0.2), 0 4px 10px rgba(255, 107, 44, 0.3)"
               : "0 4px 12px rgba(255, 107, 44, 0.2)",
             background: isListening ? "linear-gradient(135deg, #FF3B3B, #FF6B2C)" : undefined,
             transition: "all 0.2s ease",
@@ -1306,7 +1378,7 @@ export const GameDashboardPage = () => {
         >
           {isListening ? "Recording..." : "Start Mic"}
         </button>
-        
+
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", flex: 1, overflow: "hidden" }}>
           <span className="capture-state" style={{ color: isListening ? "var(--orange-primary)" : "var(--text-soft)", fontSize: "0.85rem", fontWeight: "700" }}>
             {isListening ? "Listening for the next play..." : "Idle until you start capture"}
@@ -1323,7 +1395,19 @@ export const GameDashboardPage = () => {
       {workflowStatus ? <StatusMessage tone={workflowStatus.tone} message={workflowStatus.message} /> : null}
 
       <div className="split-layout sidebar-heavy">
-        <section className="card stack feature-panel feature-panel-primary" style={{ paddingTop: "1rem" }}>
+        <section className="card stack feature-panel feature-panel-primary">
+          <div className="section-toolbar">
+            <div className="section-copy">
+              <h3>Live capture and confirmation</h3>
+              <p className="supporting-text">
+                Start capture, review the parse, then confirm or discard it without leaving this
+                work zone.
+              </p>
+            </div>
+            <div className="supporting-text">
+              {getCapturePhaseSummary(speechPhase)}
+            </div>
+          </div>
 
           {!canCapture ? (
             <StatusMessage
@@ -1339,6 +1423,60 @@ export const GameDashboardPage = () => {
           ) : null}
 
           <div className="split-layout capture-layout">
+            <section className="surface stack capture-panel action-panel primary">
+              <div className="action-panel-header">
+                <h3>Voice capture</h3>
+                <p className="supporting-text">
+                  Hold the button, call the play, then confirm it so nothing saves by accident.
+                </p>
+              </div>
+
+              <div className="cluster">
+                <button
+                  className="button capture-cta"
+                  type="button"
+                  disabled={!canCapture || !isSpeechCaptureSupported || isGameCompleted}
+                  onClick={() => {
+                    if (isListening) {
+                      stopListening();
+                      return;
+                    }
+
+                    clearSpeechError();
+                    startListening();
+                  }}
+                >
+                  {getCaptureButtonLabel(speechPhase, isListening, "Push to talk", "Stop listening")}
+                </button>
+                <span className="capture-state">
+                  {getCapturePhaseInstruction(speechPhase)}
+                </span>
+              </div>
+
+              {isListening && !isReadyToCapture ? (
+                <StatusMessage tone="info" message="Wait for “Ready for you to speak” before saying the play." />
+              ) : null}
+
+              <div className="supporting-text">
+                {isSpeechCaptureSupported
+                  ? "This browser can use the microphone for live dictation."
+                  : "This browser can’t use the microphone for live dictation, so type your call below. That’s normal on some phones or when mic access is blocked."}
+              </div>
+
+              {liveTranscript ? (
+                <div className="transcript-box">
+                  <div className="muted">Live dictation</div>
+                  <div className="mono">{liveTranscript}</div>
+                </div>
+              ) : null}
+
+              {speechError ? <StatusMessage tone="error" message={speechError} /> : null}
+
+              <div className="supporting-text">
+                Try <span className="mono">12 kill</span>, <span className="mono">Jane ace</span>,{" "}
+                <span className="mono">Mia serve error</span>, or <span className="mono">Julie dig</span>.
+              </div>
+            </section>
 
             <form
               className="surface stack form-grid capture-panel action-panel"
@@ -1412,9 +1550,8 @@ export const GameDashboardPage = () => {
             ) : (
               reviewItems.map((item) => (
                 <article
-                  className={`review-card decision-card ${
-                    item.result.kind === "clarification" ? "clarification" : "proposal"
-                  }`}
+                  className={`review-card decision-card ${item.result.kind === "clarification" ? "clarification" : "proposal"
+                    }`}
                   key={item.id}
                 >
                   <div className="cluster review-header">
@@ -1744,9 +1881,9 @@ export const GameDashboardPage = () => {
 
                 <div className="form-actions">
                   <button
-                  className="button-secondary"
-                  type="button"
-                  disabled={activeEventId === lastConfirmedEvent.id || isGameCompleted}
+                    className="button-secondary"
+                    type="button"
+                    disabled={activeEventId === lastConfirmedEvent.id || isGameCompleted}
                     onClick={() => {
                       void handleUndoEvent(
                         lastConfirmedEvent.id,
@@ -1782,14 +1919,24 @@ export const GameDashboardPage = () => {
                         startCorrectionListening();
                       }}
                     >
-                      {isCorrectionListening ? "Stop voice correction" : "Voice correct last play"}
+                      {getCaptureButtonLabel(
+                        correctionSpeechPhase,
+                        isCorrectionListening,
+                        "Voice correct last play",
+                        "Stop voice correction"
+                      )}
                     </button>
                     <span className="capture-state">
-                      {isCorrectionListening
-                        ? "Listening for how you want to change the last play..."
-                        : "Idle until you start voice correction"}
+                      {getCapturePhaseInstruction(correctionSpeechPhase)}
                     </span>
                   </div>
+
+                  {isCorrectionListening && !isCorrectionReadyToCapture ? (
+                    <StatusMessage
+                      tone="info"
+                      message="Wait for the correction mic to finish connecting before you say how the last play should change."
+                    />
+                  ) : null}
 
                   {liveCorrectionTranscript ? (
                     <div className="transcript-box">
@@ -1981,9 +2128,9 @@ export const GameDashboardPage = () => {
                             setEventEditDraft((current) =>
                               current
                                 ? {
-                                    ...current,
-                                    eventType: changeEvent.target.value as StatEventType
-                                  }
+                                  ...current,
+                                  eventType: changeEvent.target.value as StatEventType
+                                }
                                 : current
                             )
                           }
@@ -2002,9 +2149,9 @@ export const GameDashboardPage = () => {
                     </div>
                   ) : null}
 
-                    <div className="form-actions compact-actions">
-                      {!isDeleted ? (
-                        <>
+                  <div className="form-actions compact-actions">
+                    {!isDeleted ? (
+                      <>
                         {isEditing ? (
                           <>
                             <button
