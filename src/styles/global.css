@@ -1226,8 +1226,13 @@ button {
   }
 
   .main-content {
+    width: 100%;
+    min-width: 0;
     padding-bottom: 6rem;
     overflow-y: auto;
+    overflow-x: hidden;
     height: 100dvh;
+    box-sizing: border-box;
   }
+
 }

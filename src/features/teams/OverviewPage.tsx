@@ -12,7 +12,7 @@ type GameRow = Database["public"]["Tables"]["games"]["Row"];
 
 export const OverviewPage = () => {
   const navigate = useNavigate();
-  const { teams, selectedTeam, selectedTeamId, refreshTeams } = useAppShell();
+  const { teams, selectedTeam, selectedTeamId, setSelectedTeamId, refreshTeams } = useAppShell();
   const [teamName, setTeamName] = useState("");
   const [recentGames, setRecentGames] = useState<GameRow[]>([]);
   const [hasPlayers, setHasPlayers] = useState<boolean | null>(null);
@@ -282,6 +282,33 @@ export const OverviewPage = () => {
             <h3>Team Settings</h3>
             <p className="supporting-text">Make quick adjustments to {selectedTeam?.name}.</p>
           </div>
+          {teams.length > 1 && (
+            <div className="stack" style={{ gap: "0.4rem" }}>
+              <span className="muted">Switch team</span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
+                {teams.map((team) => (
+                  <button
+                    key={team.id}
+                    type="button"
+                    onClick={() => setSelectedTeamId(team.id)}
+                    style={{
+                      textAlign: "left",
+                      padding: "0.6rem 0.85rem",
+                      borderRadius: "0.75rem",
+                      border: "1.5px solid",
+                      borderColor: selectedTeamId === team.id ? "var(--accent, #3b82f6)" : "var(--line)",
+                      background: selectedTeamId === team.id ? "var(--accent-subtle, #eff6ff)" : "transparent",
+                      color: selectedTeamId === team.id ? "var(--accent, #3b82f6)" : "var(--text)",
+                      fontWeight: selectedTeamId === team.id ? 700 : 500,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {team.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="cluster">
             <Link className="button-secondary" to="/app/roster">
               Manage Roster

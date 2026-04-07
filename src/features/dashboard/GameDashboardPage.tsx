@@ -1227,10 +1227,7 @@ export const GameDashboardPage = () => {
               <h2>
                 vs {game.opponent_name} · Set {game.current_set}
               </h2>
-              <p>
-                Confirmed capture stays first. Score, set control, and game status stay close so
-                coaches can trust the current match state without hunting.
-              </p>
+
             </div>
             <div className="hero-meta" style={{ flexWrap: "wrap", gap: "0.5rem" }}>
               <div className="meta-pill">Status: {titleCase(game.status)}</div>
@@ -2218,19 +2215,15 @@ export const GameDashboardPage = () => {
 
       <div className="info-grid">
         <section className="card stack feature-panel">
-          <div className="section-copy">
+          <div className="section-copy" style={{ marginBottom: "0.5rem" }}>
             <h3>Stat totals</h3>
-            <p className="supporting-text">
-              Counts include saved plays only—undone plays are left out.
-            </p>
+
           </div>
-          <div className="grid three">
+          <div className="grid three" style={{ gap: "0.5rem" }}>
             {trackedStatTypes.map((eventType) => (
-              <div className="list-item" key={eventType}>
-                <strong>{titleCase(eventType)}</strong>
-                <div className="metric-value" style={{ fontSize: "1.5rem" }}>
-                  {totals[eventType]}
-                </div>
+              <div key={eventType} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.375rem 0.625rem", background: "var(--surface-2, rgba(255,255,255,0.04))", borderRadius: "0.5rem" }}>
+                <span style={{ fontSize: "0.8rem", color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 600 }}>{titleCase(eventType)}</span>
+                <span style={{ fontSize: "1.1rem", fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{totals[eventType]}</span>
               </div>
             ))}
           </div>
@@ -2239,9 +2232,7 @@ export const GameDashboardPage = () => {
         <section className="card stack feature-panel table-card">
           <div className="section-copy">
             <h3>Per-player set table</h3>
-            <p className="supporting-text">
-              Updates when you edit or undo plays, matching what you see in play history.
-            </p>
+
           </div>
           <table className="table">
             <thead>

@@ -53,10 +53,6 @@ export const GameSetupPage = () => {
         <div>
           <span className="chip">Game setup</span>
           <h3>Create a match context</h3>
-          <p className="supporting-text">
-            Opponent, date, and venue anchor each match so live capture and reports stay tied to
-            the right context.
-          </p>
         </div>
 
         {!selectedTeam ? (
@@ -98,19 +94,19 @@ export const GameSetupPage = () => {
                 );
             }}
           >
-            <label className="stack" style={{ gap: "0.4rem" }}>
-              <span className="muted">Opponent</span>
-              <input
-                required
-                placeholder="Mountain View HS"
-                value={draft.opponent_name}
-                onChange={(event) =>
-                  setDraft((current) => ({ ...current, opponent_name: event.target.value }))
-                }
-              />
-            </label>
-
             <div className="form-grid two">
+              <label className="stack" style={{ gap: "0.4rem" }}>
+                <span className="muted">Opponent</span>
+                <input
+                  required
+                  placeholder="Mountain View HS"
+                  value={draft.opponent_name}
+                  onChange={(event) =>
+                    setDraft((current) => ({ ...current, opponent_name: event.target.value }))
+                  }
+                />
+              </label>
+
               <label className="stack" style={{ gap: "0.4rem" }}>
                 <span className="muted">Game date</span>
                 <input
@@ -133,23 +129,6 @@ export const GameSetupPage = () => {
               </label>
 
               <label className="stack" style={{ gap: "0.4rem" }}>
-                <span className="muted">Status</span>
-                <select
-                  value={draft.status}
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      status: event.target.value as GameRow["status"]
-                    }))
-                  }
-                >
-                  <option value="draft">Draft</option>
-                  <option value="in_progress">In progress</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </label>
-
-              <label className="stack" style={{ gap: "0.4rem" }}>
                 <span className="muted">Current set</span>
                 <input
                   required
@@ -161,6 +140,24 @@ export const GameSetupPage = () => {
                   }
                 />
               </label>
+            </div>
+
+            <div className="stack" style={{ gap: "0.4rem" }}>
+              <span className="muted">Status</span>
+              <div className="segmented-control" aria-label="Game status">
+                {(["draft", "in_progress", "completed"] as GameRow["status"][]).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className={`button-ghost segment-button ${draft.status === s ? "is-active" : ""}`}
+                    aria-pressed={draft.status === s}
+                    onClick={() => setDraft((current) => ({ ...current, status: s }))}
+                    style={{ fontSize: "clamp(0.8rem, 3.5vw, 1rem)", whiteSpace: "nowrap", flex: 1, padding: "0.6rem 0.5rem" }}
+                  >
+                    {s === "in_progress" ? "In progress" : titleCase(s)}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="form-actions">
@@ -177,9 +174,6 @@ export const GameSetupPage = () => {
       <section className="card stack">
         <div>
           <h3>Existing games</h3>
-          <p className="supporting-text">
-            These links double as smoke paths for the dashboard and report routes.
-          </p>
         </div>
 
         {games.length === 0 ? (
