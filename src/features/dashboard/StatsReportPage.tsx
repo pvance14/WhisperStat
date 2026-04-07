@@ -176,14 +176,12 @@ export const StatsReportPage = () => {
             </div>
           </div>
           <div className="cluster hero-actions">
-            <Link className="button-ghost" to={`/app/games/${game.id}`}>
-              Back to dashboard
+            <Link
+              className="button-ghost"
+              to={game.status === "completed" ? `/app/summary/${game.id}` : `/app/games/${game.id}`}
+            >
+              {game.status === "completed" ? "Back to summary" : "Back to dashboard"}
             </Link>
-            {game.status === "completed" ? (
-              <Link className="button-secondary" to={`/app/summary/${game.id}`}>
-                Open summary
-              </Link>
-            ) : null}
           </div>
         </div>
       </section>
@@ -227,6 +225,15 @@ export const StatsReportPage = () => {
             <select
               value={effectiveSet}
               onChange={(event) => setSelectedSet(Number(event.target.value))}
+              style={{
+                width: "100%",
+                border: "1px solid var(--line)",
+                borderRadius: "var(--radius-control)",
+                padding: "0.88rem 0.95rem",
+                background: "rgba(255, 255, 255, 0.98)",
+                color: "var(--text-strong)",
+                boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.95)"
+              }}
             >
               {trackedSetNumbers.map((setNumber) => (
                 <option key={setNumber} value={setNumber}>

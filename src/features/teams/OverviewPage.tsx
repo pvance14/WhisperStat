@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { useAppShell } from "@/app/AppShell";
 import { StatusMessage } from "@/components/StatusMessage";
-import { createGame, createTeam, listGames, listPlayers } from "@/lib/data";
+import { createGame, createTeam, listGames, listPlayers, updateGame } from "@/lib/data";
 import type { Database } from "@/lib/database.types";
 import { requireSupabase } from "@/lib/supabase";
 import { formatDateTime, getErrorMessage } from "@/lib/utils";
@@ -18,6 +18,8 @@ export const OverviewPage = () => {
   const [hasPlayers, setHasPlayers] = useState<boolean | null>(null);
   const [status, setStatus] = useState<{ tone: "success" | "error"; message: string } | null>(null);
   const [isWorking, setIsWorking] = useState(false);
+  const [editingGameId, setEditingGameId] = useState<string | null>(null);
+  const [opponentDraft, setOpponentDraft] = useState("");
 
   useEffect(() => {
     if (!selectedTeamId) {
@@ -43,6 +45,20 @@ export const OverviewPage = () => {
     };
     void loadData();
   }, [selectedTeamId]);
+
+  const handleSaveOpponentName = async (gameId: string) => {
+    if (!opponentDraft.trim()) return;
+    try {
+      await updateGame(requireSupabase(), gameId, { opponent_name: opponentDraft.trim() });
+      setRecentGames((current) =>
+        current.map((g) => g.id === gameId ? { ...g, opponent_name: opponentDraft.trim() } : g)
+      );
+      setEditingGameId(null);
+      setOpponentDraft("");
+    } catch (error) {
+      setStatus({ tone: "error", message: getErrorMessage(error) });
+    }
+  };
 
   const handleStartQuickMatch = async () => {
     if (!selectedTeam) return;
@@ -202,16 +218,59 @@ export const OverviewPage = () => {
             ) : (
               recentGames.map((game) => (
                 <div className="list-item" key={game.id}>
-                  <strong>vs {game.opponent_name}</strong>
-                  <div className="supporting-text">{formatDateTime(game.game_date)}</div>
-                  <div className="cluster" style={{ marginTop: "0.8rem" }}>
-                    <Link className="button-secondary" to={`/app/games/${game.id}`}>
-                      Dashboard
-                    </Link>
-                    <Link className="button-ghost" to={`/app/report/${game.id}`}>
-                      Report
-                    </Link>
-                  </div>
+                  {editingGameId === game.id ? (
+                    <form
+                      className="stack"
+                      style={{ gap: "0.5rem" }}
+                      onSubmit={(e) => { e.preventDefault(); void handleSaveOpponentName(game.id); }}
+                    >
+                      <input
+                        value={opponentDraft}
+                        onChange={(e) => setOpponentDraft(e.target.value)}
+                        placeholder="Opponent name"
+                        style={{ borderRadius: "0.75rem" }}
+                        autoFocus
+                      />
+                      <div className="form-actions">
+                        <button className="button-secondary" type="submit" disabled={!opponentDraft.trim()}>
+                          Save
+                        </button>
+                        <button
+                          className="button-ghost"
+                          type="button"
+                          onClick={() => { setEditingGameId(null); setOpponentDraft(""); }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <div className="cluster" style={{ gap: "0.5rem", alignItems: "center" }}>
+                        <strong>vs {game.opponent_name}</strong>
+                        <button
+                          className="button-ghost"
+                          type="button"
+                          style={{ fontSize: "0.8rem", padding: "0.2rem 0.5rem" }}
+                          onClick={() => { setEditingGameId(game.id); setOpponentDraft(game.opponent_name ?? ""); }}
+                        >
+                          Rename
+                        </button>
+                      </div>
+                      <div className="supporting-text">{formatDateTime(game.game_date)}</div>
+                      <div className="cluster" style={{ marginTop: "0.8rem" }}>
+                        <Link
+                          className="button-secondary"
+                          to={game.status === "completed" ? `/app/summary/${game.id}` : `/app/games/${game.id}`}
+                        >
+                          Dashboard
+                        </Link>
+                        <Link className="button-ghost" to={`/app/report/${game.id}`}>
+                          Report
+                        </Link>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))
             )}

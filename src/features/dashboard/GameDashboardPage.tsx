@@ -278,11 +278,17 @@ export const GameDashboardPage = () => {
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [eventEditDraft, setEventEditDraft] = useState<EventEditDraft | null>(null);
+  const [editingReviewItemId, setEditingReviewItemId] = useState<string | null>(null);
+  const [reviewItemEditDraft, setReviewItemEditDraft] = useState<EventEditDraft | null>(null);
   const [eventLogFilter, setEventLogFilter] = useState<"current" | "all">("current");
   const [correctionTranscript, setCorrectionTranscript] = useState("");
   const [isApplyingCorrection, setIsApplyingCorrection] = useState(false);
+  const [showInlineCorrection, setShowInlineCorrection] = useState(false);
   const [scoreDraft, setScoreDraft] = useState({ us: "0", them: "0" });
   const [isSavingScore, setIsSavingScore] = useState(false);
+  const [isFinishingSet, setIsFinishingSet] = useState(false);
+  const [editingSetNumber, setEditingSetNumber] = useState<number | null>(null);
+  const [editSetScoreDraft, setEditSetScoreDraft] = useState({ us: "0", them: "0" });
   const [isUpdatingGameStatus, setIsUpdatingGameStatus] = useState(false);
   const [lastLoadedAt, setLastLoadedAt] = useState<string | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -787,26 +793,6 @@ export const GameDashboardPage = () => {
     }
   };
 
-  const {
-    isSupported: isCorrectionSpeechSupported,
-    isListening: isCorrectionListening,
-    phase: correctionSpeechPhase,
-    isReadyToCapture: isCorrectionReadyToCapture,
-    liveTranscript: liveCorrectionTranscript,
-    error: correctionSpeechError,
-    clearError: clearCorrectionSpeechError,
-    startListening: startCorrectionListening,
-    stopListening: stopCorrectionListening
-  } = useSpeechCapture(({ transcript, durationMs, source }) => {
-    void applyLastEventCorrection({
-      transcript,
-      durationMs,
-      source
-    });
-  }, {
-    keyterms: speechKeyterms,
-    sessionLabel: "last-event-correction"
-  });
 
   useEffect(() => {
     if (!gameId) {
@@ -931,45 +917,39 @@ export const GameDashboardPage = () => {
     }
   };
 
-  const handleSaveCurrentSetScore = async () => {
-    if (game.status === "completed") {
-      setWorkflowStatus({
-        tone: "warn",
-        message: "This game is completed. Reopen it before changing the saved scoreboard."
-      });
-      return;
-    }
-
+  const handleSaveScoreAndAdvance = async () => {
     const us = Number(scoreDraft.us);
     const them = Number(scoreDraft.them);
-
     if (!Number.isInteger(us) || us < 0 || !Number.isInteger(them) || them < 0) {
-      setWorkflowStatus({
-        tone: "warn",
-        message: "Scores must be whole numbers at or above zero before they can be saved."
-      });
+      setWorkflowStatus({ tone: "warn", message: "Scores must be whole numbers at or above zero." });
       return;
     }
-
     try {
       setIsSavingScore(true);
       const updatedGame = await updateGame(requireSupabase(), game.id, {
-        score_by_set: upsertSetScore(scoreBySet, {
-          setNumber: game.current_set,
-          us,
-          them
-        })
+        score_by_set: upsertSetScore(scoreBySet, { setNumber: game.current_set, us, them })
       });
       setGame(updatedGame);
-      setWorkflowStatus({
-        tone: "success",
-        message: `Saved the manual score for Set ${game.current_set}. This score now survives refresh and drives the report view.`
-      });
+      setIsFinishingSet(false);
+      await changeCurrentSet(game.current_set + 1);
     } catch (error) {
-      setWorkflowStatus({
-        tone: "error",
-        message: getErrorMessage(error)
+      setWorkflowStatus({ tone: "error", message: getErrorMessage(error) });
+    } finally {
+      setIsSavingScore(false);
+    }
+  };
+
+  const handleSaveSetScore = async (setNumber: number, us: number, them: number) => {
+    try {
+      setIsSavingScore(true);
+      const currentScoreBySet = normalizeScoreBySet(game.score_by_set);
+      const updatedGame = await updateGame(requireSupabase(), game.id, {
+        score_by_set: upsertSetScore(currentScoreBySet, { setNumber, us, them })
       });
+      setGame(updatedGame);
+      setEditingSetNumber(null);
+    } catch (error) {
+      setWorkflowStatus({ tone: "error", message: getErrorMessage(error) });
     } finally {
       setIsSavingScore(false);
     }
@@ -1017,31 +997,59 @@ export const GameDashboardPage = () => {
     }
 
     const item = reviewItems.find((candidate) => candidate.id === itemId);
+    const isDraftConfirm = editingReviewItemId === itemId && reviewItemEditDraft !== null;
 
-    if (!item || item.result.kind === "clarification") {
+    if (!item || (item.result.kind === "clarification" && !isDraftConfirm)) {
       return;
     }
 
-    const proposals = getReviewItemProposals(item);
+    if (item.result.kind !== "clarification") {
+      const proposals = getReviewItemProposals(item);
 
-    if (proposals.length === 0) {
-      setWorkflowStatus({
-        tone: "warn",
-        message: "Nothing here is ready to save yet."
-      });
-      return;
-    }
+      if (proposals.length === 0) {
+        setWorkflowStatus({
+          tone: "warn",
+          message: "Nothing here is ready to save yet."
+        });
+        return;
+      }
 
-    if (getReviewItemLoadingClauseCount(item) > 0) {
-      setWorkflowStatus({
-        tone: "info",
-        message: "Wait for smart fill-in to finish on the unclear lines before you confirm this group."
-      });
-      return;
+      if (getReviewItemLoadingClauseCount(item) > 0) {
+        setWorkflowStatus({
+          tone: "info",
+          message: "Wait for smart fill-in to finish on the unclear lines before you confirm this group."
+        });
+        return;
+      }
     }
 
     try {
       setActiveReviewId(itemId);
+
+      if (item.result.kind === "clarification") {
+        const draft = reviewItemEditDraft!;
+        const player = players.find((p) => p.id === draft.playerId);
+        await confirmStatEvent(requireSupabase(), {
+          game_id: game.id,
+          player_id: draft.playerId,
+          event_type: draft.eventType,
+          set_number: item.setNumber,
+          timestamp: item.createdAt,
+          client_event_id: item.clientCaptureId
+        });
+        await loadBundle(gameId);
+        setReviewItems((current) => current.filter((candidate) => candidate.id !== itemId));
+        setEditingReviewItemId(null);
+        setReviewItemEditDraft(null);
+        setWorkflowStatus({
+          tone: "success",
+          message: `Confirmed ${titleCase(draft.eventType)} for ${player ? `#${player.jersey_number} ${player.first_name} ${player.last_name}` : "the selected player"}. The live stats now reflect it.`
+        });
+        return;
+      }
+
+      const proposals = getReviewItemProposals(item);
+
       appLog("info", "capture.review.confirm.started", {
         gameId: game.id,
         reviewItemId: item.id,
@@ -1061,10 +1069,11 @@ export const GameDashboardPage = () => {
           }))
         });
       } else {
+        const override = editingReviewItemId === itemId ? reviewItemEditDraft : null;
         await confirmStatEvent(requireSupabase(), {
           game_id: game.id,
-          player_id: proposals[0].playerId,
-          event_type: proposals[0].eventType,
+          player_id: override?.playerId ?? proposals[0].playerId,
+          event_type: override?.eventType ?? proposals[0].eventType,
           set_number: item.setNumber,
           timestamp: item.createdAt,
           client_event_id: buildProposalClientEventId(item, proposals[0])
@@ -1073,6 +1082,8 @@ export const GameDashboardPage = () => {
 
       await loadBundle(gameId);
       setReviewItems((current) => current.filter((candidate) => candidate.id !== itemId));
+      setEditingReviewItemId(null);
+      setReviewItemEditDraft(null);
       appLog("info", "capture.review.confirm.completed", {
         gameId: game.id,
         reviewItemId: item.id,
@@ -1090,7 +1101,7 @@ export const GameDashboardPage = () => {
       appLog("warn", "capture.review.confirm.failed", {
         gameId: game.id,
         reviewItemId: item.id,
-        proposalCount: proposals.length,
+        proposalCount: item.result.kind !== "clarification" ? getReviewItemProposals(item).length : 0,
         mode: item.result.kind,
         error: getErrorMessage(error)
       });
@@ -1485,12 +1496,47 @@ export const GameDashboardPage = () => {
                     <div className="mono">{item.transcript}</div>
                   </div>
 
-                  {item.result.kind === "proposal" ? (
+                  {item.result.kind === "proposal" ? (() => {
+                    const proposal = item.result.proposal;
+                    return (
                     <>
-                      <div className="supporting-text">
-                        Matched by {item.result.proposal.matchedPlayerBy.join(", ")}. If your connection drops,
-                        confirming again won&apos;t create a duplicate play.
-                      </div>
+                      {editingReviewItemId === item.id && reviewItemEditDraft ? (
+                        <div className="form-grid two">
+                          <label className="stack" style={{ gap: "0.35rem" }}>
+                            <span className="muted">Player</span>
+                            <select
+                              value={reviewItemEditDraft.playerId}
+                              onChange={(e) =>
+                                setReviewItemEditDraft((cur) => cur ? { ...cur, playerId: e.target.value } : cur)
+                              }
+                            >
+                              {players.map((p) => (
+                                <option key={p.id} value={p.id}>
+                                  #{p.jersey_number} {p.first_name} {p.last_name}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label className="stack" style={{ gap: "0.35rem" }}>
+                            <span className="muted">Stat type</span>
+                            <select
+                              value={reviewItemEditDraft.eventType}
+                              onChange={(e) =>
+                                setReviewItemEditDraft((cur) => cur ? { ...cur, eventType: e.target.value as StatEventType } : cur)
+                              }
+                            >
+                              {trackedStatTypes.map((t) => (
+                                <option key={t} value={t}>{titleCase(t)}</option>
+                              ))}
+                            </select>
+                          </label>
+                        </div>
+                      ) : (
+                        <div className="supporting-text">
+                          Matched by {item.result.proposal.matchedPlayerBy.join(", ")}. If your connection drops,
+                          confirming again won&apos;t create a duplicate play.
+                        </div>
+                      )}
                       <div className="form-actions">
                         <button
                           className="button"
@@ -1502,6 +1548,33 @@ export const GameDashboardPage = () => {
                         >
                           {activeReviewId === item.id ? "Confirming..." : "Confirm event"}
                         </button>
+                        {editingReviewItemId === item.id ? (
+                          <button
+                            className="button-ghost"
+                            type="button"
+                            onClick={() => {
+                              setEditingReviewItemId(null);
+                              setReviewItemEditDraft(null);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        ) : (
+                          <button
+                            className="button-ghost"
+                            type="button"
+                            disabled={isGameCompleted}
+                            onClick={() => {
+                              setEditingReviewItemId(item.id);
+                              setReviewItemEditDraft({
+                                playerId: proposal.playerId,
+                                eventType: proposal.eventType
+                              });
+                            }}
+                          >
+                            Edit
+                          </button>
+                        )}
                         <button
                           className="button-ghost"
                           type="button"
@@ -1512,7 +1585,8 @@ export const GameDashboardPage = () => {
                         </button>
                       </div>
                     </>
-                  ) : item.result.kind === "proposal_batch" ? (
+                    );
+                  })() : item.result.kind === "proposal_batch" ? (
                     <div className="stack" style={{ gap: "0.75rem" }}>
                       <div className="supporting-text">
                         One voice or typed call stays grouped here. When smart fill-in finishes on any unclear
@@ -1647,6 +1721,74 @@ export const GameDashboardPage = () => {
                           ))}
                         </div>
                       ) : null}
+                      {editingReviewItemId === item.id && reviewItemEditDraft ? (
+                        <>
+                          <div className="form-grid two">
+                            <label className="stack" style={{ gap: "0.35rem" }}>
+                              <span className="muted">Player</span>
+                              <select
+                                value={reviewItemEditDraft.playerId}
+                                onChange={(e) =>
+                                  setReviewItemEditDraft((cur) => cur ? { ...cur, playerId: e.target.value } : cur)
+                                }
+                              >
+                                {players.map((p) => (
+                                  <option key={p.id} value={p.id}>
+                                    #{p.jersey_number} {p.first_name} {p.last_name}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                            <label className="stack" style={{ gap: "0.35rem" }}>
+                              <span className="muted">Stat type</span>
+                              <select
+                                value={reviewItemEditDraft.eventType}
+                                onChange={(e) =>
+                                  setReviewItemEditDraft((cur) => cur ? { ...cur, eventType: e.target.value as StatEventType } : cur)
+                                }
+                              >
+                                {trackedStatTypes.map((t) => (
+                                  <option key={t} value={t}>{titleCase(t)}</option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                          <div className="form-actions">
+                            <button
+                              className="button"
+                              type="button"
+                              disabled={activeReviewId === item.id || isGameCompleted}
+                              onClick={() => { void handleConfirmReviewItem(item.id); }}
+                            >
+                              {activeReviewId === item.id ? "Confirming..." : "Confirm event"}
+                            </button>
+                            <button
+                              className="button-ghost"
+                              type="button"
+                              onClick={() => { setEditingReviewItemId(null); setReviewItemEditDraft(null); }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="form-actions">
+                          <button
+                            className="button-ghost"
+                            type="button"
+                            disabled={isGameCompleted || players.length === 0}
+                            onClick={() => {
+                              setEditingReviewItemId(item.id);
+                              setReviewItemEditDraft({
+                                playerId: players[0].id,
+                                eventType: trackedStatTypes[0]
+                              });
+                            }}
+                          >
+                            Edit &amp; save manually
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -1663,283 +1805,181 @@ export const GameDashboardPage = () => {
 
         <div className="stack">
           <section className="card stack feature-panel">
-            <div className="section-toolbar">
-              <div className="section-copy">
-                <h3>Match state</h3>
-                <p className="supporting-text">
-                  Score, set number, and game status stay in one place so you always know where the
-                  match stands.
-                </p>
-              </div>
-              <div className="supporting-text">
-                {lastLoadedAt ? `Last updated ${formatDateTime(lastLoadedAt)}` : "Loading match data..."}
-              </div>
-            </div>
+            <h3>Match state</h3>
 
-            <section className="surface stack action-panel">
-              <div className="action-panel-header">
-                <h3>Set {game.current_set} score</h3>
-                <p className="supporting-text">
-                  Save the scoreboard manually when the rally outcome is known.
-                </p>
-              </div>
-
-              <div className="scoreboard-grid">
-                <label className="stack score-input" style={{ gap: "0.35rem" }}>
-                  <span className="muted">Us</span>
-                  <input
-                    type="number"
-                    min={0}
-                    value={scoreDraft.us}
-                    disabled={isGameCompleted}
-                    onChange={(event) =>
-                      setScoreDraft((current) => ({ ...current, us: event.target.value }))
-                    }
-                  />
-                </label>
-
-                <label className="stack score-input" style={{ gap: "0.35rem" }}>
-                  <span className="muted">Them</span>
-                  <input
-                    type="number"
-                    min={0}
-                    value={scoreDraft.them}
-                    disabled={isGameCompleted}
-                    onChange={(event) =>
-                      setScoreDraft((current) => ({ ...current, them: event.target.value }))
-                    }
-                  />
-                </label>
-              </div>
-
-              <div className="supporting-text">
-                Saved snapshot: {currentSetScore.us}-{currentSetScore.them}
-              </div>
-
-              <div className="form-actions">
-                <button
-                  className="button-secondary"
-                  type="button"
-                  disabled={isSavingScore || isGameCompleted}
-                  onClick={() => {
-                    void handleSaveCurrentSetScore();
-                  }}
-                >
-                  {isSavingScore ? "Saving..." : "Save score"}
-                </button>
-              </div>
-            </section>
-
-            <section className="surface stack action-panel secondary">
-              <div className="action-panel-header">
-                <h3>Set snapshots</h3>
-                <p className="supporting-text">
-                  These saved scores feed the report view and the eventual post-game summary flow.
-                </p>
-              </div>
-
-              {trackedSetNumbers.length === 0 ? (
-                <StatusMessage
-                  tone="info"
-                  message="No tracked sets yet. Save a score or confirm an event to establish set context."
-                />
-              ) : (
-                <div className="score-strip">
-                  {trackedSetNumbers.map((setNumber) => {
-                    const setScore = getSetScore(scoreBySet, setNumber);
-
-                    return (
-                      <div
-                        className={`list-item ${setNumber === game.current_set ? "is-current-set" : ""}`}
-                        key={setNumber}
-                      >
-                        <strong>Set {setNumber}</strong>
-                        <div className="supporting-text">
-                          {setScore.us}-{setScore.them}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
-          </section>
-
-          <section className="card stack feature-panel">
-            <div className="section-copy">
-              <h3>Quick fixes</h3>
-              <p className="supporting-text">
-                Jump straight to the most recent play you saved if you need to undo or rephrase it.
-              </p>
-            </div>
-
-            {!lastConfirmedEvent ? (
-              <StatusMessage
-                tone="info"
-                message="Save a play from the review queue first to use undo or correction."
-              />
-            ) : (
-              <>
-                <div className="recovery-anchor">
-                  <div className="recovery-anchor-label">Last saved play</div>
-                  <strong>{buildEventSummary(lastConfirmedEvent, players)}</strong>
-                  <div className="supporting-text">
-                    Logged {formatDateTime(lastConfirmedEvent.timestamp)} · Set {lastConfirmedEvent.set_number}
-                  </div>
+            {isGameCompleted ? null : (
+              <div className="surface stack" style={{ padding: "1rem", borderRadius: "1rem" }}>
+                <div>
+                  <strong>Set {game.current_set}</strong>
+                  <span className="muted" style={{ marginLeft: "0.5rem" }}>current</span>
                 </div>
 
-                <div className="form-actions">
-                  <button
-                    className="button-secondary"
-                    type="button"
-                    disabled={activeEventId === lastConfirmedEvent.id || isGameCompleted}
-                    onClick={() => {
-                      void handleUndoEvent(
-                        lastConfirmedEvent.id,
-                        "Last play undone. It no longer counts in live totals."
-                      );
-                    }}
-                  >
-                    {activeEventId === lastConfirmedEvent.id ? "Undoing..." : "Undo last play"}
-                  </button>
-                </div>
-
-                <div className="surface stack correction-panel action-panel secondary">
-                  <div className="action-panel-header">
-                    <h3>Correct last saved play</h3>
-                    <p className="supporting-text">
-                      Example: <span className="mono">actually attack error</span> or{" "}
-                      <span className="mono">actually Jane ace</span>.
-                    </p>
-                  </div>
-
-                  <div className="cluster">
-                    <button
-                      className="button"
-                      type="button"
-                      disabled={!isCorrectionSpeechSupported || isApplyingCorrection || isGameCompleted}
-                      onClick={() => {
-                        if (isCorrectionListening) {
-                          stopCorrectionListening();
-                          return;
-                        }
-
-                        clearCorrectionSpeechError();
-                        startCorrectionListening();
-                      }}
-                    >
-                      {getCaptureButtonLabel(
-                        correctionSpeechPhase,
-                        isCorrectionListening,
-                        "Voice correct last play",
-                        "Stop voice correction"
-                      )}
-                    </button>
-                    <span className="capture-state">
-                      {getCapturePhaseInstruction(correctionSpeechPhase)}
-                    </span>
-                  </div>
-
-                  {isCorrectionListening && !isCorrectionReadyToCapture ? (
-                    <StatusMessage
-                      tone="info"
-                      message="Wait for the correction mic to finish connecting before you say how the last play should change."
-                    />
-                  ) : null}
-
-                  {liveCorrectionTranscript ? (
-                    <div className="transcript-box">
-                      <div className="muted">Live correction</div>
-                      <div className="mono">{liveCorrectionTranscript}</div>
+                {isFinishingSet ? (
+                  <>
+                    <div className="scoreboard-grid">
+                      <label className="stack score-input" style={{ gap: "0.35rem" }}>
+                        <span className="muted">Us</span>
+                        <input
+                          type="number"
+                          min={0}
+                          value={scoreDraft.us}
+                          onChange={(e) => setScoreDraft((c) => ({ ...c, us: e.target.value }))}
+                        />
+                      </label>
+                      <label className="stack score-input" style={{ gap: "0.35rem" }}>
+                        <span className="muted">Them</span>
+                        <input
+                          type="number"
+                          min={0}
+                          value={scoreDraft.them}
+                          onChange={(e) => setScoreDraft((c) => ({ ...c, them: e.target.value }))}
+                        />
+                      </label>
                     </div>
-                  ) : null}
-
-                  {correctionSpeechError ? <StatusMessage tone="error" message={correctionSpeechError} /> : null}
-
-                  <form
-                    className="form-grid"
-                    onSubmit={(event) => {
-                      event.preventDefault();
-
-                      void applyLastEventCorrection({
-                        transcript: correctionTranscript.trim(),
-                        durationMs: null,
-                        source: "manual"
-                      });
-                    }}
-                  >
-                    <label className="stack" style={{ gap: "0.4rem" }}>
-                      <span className="muted">Type your correction</span>
-                      <input
-                        placeholder="actually attack error"
-                        value={correctionTranscript}
-                        disabled={isGameCompleted}
-                        onChange={(event) => setCorrectionTranscript(event.target.value)}
-                      />
-                    </label>
                     <div className="form-actions">
                       <button
-                        className="button-secondary"
-                        type="submit"
-                        disabled={isApplyingCorrection || isGameCompleted}
+                        className="button"
+                        type="button"
+                        disabled={isSavingScore}
+                        onClick={() => { void handleSaveScoreAndAdvance(); }}
                       >
-                        {isApplyingCorrection ? "Applying..." : "Apply correction"}
+                        {isSavingScore ? "Saving..." : "Save score & next set"}
                       </button>
                       <button
                         className="button-ghost"
                         type="button"
-                        disabled={isGameCompleted}
-                        onClick={() => setCorrectionTranscript("")}
+                        disabled={isUpdatingSet}
+                        onClick={() => {
+                          setIsFinishingSet(false);
+                          void changeCurrentSet(game.current_set + 1);
+                        }}
                       >
-                        Clear
+                        Skip score
+                      </button>
+                      <button
+                        className="button-ghost"
+                        type="button"
+                        onClick={() => setIsFinishingSet(false)}
+                      >
+                        Cancel
                       </button>
                     </div>
-                  </form>
-                </div>
-              </>
-            )}
-          </section>
-
-          <section className="card stack feature-panel">
-            <div className="section-copy">
-              <h3>Game lifecycle</h3>
-              <p className="supporting-text">
-                Finishing the match is explicit so reports and summaries run on completed games.
-              </p>
-            </div>
-
-            <div className="list-item">
-              <strong>Current status</strong>
-              <div className="supporting-text">
-                {titleCase(game.status)} · Current set {game.current_set}
+                  </>
+                ) : (
+                  <div className="form-actions">
+                    <button
+                      className="button-secondary"
+                      type="button"
+                      disabled={isGameCompleted}
+                      onClick={() => {
+                        const s = getSetScore(scoreBySet, game.current_set);
+                        setScoreDraft({ us: String(s.us), them: String(s.them) });
+                        setIsFinishingSet(true);
+                      }}
+                    >
+                      Finish set
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
 
-            <div className="form-actions">
+            {trackedSetNumbers.length > 0 && (
+              <div className="stack" style={{ gap: "0.4rem" }}>
+                {trackedSetNumbers.map((setNumber) => {
+                  const setScore = getSetScore(scoreBySet, setNumber);
+                  const isEditing = editingSetNumber === setNumber;
+                  const isCurrent = setNumber === game.current_set;
+
+                  return (
+                    <div className="surface" key={setNumber} style={{ padding: "0.75rem 1rem", borderRadius: "0.75rem" }}>
+                      {isEditing ? (
+                        <div className="stack" style={{ gap: "0.5rem" }}>
+                          <div className="scoreboard-grid">
+                            <label className="stack score-input" style={{ gap: "0.25rem" }}>
+                              <span className="muted">Us</span>
+                              <input
+                                type="number"
+                                min={0}
+                                value={editSetScoreDraft.us}
+                                onChange={(e) => setEditSetScoreDraft((c) => ({ ...c, us: e.target.value }))}
+                              />
+                            </label>
+                            <label className="stack score-input" style={{ gap: "0.25rem" }}>
+                              <span className="muted">Them</span>
+                              <input
+                                type="number"
+                                min={0}
+                                value={editSetScoreDraft.them}
+                                onChange={(e) => setEditSetScoreDraft((c) => ({ ...c, them: e.target.value }))}
+                              />
+                            </label>
+                          </div>
+                          <div className="form-actions">
+                            <button
+                              className="button-secondary"
+                              type="button"
+                              disabled={isSavingScore}
+                              onClick={() => {
+                                void handleSaveSetScore(setNumber, Number(editSetScoreDraft.us), Number(editSetScoreDraft.them));
+                              }}
+                            >
+                              {isSavingScore ? "Saving..." : "Save"}
+                            </button>
+                            <button className="button-ghost" type="button" onClick={() => setEditingSetNumber(null)}>
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="cluster" style={{ justifyContent: "space-between" }}>
+                          <div>
+                            <strong>Set {setNumber}</strong>
+                            {isCurrent && <span className="muted" style={{ marginLeft: "0.4rem", fontSize: "0.8rem" }}>current</span>}
+                            <span className="muted" style={{ marginLeft: "0.75rem" }}>{setScore.us}–{setScore.them}</span>
+                          </div>
+                          {!isGameCompleted && (
+                            <button
+                              className="button-ghost"
+                              type="button"
+                              style={{ fontSize: "0.8rem", padding: "0.2rem 0.5rem" }}
+                              onClick={() => {
+                                setEditingSetNumber(setNumber);
+                                setEditSetScoreDraft({ us: String(setScore.us), them: String(setScore.them) });
+                              }}
+                            >
+                              Edit score
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="form-actions" style={{ borderTop: "1px solid var(--line-subtle)", paddingTop: "0.75rem", marginTop: "0.25rem" }}>
               {game.status === "completed" ? (
                 <>
                   <Link className="button" to={`/app/summary/${game.id}`}>
                     Open post-game summary
                   </Link>
                   <button
-                    className="button-secondary"
+                    className="button-ghost"
                     type="button"
                     disabled={isUpdatingGameStatus}
-                    onClick={() => {
-                      void handleGameStatusChange("in_progress");
-                    }}
+                    onClick={() => { void handleGameStatusChange("in_progress"); }}
                   >
                     {isUpdatingGameStatus ? "Saving..." : "Reopen game"}
                   </button>
                 </>
               ) : (
                 <button
-                  className="button"
+                  className="button-secondary"
                   type="button"
                   disabled={isUpdatingGameStatus}
-                  onClick={() => {
-                    void handleGameStatusChange("completed");
-                  }}
+                  onClick={() => { void handleGameStatusChange("completed"); }}
                 >
                   {isUpdatingGameStatus ? "Saving..." : "Complete game"}
                 </button>
@@ -1950,33 +1990,27 @@ export const GameDashboardPage = () => {
       </div>
 
       <section className="card stack feature-panel event-log-panel">
-        <div className="section-toolbar">
-          <div className="section-copy">
-            <h3>Play history</h3>
-            <p className="supporting-text">
-              Undo the last save or tweak a play here. Undone plays stay listed but no longer count in totals.
-            </p>
-          </div>
-          <div className="stack" style={{ gap: "0.35rem" }}>
-            <span className="muted">Show plays</span>
-            <div className="segmented-control" aria-label="Play history filter">
-              <button
-                className={`button-ghost segment-button ${eventLogFilter === "current" ? "is-active" : ""}`}
-                type="button"
-                aria-pressed={eventLogFilter === "current"}
-                onClick={() => setEventLogFilter("current")}
-              >
-                Current set
-              </button>
-              <button
-                className={`button-ghost segment-button ${eventLogFilter === "all" ? "is-active" : ""}`}
-                type="button"
-                aria-pressed={eventLogFilter === "all"}
-                onClick={() => setEventLogFilter("all")}
-              >
-                All sets
-              </button>
-            </div>
+        <h3>Play history</h3>
+        <div>
+          <div className="segmented-control" aria-label="Play history filter" style={{ width: "100%" }}>
+            <button
+              className={`button-ghost segment-button ${eventLogFilter === "current" ? "is-active" : ""}`}
+              type="button"
+              aria-pressed={eventLogFilter === "current"}
+              onClick={() => setEventLogFilter("current")}
+                style={{ whiteSpace: "nowrap", flex: 1 }}
+            >
+              Current set
+            </button>
+            <button
+              className={`button-ghost segment-button ${eventLogFilter === "all" ? "is-active" : ""}`}
+              type="button"
+              aria-pressed={eventLogFilter === "all"}
+              onClick={() => setEventLogFilter("all")}
+              style={{ whiteSpace: "nowrap", flex: 1 }}
+            >
+              All sets
+            </button>
           </div>
         </div>
 
@@ -2095,6 +2129,19 @@ export const GameDashboardPage = () => {
                             >
                               Edit play
                             </button>
+                            {event.id === lastConfirmedEvent?.id && (
+                              <button
+                                className="button-ghost"
+                                type="button"
+                                disabled={isGameCompleted}
+                                onClick={() => {
+                                  setShowInlineCorrection((v) => !v);
+                                  setCorrectionTranscript("");
+                                }}
+                              >
+                                Correct
+                              </button>
+                            )}
                             <button
                               className="button-ghost"
                               type="button"
@@ -2117,6 +2164,51 @@ export const GameDashboardPage = () => {
                       </div>
                     )}
                   </div>
+
+                  {event.id === lastConfirmedEvent?.id && showInlineCorrection && !isDeleted && !isEditing ? (
+                    <form
+                      className="stack"
+                      style={{ gap: "0.5rem", paddingTop: "0.25rem" }}
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        void applyLastEventCorrection({
+                          transcript: correctionTranscript.trim(),
+                          durationMs: null,
+                          source: "manual"
+                        }).then(() => {
+                          setShowInlineCorrection(false);
+                          setCorrectionTranscript("");
+                        });
+                      }}
+                    >
+                      <input
+                        placeholder="e.g. actually attack error, actually Jane ace"
+                        value={correctionTranscript}
+                        disabled={isApplyingCorrection || isGameCompleted}
+                        onChange={(e) => setCorrectionTranscript(e.target.value)}
+                        style={{ borderRadius: "0.75rem" }}
+                      />
+                      <div className="form-actions">
+                        <button
+                          className="button-secondary"
+                          type="submit"
+                          disabled={isApplyingCorrection || !correctionTranscript.trim() || isGameCompleted}
+                        >
+                          {isApplyingCorrection ? "Applying..." : "Apply"}
+                        </button>
+                        <button
+                          className="button-ghost"
+                          type="button"
+                          onClick={() => {
+                            setShowInlineCorrection(false);
+                            setCorrectionTranscript("");
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  ) : null}
                 </article>
               );
             })}

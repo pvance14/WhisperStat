@@ -221,7 +221,6 @@ button {
 .sidebar-link.active {
   background: linear-gradient(135deg, rgba(18, 115, 255, 0.18), rgba(57, 160, 255, 0.08));
   border-color: rgba(57, 160, 255, 0.36);
-  transform: translateX(2px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
@@ -420,6 +419,8 @@ button {
 
 .chip {
   width: fit-content;
+  display: block;
+  margin-bottom: 0.75rem;
   background: linear-gradient(135deg, rgba(18, 115, 255, 0.12), rgba(255, 154, 31, 0.16));
   color: var(--text-strong);
   border: 1px solid rgba(18, 115, 255, 0.1);
