@@ -221,9 +221,6 @@ export const PostGameSummaryPage = () => {
             </div>
           </div>
           <div className="cluster hero-actions">
-            <Link className="button-secondary" to={`/app/games/${game.id}`}>
-              Back to dashboard
-            </Link>
             <Link className="button-ghost" to={`/app/report/${game.id}`}>
               Open report
             </Link>

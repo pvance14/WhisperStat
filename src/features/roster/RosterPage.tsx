@@ -139,11 +139,18 @@ export const RosterPage = () => {
 
               <label className="stack" style={{ gap: "0.4rem" }}>
                 <span className="muted">Position</span>
-                <input
-                  placeholder="Outside, setter, libero..."
+                <select
                   value={draft.position}
                   onChange={(event) => setDraft((current) => ({ ...current, position: event.target.value }))}
-                />
+                >
+                  <option value="">— select —</option>
+                  <option value="Outside Hitter">Outside Hitter</option>
+                  <option value="Opposite Hitter">Opposite Hitter</option>
+                  <option value="Middle Blocker">Middle Blocker</option>
+                  <option value="Setter">Setter</option>
+                  <option value="Libero">Libero</option>
+                  <option value="Defensive Specialist">Defensive Specialist</option>
+                </select>
               </label>
             </div>
 
@@ -182,9 +189,6 @@ export const RosterPage = () => {
       <section className="card stack">
         <div>
           <h3>{selectedTeam ? `${selectedTeam.name} roster` : "Roster list"}</h3>
-          <p className="supporting-text">
-            This list will feed player resolution and later voice parsing context.
-          </p>
         </div>
 
         {players.length === 0 ? (

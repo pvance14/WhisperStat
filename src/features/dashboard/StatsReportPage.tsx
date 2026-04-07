@@ -154,10 +154,7 @@ export const StatsReportPage = () => {
             <div className="stack-compact">
               <span className="chip">Match stats report</span>
               <h2>Current match report: vs {game.opponent_name}</h2>
-              <p>
-                This report should answer the big questions fast: what set or match view you are in,
-                what the score says, and who is standing out.
-              </p>
+
             </div>
             <div className="hero-meta">
               <div className="meta-pill">Mode: {viewMode === "full_match" ? "Full match" : `Set ${effectiveSet}`}</div>
@@ -176,42 +173,29 @@ export const StatsReportPage = () => {
             </div>
           </div>
           <div className="cluster hero-actions">
-            <Link className="button-ghost" to={`/app/games/${game.id}`}>
-              Back to dashboard
+            <Link
+              className="button-ghost"
+              to={game.status === "completed" ? `/app/summary/${game.id}` : `/app/games/${game.id}`}
+            >
+              {game.status === "completed" ? "Back to summary" : "Back to dashboard"}
             </Link>
-            {game.status === "completed" ? (
-              <Link className="button-secondary" to={`/app/summary/${game.id}`}>
-                Open summary
-              </Link>
-            ) : null}
           </div>
         </div>
       </section>
 
       {status ? <StatusMessage tone={status.tone} message={status.message} /> : null}
 
-      <section className="card stack feature-panel">
-        <div className="section-toolbar">
-          <div className="section-copy">
-            <h3>View controls</h3>
-            <p className="supporting-text">
-              Current set stays obvious for live use, but you can also flip to full-match totals without leaving the game.
-            </p>
-          </div>
-          <div className="supporting-text">
-            {lastLoadedAt ? `Last updated ${formatDateTime(lastLoadedAt)}` : "Loading match data..."}
-          </div>
-        </div>
-
-        <div className="section-toolbar">
-          <div className="segmented-control" aria-label="Report view mode">
+      <section className="card" style={{ padding: "0.75rem 1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+          {/* Mode toggle */}
+          <div className="segmented-control" aria-label="Report view mode" style={{ flexShrink: 0 }}>
             <button
               className={`button-ghost segment-button ${viewMode === "current_set" ? "is-active" : ""}`}
               type="button"
               aria-pressed={viewMode === "current_set"}
               onClick={() => setViewMode("current_set")}
             >
-              Current set
+              Set
             </button>
             <button
               className={`button-ghost segment-button ${viewMode === "full_match" ? "is-active" : ""}`}
@@ -219,59 +203,58 @@ export const StatsReportPage = () => {
               aria-pressed={viewMode === "full_match"}
               onClick={() => setViewMode("full_match")}
             >
-              Full match
+              Match
             </button>
           </div>
-          <label className="stack" style={{ gap: "0.35rem", minWidth: "11rem" }}>
-            <span className="muted">Set focus</span>
-            <select
-              value={effectiveSet}
-              onChange={(event) => setSelectedSet(Number(event.target.value))}
-            >
+
+          {/* Set buttons — only when in set mode */}
+          {viewMode === "current_set" && (
+            <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" }}>
               {trackedSetNumbers.map((setNumber) => (
-                <option key={setNumber} value={setNumber}>
-                  Set {setNumber}
-                  {setNumber === game.current_set ? " (current)" : ""}
-                </option>
+                <button
+                  key={setNumber}
+                  type="button"
+                  onClick={() => setSelectedSet(setNumber)}
+                  style={{
+                    padding: "0.3rem 0.7rem",
+                    borderRadius: "999px",
+                    border: "1.5px solid",
+                    borderColor: effectiveSet === setNumber ? "var(--accent, #3b82f6)" : "var(--line)",
+                    background: effectiveSet === setNumber ? "var(--accent, #3b82f6)" : "transparent",
+                    color: effectiveSet === setNumber ? "#fff" : "var(--text-2)",
+                    fontWeight: effectiveSet === setNumber ? 700 : 500,
+                    fontSize: "0.8rem",
+                    cursor: "pointer",
+                    lineHeight: 1.4
+                  }}
+                >
+                  Set {setNumber}{setNumber === game.current_set ? " ·" : ""}
+                </button>
               ))}
-            </select>
-          </label>
+            </div>
+          )}
+
+          {/* Quick stats */}
+          <div style={{ display: "flex", gap: "1rem", marginLeft: "auto", flexWrap: "wrap", alignItems: "center" }}>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-2)" }}>
+              Kills <strong style={{ color: "var(--text-strong)" }}>{displayedTotals.kill}</strong>
+            </span>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-2)" }}>
+              Digs <strong style={{ color: "var(--text-strong)" }}>{displayedTotals.dig}</strong>
+            </span>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-2)" }}>
+              Sets <strong style={{ color: "var(--text-strong)" }}>{matchScore.us}–{matchScore.them}</strong>
+            </span>
+            <span style={{ fontSize: "0.75rem", color: "var(--text-3, #aaa)" }}>
+              {lastLoadedAt ? `Updated ${formatDateTime(lastLoadedAt)}` : "Loading..."}
+            </span>
+          </div>
         </div>
       </section>
-
-      <div className="summary-strip">
-        <div className="summary-tile featured">
-          <div className="summary-label">{viewMode === "full_match" ? "Match kills" : `Set ${effectiveSet} kills`}</div>
-          <div className="summary-value">{displayedTotals.kill}</div>
-          <div className="summary-support">Saved plays only (undone plays hidden).</div>
-        </div>
-        <div className="summary-tile">
-          <div className="summary-label">{viewMode === "full_match" ? "Match digs" : `Set ${effectiveSet} digs`}</div>
-          <div className="summary-value">{displayedTotals.dig}</div>
-          <div className="summary-support">Same counting rules as the live dashboard.</div>
-        </div>
-        <div className="summary-tile">
-          <div className="summary-label">Sets won</div>
-          <div className="summary-value">
-            {matchScore.us}-{matchScore.them}
-          </div>
-          <div className="summary-support">Calculated from the saved manual set scores.</div>
-        </div>
-        <div className="summary-tile">
-          <div className="summary-label">Focus</div>
-          <div className="summary-value">{viewMode === "full_match" ? "All" : effectiveSet}</div>
-          <div className="summary-support">
-            {viewMode === "full_match" ? "Whole match overview." : "Single-set view for live coaching."}
-          </div>
-        </div>
-      </div>
 
       <section className="card stack feature-panel">
         <div className="section-copy">
           <h3>Score by set</h3>
-          <p className="supporting-text">
-            Scores you save stay on the game, so refreshing or opening the report always matches what you entered.
-          </p>
         </div>
         <div className="score-strip">
           {trackedSetNumbers.map((setNumber) => {
@@ -298,9 +281,6 @@ export const StatsReportPage = () => {
       <section className="card stack feature-panel">
         <div className="section-copy">
           <h3>Stat leaders</h3>
-          <p className="supporting-text">
-            Lightweight visuals are enough here. The goal is fast comparison, not a polished export artifact.
-          </p>
         </div>
         {leaders.length === 0 ? (
           <StatusMessage tone="info" message="No stat leaders yet because no plays have been saved." />
@@ -315,17 +295,13 @@ export const StatsReportPage = () => {
               return (
                 <div className="list-item stack" key={row.playerId} style={{ gap: "0.65rem" }}>
                   <div className="cluster section-header">
-                    <div>
-                      <strong>
-                        #{row.jerseyNumber} {row.playerName}
-                      </strong>
-                      <div className="supporting-text">
-                        {viewMode === "full_match" ? "Whole match" : `Set ${effectiveSet}`} kills: {leaderValue}
-                      </div>
-                    </div>
-                    <div className="supporting-text">
-                      Aces {viewMode === "full_match" ? row.totals.ace : row.currentSetTotals.ace} · Blocks{" "}
-                      {viewMode === "full_match" ? row.totals.block : row.currentSetTotals.block}
+                    <strong>
+                      #{row.jerseyNumber} {row.playerName}
+                    </strong>
+                    <div className="supporting-text" style={{ display: "flex", gap: "0.75rem" }}>
+                      <span>Kills {leaderValue}</span>
+                      <span>Aces {viewMode === "full_match" ? row.totals.ace : row.currentSetTotals.ace}</span>
+                      <span>Blocks {viewMode === "full_match" ? row.totals.block : row.currentSetTotals.block}</span>
                     </div>
                   </div>
                   <div className="leader-bar-track">
@@ -342,9 +318,6 @@ export const StatsReportPage = () => {
         <section className="card stack feature-panel table-card">
           <div className="section-copy">
           <h3>Player stat table</h3>
-          <p className="supporting-text">
-            Each row keeps both the focused set and the whole match visible so coaches can glance at context without switching pages.
-          </p>
           </div>
           <table className="table">
             <thead>
@@ -402,17 +375,12 @@ export const StatsReportPage = () => {
         <section className="card stack feature-panel">
           <div className="section-copy">
             <h3>All tracked totals</h3>
-            <p className="supporting-text">
-              Every stat type WhisperStat tracks for this view, in one place for a quick sanity check.
-            </p>
           </div>
-          <div className="grid three">
+          <div className="grid three" style={{ gap: "0.5rem" }}>
             {trackedStatTypes.map((eventType) => (
-              <div className="list-item" key={eventType}>
-                <strong>{titleCase(eventType)}</strong>
-                <div className="metric-value" style={{ fontSize: "1.5rem" }}>
-                  {displayedTotals[eventType]}
-                </div>
+              <div key={eventType} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.375rem 0.625rem", background: "var(--surface-2, rgba(255,255,255,0.04))", borderRadius: "0.5rem" }}>
+                <span style={{ fontSize: "0.8rem", color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 600 }}>{titleCase(eventType)}</span>
+                <span style={{ fontSize: "1.1rem", fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{displayedTotals[eventType]}</span>
               </div>
             ))}
           </div>
