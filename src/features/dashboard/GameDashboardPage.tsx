@@ -1274,65 +1274,6 @@ export const GameDashboardPage = () => {
         </div>
       </section>
 
-      {/* 1. Static Large Microphone Block (Normal Flow) */}
-      <div
-        ref={primaryMicRefCallback}
-        style={{
-          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96))",
-          padding: "3rem 1.5rem",
-          margin: "0 -1.6rem 1.25rem -1.6rem",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.02)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "2rem",
-          borderBottomLeftRadius: "1.5rem",
-          borderBottomRightRadius: "1.5rem"
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <h3 style={{ fontSize: "2.25rem", color: "var(--text-strong)" }}>Live Voice Capture</h3>
-          <p className="supporting-text" style={{ fontSize: "1.1rem", maxWidth: "400px", margin: "0.5rem auto 0" }}>
-            Tap the microphone and speak naturally (e.g. "12 got a kill"). Scroll down to view stats while recording.
-          </p>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.25rem", width: "100%" }}>
-          <button
-            className="button"
-            type="button"
-            disabled={!canCapture || !isSpeechCaptureSupported || isGameCompleted}
-            onClick={() => {
-              if (isListening) stopListening();
-              else { clearSpeechError(); startListening(); }
-            }}
-            style={{
-              padding: "1.75rem 3.5rem",
-              fontSize: "1.6rem",
-              borderRadius: "999px",
-              boxShadow: isListening
-                ? "0 0 0 6px rgba(255, 107, 44, 0.2), 0 10px 30px rgba(255, 107, 44, 0.4)"
-                : "0 18px 36px rgba(255, 107, 44, 0.28)",
-              background: isListening ? "linear-gradient(135deg, #FF3B3B, #FF6B2C)" : undefined,
-              transition: "all 0.2s ease"
-            }}
-          >
-            {isListening ? "Stop Listening" : "Push to start live capture"}
-          </button>
-
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-            <span className="capture-state" style={{ color: isListening ? "var(--orange-primary)" : "var(--text-soft)", fontSize: "1.1rem", fontWeight: "700" }}>
-              {isListening ? "Listening for the next play..." : "Idle until you start capture"}
-            </span>
-            {liveTranscript && (
-              <div className="mono" style={{ fontSize: "1.25rem", color: "var(--text-strong)", backgroundColor: "var(--bg-muted)", padding: "0.75rem 1.25rem", borderRadius: "1rem", marginTop: "1rem" }}>
-                "{liveTranscript}"
-              </div>
-            )}
-          </div>
-        </div>
-        {speechError && <StatusMessage tone="error" message={speechError} />}
-      </div>
 
       {/* 2. Slide-In Compact Sticky Header (Fixed Overlay) */}
       <div
@@ -1395,15 +1336,9 @@ export const GameDashboardPage = () => {
       {workflowStatus ? <StatusMessage tone={workflowStatus.tone} message={workflowStatus.message} /> : null}
 
       <div className="split-layout sidebar-heavy">
-        <section className="card stack feature-panel feature-panel-primary">
+        <section className="card stack feature-panel feature-panel-primary" ref={primaryMicRefCallback}>
           <div className="section-toolbar">
-            <div className="section-copy">
-              <h3>Live capture and confirmation</h3>
-              <p className="supporting-text">
-                Start capture, review the parse, then confirm or discard it without leaving this
-                work zone.
-              </p>
-            </div>
+            <h3>Log a play</h3>
             <div className="supporting-text">
               {getCapturePhaseSummary(speechPhase)}
             </div>
@@ -1422,67 +1357,57 @@ export const GameDashboardPage = () => {
             />
           ) : null}
 
-          <div className="split-layout capture-layout">
-            <section className="surface stack capture-panel action-panel primary">
-              <div className="action-panel-header">
-                <h3>Voice capture</h3>
-                <p className="supporting-text">
-                  Hold the button, call the play, then confirm it so nothing saves by accident.
-                </p>
+          <section className="surface stack capture-panel action-panel primary">
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+              <button
+                className="button capture-cta"
+                type="button"
+                disabled={!canCapture || !isSpeechCaptureSupported || isGameCompleted}
+                onClick={() => {
+                  if (isListening) {
+                    stopListening();
+                    return;
+                  }
+                  clearSpeechError();
+                  startListening();
+                }}
+                style={{
+                  width: "100%",
+                  padding: "1.1rem 2rem",
+                  fontSize: "1.15rem",
+                  letterSpacing: "0.01em",
+                  boxShadow: isListening
+                    ? "0 0 0 5px rgba(255, 107, 44, 0.18), 0 8px 24px rgba(255, 107, 44, 0.35)"
+                    : "0 6px 20px rgba(255, 107, 44, 0.25)",
+                  background: isListening ? "linear-gradient(135deg, #FF3B3B, #FF6B2C)" : undefined,
+                  transition: "all 0.2s ease"
+                }}
+              >
+                {getCaptureButtonLabel(speechPhase, isListening, "Push to talk", "Stop listening")}
+              </button>
+              <span className="capture-state" style={{ fontSize: "0.88rem" }}>
+                {getCapturePhaseInstruction(speechPhase)}
+              </span>
+            </div>
+
+            {isListening && !isReadyToCapture ? (
+              <StatusMessage tone="info" message={'Wait for \u201cReady for you to speak\u201d before saying the play.'} />
+            ) : null}
+
+            {liveTranscript ? (
+              <div className="transcript-box">
+                <div className="muted">Live dictation</div>
+                <div className="mono">{liveTranscript}</div>
               </div>
+            ) : null}
 
-              <div className="cluster">
-                <button
-                  className="button capture-cta"
-                  type="button"
-                  disabled={!canCapture || !isSpeechCaptureSupported || isGameCompleted}
-                  onClick={() => {
-                    if (isListening) {
-                      stopListening();
-                      return;
-                    }
-
-                    clearSpeechError();
-                    startListening();
-                  }}
-                >
-                  {getCaptureButtonLabel(speechPhase, isListening, "Push to talk", "Stop listening")}
-                </button>
-                <span className="capture-state">
-                  {getCapturePhaseInstruction(speechPhase)}
-                </span>
-              </div>
-
-              {isListening && !isReadyToCapture ? (
-                <StatusMessage tone="info" message="Wait for “Ready for you to speak” before saying the play." />
-              ) : null}
-
-              <div className="supporting-text">
-                {isSpeechCaptureSupported
-                  ? "This browser can use the microphone for live dictation."
-                  : "This browser can’t use the microphone for live dictation, so type your call below. That’s normal on some phones or when mic access is blocked."}
-              </div>
-
-              {liveTranscript ? (
-                <div className="transcript-box">
-                  <div className="muted">Live dictation</div>
-                  <div className="mono">{liveTranscript}</div>
-                </div>
-              ) : null}
-
-              {speechError ? <StatusMessage tone="error" message={speechError} /> : null}
-
-              <div className="supporting-text">
-                Try <span className="mono">12 kill</span>, <span className="mono">Jane ace</span>,{" "}
-                <span className="mono">Mia serve error</span>, or <span className="mono">Julie dig</span>.
-              </div>
-            </section>
+            {speechError ? <StatusMessage tone="error" message={speechError} /> : null}
 
             <form
-              className="surface stack form-grid capture-panel action-panel"
+              className="stack"
+              style={{ gap: "0.5rem" }}
               onSubmit={(event) => {
                 event.preventDefault();
-
                 if (!manualTranscript.trim()) {
                   setWorkflowStatus({
                     tone: "warn",
@@ -1490,7 +1415,6 @@ export const GameDashboardPage = () => {
                   });
                   return;
                 }
-
                 handleCapturedTranscript({
                   transcript: manualTranscript.trim(),
                   durationMs: null,
@@ -1498,49 +1422,34 @@ export const GameDashboardPage = () => {
                 });
               }}
             >
-              <div className="action-panel-header">
-                <h3>Type your call</h3>
-                <p className="supporting-text">
-                  Use this when the mic is off or unreliable—you get the same review step before
-                  anything is saved.
-                </p>
-              </div>
-
-              <label className="stack" style={{ gap: "0.4rem" }}>
-                <span className="muted">What you said (or would say)</span>
-                <textarea
-                  rows={5}
-                  placeholder="Example: 12 kill"
-                  value={manualTranscript}
-                  disabled={isGameCompleted}
-                  onChange={(event) => setManualTranscript(event.target.value)}
-                />
-              </label>
-
+              <textarea
+                rows={2}
+                placeholder="Or type it — e.g. 12 kill, Jane ace"
+                value={manualTranscript}
+                disabled={isGameCompleted}
+                onChange={(event) => setManualTranscript(event.target.value)}
+                style={{ resize: "none", borderRadius: "0.75rem" }}
+              />
               <div className="form-actions">
                 <button className="button-secondary" type="submit" disabled={!canCapture || isGameCompleted}>
-                  Interpret text
+                  Interpret
                 </button>
-                <button
-                  className="button-ghost"
-                  type="button"
-                  disabled={isGameCompleted}
-                  onClick={() => setManualTranscript("")}
-                >
-                  Clear
-                </button>
+                {manualTranscript && (
+                  <button
+                    className="button-ghost"
+                    type="button"
+                    disabled={isGameCompleted}
+                    onClick={() => setManualTranscript("")}
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
             </form>
-          </div>
+          </section>
 
           <section className="review-list">
-            <div className="section-copy">
-              <h3>Review queue</h3>
-              <p className="supporting-text">
-                Each card should read clearly: who, what happened, and a button to save it to the
-                match.
-              </p>
-            </div>
+            <h3>Review queue</h3>
 
             {reviewItems.length === 0 ? (
               <StatusMessage
