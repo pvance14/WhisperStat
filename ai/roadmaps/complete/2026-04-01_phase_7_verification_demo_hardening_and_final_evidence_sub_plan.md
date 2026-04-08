@@ -77,3 +77,14 @@ We need to avoid over-engineering, cruft, and legacy-compatibility features in t
 
 - Supabase logs / Edge logs reviewed for obvious errors before final.
 - Confirm RLS regression: second account cannot read first account’s games.
+
+## Completion Notes
+
+- Phase 7 closeout is documentation-heavy by design because the remaining scope was proof and hardening, not new product behavior.
+- The final evidence set now includes:
+- `aiDocs/evidence/phase_7_end_to_end_verification.md`
+- `aiDocs/evidence/phase_7_demo_hardening.md`
+- `aiDocs/evidence/phase_7_validation_packet.md`
+- `aiDocs/evidence/phase_7_rubric_traceability.md`
+- `aiDocs/evidence/phase_7_security_and_performance.md`
+- `aiDocs/mvp.md` now includes observed notes in the success-criteria section so the repo no longer reads as though all proof is still hypothetical.

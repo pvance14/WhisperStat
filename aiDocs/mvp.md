@@ -108,6 +108,13 @@ Native iOS/Android apps remain **after validation**, not part of MVP.
 
 Pre-build **de-risking** (coach interviews, gym noise ASR test, waitlist, Wizard of Oz) remains the gating work summarized in [PRD §10](./prd.md) — the MVP assumes those signals justify engineering investment.
 
+### Observed Notes After Implementation
+
+- **Core loop:** observed as working end to end across the tracked phase verifications, with auth, roster, game setup, capture, confirm, live totals, report, correction, completion, and summary all backed by implementation and evidence notes in `aiDocs/evidence/`.
+- **Trust behavior:** confirmed more strongly than the original MVP draft. The product now has explicit confirm-before-write, undo, last-event correction, older event edits, and atomic grouped confirmation for multi-event capture.
+- **Differentiation:** supported directionally. The repo demonstrates natural-feeling bounded volleyball phrases better than scripted-command-only input, but this is still backed by prototype evidence rather than a formal comparative study.
+- **Accuracy / eyes-up / paid-demand targets:** not all PRD-era business or field metrics were formally re-measured in tracked evidence. For the class final, those should be presented as partially supported prototype claims rather than fully closed business validation.
+
 ---
 
 ## Summary Checklist
