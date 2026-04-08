@@ -23,6 +23,7 @@ In this repo, **`ai/` is tracked** (not gitignored) so roadmaps under `ai/roadma
   - `phase_7_validation_packet.md`
   - `phase_7_rubric_traceability.md`
   - `phase_7_security_and_performance.md`
+  - `2026-04-07_codex_skill_usage.md`
 - **Validation / falsification** write-ups: hypothesis, what would falsify, how you ran the test, outcome, what changed (per PRD §10 and `final_project_alignment.md`).
 - **Demo evidence**: preflight checklists, golden-path screenshots or notes, fallback scenarios (offline / ASR failure).
 - **Traceability**: short maps from rubric or alignment-doc requirements to a file in this folder or a PR.

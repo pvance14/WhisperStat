@@ -4,9 +4,9 @@
 
 # Local / editor-specific (not shared)
 # Optional root-level Claude config; preferred location is ai/claude.md
-claude.md
-CLAUDE.md
-.cursorrules
+# claude.md
+# CLAUDE.md
+# .cursorrules
 
 # Tracked at repo root: AGENTS.md (Codex / shared agent defaults)
 .env
