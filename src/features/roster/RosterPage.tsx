@@ -216,10 +216,12 @@ export const RosterPage = () => {
                   <td>{player.position ?? "—"}</td>
                   <td>{player.aliases?.join(", ") ?? "—"}</td>
                   <td>
-                    <div className="cluster">
+                    <div className="cluster compact-actions roster-row-actions">
                       <button
-                        className="button-ghost"
+                        className="button-ghost icon-button"
                         type="button"
+                        aria-label={`Edit ${player.first_name} ${player.last_name}`}
+                        title="Edit player"
                         onClick={() => {
                           setEditingPlayerId(player.id);
                           setDraft({
@@ -231,11 +233,30 @@ export const RosterPage = () => {
                           });
                         }}
                       >
-                        Edit
+                        <svg viewBox="0 0 20 20" aria-hidden="true">
+                          <path
+                            d="M13.9 2.6a2.1 2.1 0 0 1 3 3L8 14.5l-3.6.6.6-3.6 8.9-8.9Z"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.7"
+                          />
+                          <path
+                            d="M12.5 4l3.5 3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.7"
+                          />
+                        </svg>
                       </button>
                       <button
-                        className="button-ghost"
+                        className="button-ghost icon-button"
                         type="button"
+                        aria-label={`Delete ${player.first_name} ${player.last_name}`}
+                        title="Delete player"
                         onClick={() => {
                           void deletePlayer(requireSupabase(), player.id)
                             .then(loadPlayers)
@@ -253,7 +274,40 @@ export const RosterPage = () => {
                             );
                         }}
                       >
-                        Delete
+                        <svg viewBox="0 0 20 20" aria-hidden="true">
+                          <path
+                            d="M4.5 5.5h11"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.7"
+                          />
+                          <path
+                            d="M7.5 5.5V4.4c0-.5.4-.9.9-.9h3.2c.5 0 .9.4.9.9v1.1"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.7"
+                          />
+                          <path
+                            d="M6.3 5.5l.6 9.1c0 .7.6 1.2 1.3 1.2h3.6c.7 0 1.3-.5 1.3-1.2l.6-9.1"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.7"
+                          />
+                          <path
+                            d="M8.4 8.4v4.5M11.6 8.4v4.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.7"
+                          />
+                        </svg>
                       </button>
                     </div>
                   </td>
