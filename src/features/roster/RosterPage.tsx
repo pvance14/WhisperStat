@@ -253,7 +253,7 @@ export const RosterPage = () => {
                         </svg>
                       </button>
                       <button
-                        className="button-ghost icon-button"
+                        className="button-ghost icon-button icon-button-danger"
                         type="button"
                         aria-label={`Delete ${player.first_name} ${player.last_name}`}
                         title="Delete player"
